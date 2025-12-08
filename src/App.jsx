@@ -186,40 +186,77 @@ const BottomSheet = ({ isOpen, onClose, title, children }) => {
   );
 };
 
+// 토스 스타일 아이콘 SVG 컴포넌트
+const IconHome = ({ active, color }) => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill={active ? color : 'none'} stroke={color} strokeWidth="2">
+    <path d="M3 9.5L12 3L21 9.5V20C21 20.5523 20.5523 21 20 21H4C3.44772 21 3 20.5523 3 20V9.5Z" />
+    <path d="M9 21V14H15V21" stroke={active ? '#FFFFFF' : color} strokeWidth="2" />
+  </svg>
+);
+
+const IconOrder = ({ active, color }) => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill={active ? color : 'none'} stroke={color} strokeWidth="2">
+    <rect x="3" y="3" width="18" height="18" rx="2" />
+    <line x1="7" y1="8" x2="17" y2="8" stroke={active ? '#FFFFFF' : color} />
+    <line x1="7" y1="12" x2="17" y2="12" stroke={active ? '#FFFFFF' : color} />
+    <line x1="7" y1="16" x2="12" y2="16" stroke={active ? '#FFFFFF' : color} />
+  </svg>
+);
+
+const IconSettings = ({ active, color }) => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2">
+    <line x1="4" y1="6" x2="20" y2="6" />
+    <line x1="4" y1="12" x2="20" y2="12" />
+    <line x1="4" y1="18" x2="20" y2="18" />
+    {active && <>
+      <circle cx="8" cy="6" r="2" fill={color} />
+      <circle cx="16" cy="12" r="2" fill={color} />
+      <circle cx="10" cy="18" r="2" fill={color} />
+    </>}
+  </svg>
+);
+
 const BottomNav = ({ activeTab, onChange }) => {
   const { colors } = useTheme();
   const tabs = [
-    { id: 'home', label: '홈', icon: '🏠' },
-    { id: 'orders', label: '주문', icon: '📋' },
-    { id: 'settings', label: '설정', icon: '⚙️' },
+    { id: 'home', label: '홈', Icon: IconHome },
+    { id: 'orders', label: '주문', Icon: IconOrder },
+    { id: 'settings', label: '전체', Icon: IconSettings },
   ];
   return (
     <div style={{
-      display: 'flex', justifyContent: 'space-around', padding: `${tokens.spacing.md}px 0`,
-      paddingBottom: `calc(${tokens.spacing.md}px + env(safe-area-inset-bottom, 0px))`,
-      background: colors.bgCard, borderTop: `1px solid ${colors.border}`,
-      position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)',
-      width: '100%', maxWidth: 480, zIndex: 100,
+      position: 'fixed', bottom: 16, left: '50%', transform: 'translateX(-50%)',
+      width: 'calc(100% - 32px)', maxWidth: 400, zIndex: 100,
     }}>
-      {tabs.map(tab => (
-        <button key={tab.id} onClick={() => onChange(tab.id)} style={{
-          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
-          background: activeTab === tab.id ? colors.green50 : 'none',
-          border: 'none', cursor: 'pointer', padding: `${tokens.spacing.sm}px ${tokens.spacing.xl}px`,
-          borderRadius: tokens.radius.md,
-          color: activeTab === tab.id ? colors.green600 : colors.textTertiary,
-        }}>
-          <span style={{ fontSize: 20 }}>{tab.icon}</span>
-          <span style={{ fontSize: tokens.fontSize.xs, fontWeight: activeTab === tab.id ? 700 : 400 }}>{tab.label}</span>
-        </button>
-      ))}
+      <div style={{
+        display: 'flex', justifyContent: 'space-around', alignItems: 'center',
+        padding: '8px 16px',
+        background: colors.bgCard, borderRadius: 50,
+        boxShadow: '0 4px 20px rgba(0,0,0,0.12)',
+      }}>
+        {tabs.map(tab => {
+          const isActive = activeTab === tab.id;
+          const iconColor = isActive ? colors.gray800 : colors.gray400;
+          return (
+            <button key={tab.id} onClick={() => onChange(tab.id)} style={{
+              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2,
+              background: 'none', border: 'none', cursor: 'pointer', padding: '8px 20px',
+            }}>
+              <tab.Icon active={isActive} color={iconColor} />
+              <span style={{
+                fontSize: 11, fontWeight: isActive ? 600 : 400,
+                color: isActive ? colors.gray800 : colors.gray400,
+              }}>{tab.label}</span>
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 };
 
 // 플로팅 챗봇 버튼
 const FloatingChatButton = () => {
-  const { colors } = useTheme();
   return (
     <a
       href="http://pf.kakao.com/_xiJxmxdG/chat"
@@ -227,11 +264,11 @@ const FloatingChatButton = () => {
       rel="noopener noreferrer"
       style={{
         position: 'fixed',
-        bottom: 80,
-        right: 20,
-        width: 56,
-        height: 56,
-        borderRadius: 28,
+        bottom: 100,
+        right: 16,
+        width: 52,
+        height: 52,
+        borderRadius: 26,
         background: '#FEE500',
         display: 'flex',
         alignItems: 'center',
@@ -241,7 +278,9 @@ const FloatingChatButton = () => {
         textDecoration: 'none',
       }}
     >
-      <span style={{ fontSize: 28 }}>💬</span>
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="#3C1E1E">
+        <path d="M12 3C6.48 3 2 6.58 2 11c0 2.62 1.69 4.94 4.27 6.38L5 21l4.41-2.31C10.25 18.89 11.11 19 12 19c5.52 0 10-3.58 10-8s-4.48-8-10-8z"/>
+      </svg>
     </a>
   );
 };
@@ -295,11 +334,35 @@ const PAYMENT_FEE = 0.03;
 const CO2_PER_BAG = 2.5;
 
 // ============================================
-// 홈 화면
+// 홈 화면 - 사장님용
 // ============================================
 const HomeScreen = ({ onNavigate, shopData, setShopData }) => {
   const { colors } = useTheme();
   const [showQuantitySheet, setShowQuantitySheet] = useState(false);
+
+  // 오늘 픽업 시간 (예: 19:00-20:00)
+  const pickupStartTime = '19:00';
+  const pickupEndTime = '20:00';
+
+  // 타임라인 계산
+  const getTimelineSteps = () => {
+    const [startHour, startMin] = pickupStartTime.split(':').map(Number);
+    const reserveOpenTime = `어제 ${startHour - 1}:${String(startMin + 30).padStart(2, '0')}`;
+    const confirmTime = `오늘 ${startHour - 1}:${String(startMin + 30).padStart(2, '0')}`;
+
+    // 현재 진행 상태 (데모용)
+    const currentStep = 1; // 0: 예약오픈 전, 1: 예약 중, 2: 확정됨, 3: 픽업 중, 4: 마감
+
+    return [
+      { id: 0, label: '예약 오픈', time: reserveOpenTime, desc: '고객이 예약할 수 있어요' },
+      { id: 1, label: '확정', time: confirmTime, desc: '자동 확정돼요' },
+      { id: 2, label: '픽업 시작', time: `오늘 ${pickupStartTime}`, desc: '고객이 방문해요' },
+      { id: 3, label: '픽업 마감', time: `오늘 ${pickupEndTime}`, desc: '판매 종료' },
+    ];
+  };
+
+  const timelineSteps = getTimelineSteps();
+  const currentStep = 1; // 현재 예약 진행 중
 
   const totalStats = {
     co2Saved: shopData.totalSold * CO2_PER_BAG,
@@ -307,79 +370,97 @@ const HomeScreen = ({ onNavigate, shopData, setShopData }) => {
     totalRevenue: shopData.totalRevenue,
   };
 
-  const stats = [
-    { label: '예약', value: shopData.paidCount, color: colors.orange500 },
-    { label: '확정', value: shopData.confirmedCount, color: colors.blue500 },
-    { label: '픽업완료', value: shopData.pickedUpCount, color: colors.green500 },
-  ];
-
   return (
-    <div>
-      {/* 당근앱 스타일 환경 기여 카드들 */}
-      <div style={{ padding: tokens.spacing.lg, paddingBottom: 0 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: tokens.spacing.sm }}>
-          <div style={{ background: colors.bgCard, borderRadius: 20, padding: tokens.spacing.lg, textAlign: 'center', boxShadow: `0 2px 8px ${colors.shadow}` }}>
-            <div style={{ width: 44, height: 44, borderRadius: 22, margin: '0 auto', background: '#E8F5E9', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: tokens.spacing.sm }}>
-              <span style={{ fontSize: 20 }}>🌿</span>
-            </div>
-            <div style={{ fontSize: tokens.fontSize.xxl, fontWeight: 700, color: colors.text }}>
-              {totalStats.co2Saved.toFixed(0)}<span style={{ fontSize: tokens.fontSize.xs, fontWeight: 500, color: colors.textTertiary }}>kg</span>
-            </div>
-            <div style={{ fontSize: tokens.fontSize.xs, color: colors.textTertiary, marginTop: 2 }}>CO₂ 절감</div>
-          </div>
-          <div style={{ background: colors.bgCard, borderRadius: 20, padding: tokens.spacing.lg, textAlign: 'center', boxShadow: `0 2px 8px ${colors.shadow}` }}>
-            <div style={{ width: 44, height: 44, borderRadius: 22, margin: '0 auto', background: '#FFF3E0', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: tokens.spacing.sm }}>
-              <span style={{ fontSize: 20 }}>🎁</span>
-            </div>
-            <div style={{ fontSize: tokens.fontSize.xxl, fontWeight: 700, color: colors.text }}>
-              {totalStats.totalSold}<span style={{ fontSize: tokens.fontSize.xs, fontWeight: 500, color: colors.textTertiary }}>개</span>
-            </div>
-            <div style={{ fontSize: tokens.fontSize.xs, color: colors.textTertiary, marginTop: 2 }}>럭키백 판매</div>
-          </div>
-          <div style={{ background: colors.bgCard, borderRadius: 20, padding: tokens.spacing.lg, textAlign: 'center', boxShadow: `0 2px 8px ${colors.shadow}` }}>
-            <div style={{ width: 44, height: 44, borderRadius: 22, margin: '0 auto', background: '#E3F2FD', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: tokens.spacing.sm }}>
-              <span style={{ fontSize: 20 }}>💰</span>
-            </div>
-            <div style={{ fontSize: tokens.fontSize.xxl, fontWeight: 700, color: colors.text }}>
-              {(totalStats.totalRevenue / 10000).toFixed(0)}<span style={{ fontSize: tokens.fontSize.xs, fontWeight: 500, color: colors.textTertiary }}>만원</span>
-            </div>
-            <div style={{ fontSize: tokens.fontSize.xs, color: colors.textTertiary, marginTop: 2 }}>누적 매출</div>
-          </div>
+    <div style={{ paddingBottom: 100 }}>
+      {/* 사장님 인사 */}
+      <div style={{ padding: `${tokens.spacing.xl}px ${tokens.spacing.lg}px ${tokens.spacing.md}px` }}>
+        <div style={{ fontSize: tokens.fontSize.xxl, fontWeight: 700, color: colors.text }}>
+          안녕하세요, 사장님
+        </div>
+        <div style={{ fontSize: tokens.fontSize.md, color: colors.textTertiary, marginTop: 4 }}>
+          {new Date().toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', weekday: 'long' })}
         </div>
       </div>
 
-      <Card style={{ margin: `${tokens.spacing.lg}px ${tokens.spacing.lg}px ${tokens.spacing.lg}px` }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: tokens.spacing.lg }}>
-          <span style={{ fontSize: tokens.fontSize.md, fontWeight: 600, color: colors.text }}>오늘 현황</span>
-          <span style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary }}>
-            {new Date().toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', weekday: 'short' })}
-          </span>
+      {/* 오늘 현황 타임라인 */}
+      <Card style={{ margin: `${tokens.spacing.sm}px ${tokens.spacing.lg}px ${tokens.spacing.lg}px` }}>
+        <div style={{ marginBottom: tokens.spacing.lg }}>
+          <div style={{ fontSize: tokens.fontSize.md, fontWeight: 600, color: colors.text }}>오늘의 럭키백</div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: tokens.spacing.lg, background: colors.gray50, borderRadius: tokens.radius.md, marginBottom: tokens.spacing.lg }}>
-          <div style={{ textAlign: 'center', flex: 1 }}>
-            <div style={{ fontSize: tokens.fontSize.xxxxl, fontWeight: 700, color: colors.green500 }}>{shopData.dailySalesCount - shopData.soldCount}</div>
+
+        {/* 타임라인 */}
+        <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: tokens.spacing.xl }}>
+          {timelineSteps.map((step, idx) => {
+            const isCompleted = idx < currentStep;
+            const isCurrent = idx === currentStep;
+            const isLast = idx === timelineSteps.length - 1;
+
+            return (
+              <div key={step.id} style={{ flex: 1, position: 'relative' }}>
+                {/* 연결선 */}
+                {!isLast && (
+                  <div style={{
+                    position: 'absolute', top: 10, left: '50%', right: '-50%',
+                    height: 2, background: isCompleted ? colors.green500 : colors.gray200,
+                    zIndex: 0,
+                  }} />
+                )}
+
+                {/* 점 */}
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 1 }}>
+                  <div style={{
+                    width: isCurrent ? 24 : 20, height: isCurrent ? 24 : 20,
+                    borderRadius: '50%',
+                    background: isCompleted || isCurrent ? colors.green500 : colors.bgCard,
+                    border: `2px solid ${isCompleted || isCurrent ? colors.green500 : colors.gray300}`,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  }}>
+                    {(isCompleted || isCurrent) && (
+                      <div style={{ width: 8, height: 8, borderRadius: 4, background: '#FFFFFF' }} />
+                    )}
+                  </div>
+
+                  {/* 라벨 */}
+                  <div style={{
+                    marginTop: tokens.spacing.sm, textAlign: 'center',
+                    color: isCurrent ? colors.green600 : isCompleted ? colors.text : colors.textTertiary,
+                    fontWeight: isCurrent ? 600 : 400, fontSize: tokens.fontSize.xs,
+                  }}>
+                    {step.label}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* 현재 상태 설명 */}
+        <div style={{
+          padding: tokens.spacing.md, background: colors.green50, borderRadius: tokens.radius.md,
+          border: `1px dashed ${colors.green500}`,
+        }}>
+          <div style={{ fontSize: tokens.fontSize.sm, fontWeight: 600, color: colors.green600 }}>
+            {timelineSteps[currentStep].label}
+          </div>
+          <div style={{ fontSize: tokens.fontSize.sm, color: colors.green500, marginTop: 2 }}>
+            {timelineSteps[currentStep].desc} · {timelineSteps[currentStep].time}
+          </div>
+        </div>
+
+        {/* 수량 정보 */}
+        <div style={{ display: 'flex', alignItems: 'center', marginTop: tokens.spacing.lg, padding: tokens.spacing.md, background: colors.gray50, borderRadius: tokens.radius.md }}>
+          <div style={{ flex: 1 }}>
             <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary }}>남은 수량</div>
-          </div>
-          <div style={{ width: 1, height: 40, background: colors.gray200 }} />
-          <div style={{ textAlign: 'center', flex: 1 }}>
-            <div style={{ fontSize: tokens.fontSize.xxxxl, fontWeight: 700, color: colors.gray400 }}>{shopData.dailySalesCount}</div>
-            <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary }}>전체 수량</div>
-          </div>
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-          {stats.map(stat => (
-            <div key={stat.label} style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: tokens.fontSize.xxxl, fontWeight: 700, color: stat.color }}>{stat.value}</div>
-              <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary }}>{stat.label}</div>
+            <div style={{ fontSize: tokens.fontSize.xxl, fontWeight: 700, color: colors.green500 }}>
+              {shopData.dailySalesCount - shopData.soldCount}개
+              <span style={{ fontSize: tokens.fontSize.sm, fontWeight: 400, color: colors.textTertiary }}> / {shopData.dailySalesCount}개</span>
             </div>
-          ))}
+          </div>
+          <Button variant="secondary" size="sm" onClick={() => setShowQuantitySheet(true)}>수량 변경</Button>
         </div>
       </Card>
 
-      <Card style={{ margin: `0 ${tokens.spacing.lg}px ${tokens.spacing.lg}px` }}>
-        <Toggle checked={shopData.isSoldOut} onChange={(v) => setShopData({ ...shopData, isSoldOut: v })} label="오늘 판매 종료" />
-      </Card>
-
+      {/* 대기 중인 주문 */}
       {shopData.paidCount > 0 && (
         <Card style={{ margin: `0 ${tokens.spacing.lg}px ${tokens.spacing.lg}px`, background: colors.blue50, border: `1px solid ${colors.blue100}` }} onClick={() => onNavigate('orders')}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -387,40 +468,83 @@ const HomeScreen = ({ onNavigate, shopData, setShopData }) => {
               <div style={{ fontSize: tokens.fontSize.md, fontWeight: 600, color: colors.blue600 }}>확정 대기 주문 {shopData.paidCount}건</div>
               <div style={{ fontSize: tokens.fontSize.sm, color: colors.blue500, marginTop: 4 }}>픽업 시간 전에 확정해 주세요</div>
             </div>
-            <span style={{ color: colors.blue500 }}>›</span>
+            <span style={{ color: colors.blue500, fontSize: 20 }}>›</span>
           </div>
         </Card>
       )}
 
-      <Card style={{ margin: `0 ${tokens.spacing.lg}px ${tokens.spacing.lg}px` }} onClick={() => setShowQuantitySheet(true)}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div>
-            <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary }}>오늘의 럭키백 수량</div>
-            <div style={{ fontSize: tokens.fontSize.xxl, fontWeight: 700, color: colors.text, marginTop: 4 }}>{shopData.dailySalesCount}개</div>
+      {/* 오늘 판매 종료 토글 */}
+      <Card style={{ margin: `0 ${tokens.spacing.lg}px ${tokens.spacing.lg}px` }}>
+        <Toggle checked={shopData.isSoldOut} onChange={(v) => setShopData({ ...shopData, isSoldOut: v })} label="오늘 판매 마감하기" />
+        {shopData.isSoldOut && (
+          <div style={{ marginTop: tokens.spacing.sm, fontSize: tokens.fontSize.sm, color: colors.textTertiary }}>
+            마감하면 고객이 예약할 수 없어요
           </div>
-          <Button variant="secondary" size="sm">변경</Button>
-        </div>
+        )}
       </Card>
 
+      {/* 환경 기여 카드들 */}
+      <div style={{ padding: `0 ${tokens.spacing.lg}px ${tokens.spacing.lg}px` }}>
+        <div style={{ fontSize: tokens.fontSize.sm, fontWeight: 600, color: colors.textTertiary, marginBottom: tokens.spacing.md }}>
+          사장님의 환경 기여
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: tokens.spacing.sm }}>
+          <div style={{ background: colors.bgCard, borderRadius: tokens.radius.lg, padding: tokens.spacing.md, textAlign: 'center', boxShadow: `0 1px 3px ${colors.shadow}` }}>
+            <div style={{ fontSize: tokens.fontSize.xl, fontWeight: 700, color: colors.green500 }}>
+              {totalStats.co2Saved.toFixed(0)}
+            </div>
+            <div style={{ fontSize: tokens.fontSize.xs, color: colors.textTertiary }}>kg CO₂ 절감</div>
+          </div>
+          <div style={{ background: colors.bgCard, borderRadius: tokens.radius.lg, padding: tokens.spacing.md, textAlign: 'center', boxShadow: `0 1px 3px ${colors.shadow}` }}>
+            <div style={{ fontSize: tokens.fontSize.xl, fontWeight: 700, color: colors.orange500 }}>
+              {totalStats.totalSold}
+            </div>
+            <div style={{ fontSize: tokens.fontSize.xs, color: colors.textTertiary }}>개 럭키백 판매</div>
+          </div>
+          <div style={{ background: colors.bgCard, borderRadius: tokens.radius.lg, padding: tokens.spacing.md, textAlign: 'center', boxShadow: `0 1px 3px ${colors.shadow}` }}>
+            <div style={{ fontSize: tokens.fontSize.xl, fontWeight: 700, color: colors.blue500 }}>
+              {(totalStats.totalRevenue / 10000).toFixed(0)}
+            </div>
+            <div style={{ fontSize: tokens.fontSize.xs, color: colors.textTertiary }}>만원 매출</div>
+          </div>
+        </div>
+      </div>
+
+      {/* 바로가기 */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: tokens.spacing.md, margin: `0 ${tokens.spacing.lg}px ${tokens.spacing.lg}px` }}>
-        <Card onClick={() => onNavigate('luckybag-settings')} style={{ textAlign: 'center', padding: tokens.spacing.lg }}>
-          <div style={{ fontSize: 24, marginBottom: tokens.spacing.sm }}>🎁</div>
-          <div style={{ fontSize: tokens.fontSize.sm, fontWeight: 500, color: colors.text }}>럭키백 설정</div>
+        <Card onClick={() => onNavigate('luckybag-settings')} style={{ padding: tokens.spacing.lg }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.md }}>
+            <div style={{ width: 40, height: 40, borderRadius: 12, background: colors.orange50, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill={colors.orange500}>
+                <path d="M20 7h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v3H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zM10 4h4v3h-4V4z"/>
+              </svg>
+            </div>
+            <div style={{ fontSize: tokens.fontSize.sm, fontWeight: 500, color: colors.text }}>럭키백 설정</div>
+          </div>
         </Card>
-        <Card onClick={() => onNavigate('pickup-settings')} style={{ textAlign: 'center', padding: tokens.spacing.lg }}>
-          <div style={{ fontSize: 24, marginBottom: tokens.spacing.sm }}>📅</div>
-          <div style={{ fontSize: tokens.fontSize.sm, fontWeight: 500, color: colors.text }}>픽업 시간</div>
+        <Card onClick={() => onNavigate('pickup-settings')} style={{ padding: tokens.spacing.lg }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.md }}>
+            <div style={{ width: 40, height: 40, borderRadius: 12, background: colors.blue50, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill={colors.blue500}>
+                <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM9 14H7v-2h2v2zm4 0h-2v-2h2v2zm4 0h-2v-2h2v2z"/>
+              </svg>
+            </div>
+            <div style={{ fontSize: tokens.fontSize.sm, fontWeight: 500, color: colors.text }}>픽업 시간</div>
+          </div>
         </Card>
       </div>
 
-      <BottomSheet isOpen={showQuantitySheet} onClose={() => setShowQuantitySheet(false)} title="럭키백 수량 변경">
-        <div style={{ marginBottom: tokens.spacing.xl }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: tokens.spacing.lg, background: colors.gray50, borderRadius: tokens.radius.md }}>
+      <BottomSheet isOpen={showQuantitySheet} onClose={() => setShowQuantitySheet(false)} title="오늘 럭키백 수량">
+        <div style={{ marginBottom: tokens.spacing.lg }}>
+          <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary, marginBottom: tokens.spacing.md }}>
+            오늘 판매할 럭키백 수량을 설정해 주세요
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: tokens.spacing.xl, padding: tokens.spacing.xl, background: colors.gray50, borderRadius: tokens.radius.lg }}>
             <button onClick={() => setShopData({ ...shopData, dailySalesCount: Math.max(1, shopData.dailySalesCount - 1) })}
-              style={{ width: 44, height: 44, borderRadius: 22, border: `1px solid ${colors.gray300}`, background: colors.bgCard, fontSize: 20, cursor: 'pointer', color: colors.text }}>-</button>
-            <span style={{ fontSize: tokens.fontSize.xxxl, fontWeight: 700, color: colors.text }}>{shopData.dailySalesCount}</span>
+              style={{ width: 48, height: 48, borderRadius: 24, border: `1px solid ${colors.gray300}`, background: colors.bgCard, fontSize: 24, cursor: 'pointer', color: colors.text }}>−</button>
+            <span style={{ fontSize: 40, fontWeight: 700, color: colors.text, minWidth: 60, textAlign: 'center' }}>{shopData.dailySalesCount}</span>
             <button onClick={() => setShopData({ ...shopData, dailySalesCount: shopData.dailySalesCount + 1 })}
-              style={{ width: 44, height: 44, borderRadius: 22, border: `1px solid ${colors.gray300}`, background: colors.bgCard, fontSize: 20, cursor: 'pointer', color: colors.text }}>+</button>
+              style={{ width: 48, height: 48, borderRadius: 24, border: `1px solid ${colors.gray300}`, background: colors.bgCard, fontSize: 24, cursor: 'pointer', color: colors.text }}>+</button>
           </div>
         </div>
         <Button fullWidth onClick={() => setShowQuantitySheet(false)}>저장하기</Button>
@@ -2108,7 +2232,7 @@ export default function App() {
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
         transition: 'background 0.3s', position: 'relative',
       }}>
-        <div style={{ paddingBottom: showBottomNav ? 80 : 0 }}>{renderScreen()}</div>
+        <div style={{ paddingBottom: showBottomNav ? 100 : 0 }}>{renderScreen()}</div>
         {showBottomNav && <BottomNav activeTab={activeTab} onChange={navigate} />}
         <FloatingChatButton />
       </div>
