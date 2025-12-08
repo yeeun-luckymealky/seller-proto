@@ -40,18 +40,39 @@ const tokens = {
 
 // 카테고리 목록 (백엔드 기반)
 const FOOD_CATEGORIES = [
-  { id: 1, name: '베이커리', emoji: '🥐' },
+  { id: 1, name: '샐러드', emoji: '🥗' },
   { id: 2, name: '피자', emoji: '🍕' },
   { id: 3, name: '한식', emoji: '🍚' },
-  { id: 4, name: '양식', emoji: '🍝' },
-  { id: 5, name: '일식', emoji: '🍣' },
-  { id: 6, name: '중식', emoji: '🥟' },
-  { id: 7, name: '분식', emoji: '🍜' },
-  { id: 8, name: '치킨', emoji: '🍗' },
-  { id: 9, name: '카페/디저트', emoji: '🍰' },
-  { id: 10, name: '샐러드', emoji: '🥗' },
-  { id: 11, name: '샌드위치', emoji: '🥪' },
-  { id: 12, name: '도시락', emoji: '🍱' },
+  { id: 4, name: '디저트', emoji: '🍰' },
+  { id: 5, name: '빵', emoji: '🥐' },
+  { id: 6, name: '과일', emoji: '🍎' },
+  { id: 7, name: '식사빵', emoji: '🥖' },
+];
+
+// 한국 은행 목록
+const KOREAN_BANKS = [
+  { value: 'KB', label: 'KB국민은행' },
+  { value: 'SHINHAN', label: '신한은행' },
+  { value: 'WOORI', label: '우리은행' },
+  { value: 'HANA', label: '하나은행' },
+  { value: 'NH', label: 'NH농협은행' },
+  { value: 'IBK', label: 'IBK기업은행' },
+  { value: 'SC', label: 'SC제일은행' },
+  { value: 'CITI', label: '한국씨티은행' },
+  { value: 'KAKAO', label: '카카오뱅크' },
+  { value: 'TOSS', label: '토스뱅크' },
+  { value: 'KBANK', label: '케이뱅크' },
+  { value: 'DGB', label: 'DGB대구은행' },
+  { value: 'BNK_BUSAN', label: 'BNK부산은행' },
+  { value: 'BNK_KYUNGNAM', label: 'BNK경남은행' },
+  { value: 'GWANGJU', label: '광주은행' },
+  { value: 'JEONBUK', label: '전북은행' },
+  { value: 'JEJU', label: '제주은행' },
+  { value: 'SUHYUP', label: '수협은행' },
+  { value: 'SHINHYUP', label: '신협' },
+  { value: 'SAEMAUL', label: '새마을금고' },
+  { value: 'POST', label: '우체국' },
+  { value: 'CUSTOM', label: '직접 입력' },
 ];
 
 // ============================================
@@ -1350,50 +1371,191 @@ const EmployeesScreen = ({ onBack, shopData, setShopData }) => {
 // ============================================
 // 정산 내역
 // ============================================
-const SettlementScreen = ({ onBack }) => {
+const SettlementScreen = ({ onBack, shopData }) => {
   const { colors } = useTheme();
   const [showTaxInfo, setShowTaxInfo] = useState(false);
+  const [showExportSheet, setShowExportSheet] = useState(false);
+  const [selectedMonth, setSelectedMonth] = useState(null);
+  const [exportMonth, setExportMonth] = useState('');
 
   const settlements = [
-    { month: '2024년 11월', amount: 1250000, status: 'completed', paidAt: '2024-12-02' },
-    { month: '2024년 10월', amount: 980000, status: 'completed', paidAt: '2024-11-01' },
+    {
+      month: '2024년 11월',
+      monthKey: '2024-11',
+      amount: 1250000,
+      status: 'completed',
+      paidAt: '2024-12-02',
+      details: [
+        { pickupDate: '2024-11-08', productName: '행복한 베이커리 럭키백', originalPrice: 7800, salePrice: 3900, quantity: 2, transactionAmount: 7800, platformFee: 764, paymentFee: 234, settlementAmount: 6802 },
+        { pickupDate: '2024-11-10', productName: '행복한 베이커리 럭키백', originalPrice: 7800, salePrice: 3900, quantity: 3, transactionAmount: 11700, platformFee: 1146, paymentFee: 351, settlementAmount: 10203 },
+        { pickupDate: '2024-11-14', productName: '행복한 베이커리 럭키백', originalPrice: 7800, salePrice: 3900, quantity: 5, transactionAmount: 19500, platformFee: 1911, paymentFee: 585, settlementAmount: 17004 },
+        { pickupDate: '2024-11-18', productName: '행복한 베이커리 럭키백', originalPrice: 7800, salePrice: 3900, quantity: 4, transactionAmount: 15600, platformFee: 1528, paymentFee: 468, settlementAmount: 13604 },
+        { pickupDate: '2024-11-22', productName: '행복한 베이커리 럭키백', originalPrice: 7800, salePrice: 3900, quantity: 6, transactionAmount: 23400, platformFee: 2293, paymentFee: 702, settlementAmount: 20405 },
+        { pickupDate: '2024-11-25', productName: '행복한 베이커리 럭키백', originalPrice: 7800, salePrice: 3900, quantity: 3, transactionAmount: 11700, platformFee: 1146, paymentFee: 351, settlementAmount: 10203 },
+        { pickupDate: '2024-11-28', productName: '행복한 베이커리 럭키백', originalPrice: 7800, salePrice: 3900, quantity: 2, transactionAmount: 7800, platformFee: 764, paymentFee: 234, settlementAmount: 6802 },
+      ],
+    },
+    {
+      month: '2024년 10월',
+      monthKey: '2024-10',
+      amount: 980000,
+      status: 'completed',
+      paidAt: '2024-11-01',
+      details: [
+        { pickupDate: '2024-10-05', productName: '행복한 베이커리 럭키백', originalPrice: 7800, salePrice: 3900, quantity: 4, transactionAmount: 15600, platformFee: 1528, paymentFee: 468, settlementAmount: 13604 },
+        { pickupDate: '2024-10-12', productName: '행복한 베이커리 럭키백', originalPrice: 7800, salePrice: 3900, quantity: 5, transactionAmount: 19500, platformFee: 1911, paymentFee: 585, settlementAmount: 17004 },
+        { pickupDate: '2024-10-20', productName: '행복한 베이커리 럭키백', originalPrice: 7800, salePrice: 3900, quantity: 3, transactionAmount: 11700, platformFee: 1146, paymentFee: 351, settlementAmount: 10203 },
+      ],
+    },
   ];
+
+  const exportMonths = [
+    { value: '2024-11', label: '2024년 11월' },
+    { value: '2024-10', label: '2024년 10월' },
+    { value: '2024-09', label: '2024년 9월' },
+  ];
+
+  const handleExport = (type) => {
+    const fileName = type === 'all'
+      ? `${shopData?.shopName || '가게'}_전체_정산상세.xlsx`
+      : `${shopData?.shopName || '가게'}_${exportMonth.replace('-', '년')}월_정산상세.xlsx`;
+    alert(`${fileName} 파일이 다운로드됩니다.\n(프로토타입 - 실제로는 다운로드되지 않습니다)`);
+    setShowExportSheet(false);
+  };
+
+  const formatDate = (dateStr) => {
+    const date = new Date(dateStr);
+    return `${date.getMonth() + 1}/${date.getDate()}`;
+  };
 
   return (
     <div>
-      <Header title="정산 내역" onBack={onBack} />
-      <div style={{ padding: tokens.spacing.lg }}>
-        <Card style={{ marginBottom: tokens.spacing.lg, background: colors.green50, border: `1px solid ${colors.green100}` }} onClick={() => setShowTaxInfo(true)}>
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: tokens.spacing.md }}>
-            <span style={{ fontSize: 24 }}>💡</span>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: tokens.fontSize.md, fontWeight: 600, color: colors.green600, marginBottom: 4 }}>2026년 1월부터 세무 처리가 간편해져요</div>
-              <div style={{ fontSize: tokens.fontSize.sm, color: colors.green500 }}>세금계산서·현금영수증 발행, 이제 안 하셔도 돼요</div>
+      <Header
+        title="정산 내역"
+        onBack={selectedMonth ? () => setSelectedMonth(null) : onBack}
+        right={!selectedMonth && (
+          <button onClick={() => setShowExportSheet(true)} style={{
+            background: colors.green500, border: 'none', borderRadius: tokens.radius.sm,
+            padding: `${tokens.spacing.sm}px ${tokens.spacing.md}px`, fontSize: tokens.fontSize.sm,
+            fontWeight: 600, color: '#FFFFFF', cursor: 'pointer',
+          }}>Excel 내보내기</button>
+        )}
+      />
+
+      {selectedMonth ? (
+        // 일자별 상세 보기
+        <div style={{ padding: tokens.spacing.lg }}>
+          <div style={{ marginBottom: tokens.spacing.lg }}>
+            <div style={{ fontSize: tokens.fontSize.xl, fontWeight: 700, color: colors.text, marginBottom: tokens.spacing.sm }}>
+              {selectedMonth.month} 정산 상세
             </div>
-            <span style={{ color: colors.green500 }}>›</span>
+            <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary }}>
+              플랫폼 수수료 9.8% + 결제 수수료 3.0%
+            </div>
           </div>
-        </Card>
 
-        <Card style={{ marginBottom: tokens.spacing.lg, background: colors.green500 }}>
-          <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: tokens.fontSize.sm }}>12월 예상 정산금</div>
-          <div style={{ color: '#FFFFFF', fontSize: tokens.fontSize.xxxl, fontWeight: 700, marginTop: tokens.spacing.sm }}>1,580,000원</div>
-          <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: tokens.fontSize.sm, marginTop: tokens.spacing.xs }}>1월 첫 영업일 지급 예정</div>
-        </Card>
+          {/* 테이블 헤더 */}
+          <div style={{ background: colors.gray100, borderRadius: `${tokens.radius.md}px ${tokens.radius.md}px 0 0`, padding: tokens.spacing.md, overflowX: 'auto' }}>
+            <div style={{ display: 'flex', minWidth: 800, fontSize: tokens.fontSize.xs, fontWeight: 600, color: colors.textTertiary }}>
+              <div style={{ width: 60 }}>픽업일</div>
+              <div style={{ flex: 1, minWidth: 120 }}>상품명</div>
+              <div style={{ width: 60, textAlign: 'right' }}>정가</div>
+              <div style={{ width: 60, textAlign: 'right' }}>판매가</div>
+              <div style={{ width: 40, textAlign: 'right' }}>수량</div>
+              <div style={{ width: 70, textAlign: 'right' }}>거래금액</div>
+              <div style={{ width: 70, textAlign: 'right' }}>플랫폼</div>
+              <div style={{ width: 60, textAlign: 'right' }}>결제</div>
+              <div style={{ width: 80, textAlign: 'right' }}>정산금액</div>
+            </div>
+          </div>
 
-        {settlements.map((s, idx) => (
-          <Card key={idx} style={{ marginBottom: tokens.spacing.md }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-              <div>
-                <div style={{ fontSize: tokens.fontSize.md, color: colors.text }}>{s.month}</div>
-                <div style={{ fontSize: tokens.fontSize.xxl, fontWeight: 700, color: colors.text, marginTop: tokens.spacing.xs }}>{s.amount.toLocaleString()}원</div>
-                <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary, marginTop: 2 }}>{s.paidAt} 지급</div>
+          {/* 테이블 바디 */}
+          <div style={{ background: colors.bgCard, borderRadius: `0 0 ${tokens.radius.md}px ${tokens.radius.md}px`, boxShadow: `0 1px 3px ${colors.shadow}`, overflowX: 'auto' }}>
+            {selectedMonth.details.map((row, idx) => (
+              <div key={idx} style={{
+                display: 'flex', minWidth: 800, padding: tokens.spacing.md,
+                borderBottom: idx < selectedMonth.details.length - 1 ? `1px solid ${colors.border}` : 'none',
+                fontSize: tokens.fontSize.xs, color: colors.text,
+              }}>
+                <div style={{ width: 60 }}>{formatDate(row.pickupDate)}</div>
+                <div style={{ flex: 1, minWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{row.productName}</div>
+                <div style={{ width: 60, textAlign: 'right' }}>{row.originalPrice.toLocaleString()}</div>
+                <div style={{ width: 60, textAlign: 'right' }}>{row.salePrice.toLocaleString()}</div>
+                <div style={{ width: 40, textAlign: 'right' }}>{row.quantity}</div>
+                <div style={{ width: 70, textAlign: 'right' }}>{row.transactionAmount.toLocaleString()}</div>
+                <div style={{ width: 70, textAlign: 'right', color: colors.red500 }}>-{row.platformFee.toLocaleString()}</div>
+                <div style={{ width: 60, textAlign: 'right', color: colors.red500 }}>-{row.paymentFee.toLocaleString()}</div>
+                <div style={{ width: 80, textAlign: 'right', fontWeight: 600, color: colors.green600 }}>{row.settlementAmount.toLocaleString()}</div>
               </div>
-              <Badge variant="success">지급완료</Badge>
+            ))}
+
+            {/* 합계 */}
+            <div style={{
+              display: 'flex', minWidth: 800, padding: tokens.spacing.md,
+              background: colors.green50, fontSize: tokens.fontSize.sm, fontWeight: 600,
+            }}>
+              <div style={{ width: 60 }}>합계</div>
+              <div style={{ flex: 1, minWidth: 120 }}></div>
+              <div style={{ width: 60, textAlign: 'right' }}></div>
+              <div style={{ width: 60, textAlign: 'right' }}></div>
+              <div style={{ width: 40, textAlign: 'right' }}>{selectedMonth.details.reduce((sum, r) => sum + r.quantity, 0)}</div>
+              <div style={{ width: 70, textAlign: 'right' }}>{selectedMonth.details.reduce((sum, r) => sum + r.transactionAmount, 0).toLocaleString()}</div>
+              <div style={{ width: 70, textAlign: 'right', color: colors.red500 }}>-{selectedMonth.details.reduce((sum, r) => sum + r.platformFee, 0).toLocaleString()}</div>
+              <div style={{ width: 60, textAlign: 'right', color: colors.red500 }}>-{selectedMonth.details.reduce((sum, r) => sum + r.paymentFee, 0).toLocaleString()}</div>
+              <div style={{ width: 80, textAlign: 'right', color: colors.green600 }}>{selectedMonth.details.reduce((sum, r) => sum + r.settlementAmount, 0).toLocaleString()}</div>
+            </div>
+          </div>
+
+          <div style={{ marginTop: tokens.spacing.xl, padding: tokens.spacing.lg, background: colors.gray50, borderRadius: tokens.radius.md }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: tokens.spacing.sm }}>
+              <span style={{ color: colors.textTertiary }}>패널티 차감</span>
+              <span style={{ color: colors.text }}>0원</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: tokens.spacing.sm, borderTop: `1px solid ${colors.gray200}` }}>
+              <span style={{ fontWeight: 600, color: colors.text }}>최종 정산금액</span>
+              <span style={{ fontWeight: 700, color: colors.green600, fontSize: tokens.fontSize.lg }}>{selectedMonth.amount.toLocaleString()}원</span>
+            </div>
+          </div>
+        </div>
+      ) : (
+        // 월별 목록
+        <div style={{ padding: tokens.spacing.lg }}>
+          <Card style={{ marginBottom: tokens.spacing.lg, background: colors.green50, border: `1px solid ${colors.green100}` }} onClick={() => setShowTaxInfo(true)}>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: tokens.spacing.md }}>
+              <span style={{ fontSize: 24 }}>💡</span>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: tokens.fontSize.md, fontWeight: 600, color: colors.green600, marginBottom: 4 }}>2026년 1월부터 세무 처리가 간편해져요</div>
+                <div style={{ fontSize: tokens.fontSize.sm, color: colors.green500 }}>세금계산서·현금영수증 발행, 이제 안 하셔도 돼요</div>
+              </div>
+              <span style={{ color: colors.green500 }}>›</span>
             </div>
           </Card>
-        ))}
-      </div>
 
+          <Card style={{ marginBottom: tokens.spacing.lg, background: colors.green500 }}>
+            <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: tokens.fontSize.sm }}>12월 예상 정산금</div>
+            <div style={{ color: '#FFFFFF', fontSize: tokens.fontSize.xxxl, fontWeight: 700, marginTop: tokens.spacing.sm }}>1,580,000원</div>
+            <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: tokens.fontSize.sm, marginTop: tokens.spacing.xs }}>1월 첫 영업일 지급 예정</div>
+          </Card>
+
+          {settlements.map((s, idx) => (
+            <Card key={idx} style={{ marginBottom: tokens.spacing.md, cursor: 'pointer' }} onClick={() => setSelectedMonth(s)}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div>
+                  <div style={{ fontSize: tokens.fontSize.md, color: colors.text }}>{s.month}</div>
+                  <div style={{ fontSize: tokens.fontSize.xxl, fontWeight: 700, color: colors.text, marginTop: tokens.spacing.xs }}>{s.amount.toLocaleString()}원</div>
+                  <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary, marginTop: 2 }}>{s.paidAt} 지급</div>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.sm }}>
+                  <Badge variant="success">지급완료</Badge>
+                  <span style={{ color: colors.gray400 }}>›</span>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      {/* 세무 안내 시트 */}
       <BottomSheet isOpen={showTaxInfo} onClose={() => setShowTaxInfo(false)} title="2026년 세무 처리 변경 안내">
         <div style={{ lineHeight: 1.7 }}>
           <div style={{ padding: tokens.spacing.lg, background: colors.green50, borderRadius: tokens.radius.md, marginBottom: tokens.spacing.xl }}>
@@ -1422,6 +1584,28 @@ const SettlementScreen = ({ onBack }) => {
           <Button fullWidth variant="secondary" onClick={() => setShowTaxInfo(false)}>확인</Button>
         </div>
       </BottomSheet>
+
+      {/* Excel 내보내기 시트 */}
+      <BottomSheet isOpen={showExportSheet} onClose={() => setShowExportSheet(false)} title="Excel 내보내기">
+        <div>
+          <div style={{ marginBottom: tokens.spacing.xl }}>
+            <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary, marginBottom: tokens.spacing.md }}>내보낼 기간 선택</div>
+            <Select
+              value={exportMonth}
+              onChange={setExportMonth}
+              options={exportMonths}
+              placeholder="월을 선택하세요"
+            />
+          </div>
+          <div style={{ display: 'flex', gap: tokens.spacing.md }}>
+            <Button variant="secondary" fullWidth onClick={() => handleExport('all')}>전체 내보내기</Button>
+            <Button fullWidth onClick={() => handleExport('month')} disabled={!exportMonth}>선택 월 내보내기</Button>
+          </div>
+          <div style={{ marginTop: tokens.spacing.lg, fontSize: tokens.fontSize.xs, color: colors.textTertiary, textAlign: 'center' }}>
+            엑셀 파일에는 픽업일, 상품명, 정가, 판매가, 판매개수,<br />거래금액, 플랫폼 수수료, 결제 수수료, 정산금액이 포함됩니다.
+          </div>
+        </div>
+      </BottomSheet>
     </div>
   );
 };
@@ -1432,9 +1616,12 @@ const SettlementScreen = ({ onBack }) => {
 const SettlementInfoScreen = ({ onBack, shopData, setShopData }) => {
   const { colors } = useTheme();
   const [editingField, setEditingField] = useState(null);
+  const [showBankSheet, setShowBankSheet] = useState(false);
+  const [customBankName, setCustomBankName] = useState('');
 
   const [settlementInfo, setSettlementInfo] = useState({
     accountHolder: shopData.settlementInfo?.accountHolder || '',
+    bankCode: shopData.settlementInfo?.bankCode || '',
     bankName: shopData.settlementInfo?.bankName || '',
     accountNumber: shopData.settlementInfo?.accountNumber || '',
     phone: shopData.settlementInfo?.phone || '',
@@ -1450,9 +1637,29 @@ const SettlementInfoScreen = ({ onBack, shopData, setShopData }) => {
     setEditingField(null);
   };
 
+  const selectBank = (bank) => {
+    if (bank.value === 'CUSTOM') {
+      setCustomBankName('');
+      setEditingField('customBank');
+    } else {
+      const newInfo = { ...settlementInfo, bankCode: bank.value, bankName: bank.label };
+      setSettlementInfo(newInfo);
+      setShopData({ ...shopData, settlementInfo: newInfo });
+    }
+    setShowBankSheet(false);
+  };
+
+  const saveCustomBank = () => {
+    if (customBankName) {
+      const newInfo = { ...settlementInfo, bankCode: 'CUSTOM', bankName: customBankName };
+      setSettlementInfo(newInfo);
+      setShopData({ ...shopData, settlementInfo: newInfo });
+    }
+    setEditingField(null);
+  };
+
   const fields = [
     { key: 'accountHolder', label: '예금주명', placeholder: '예금주명을 입력하세요' },
-    { key: 'bankName', label: '은행', placeholder: '은행을 선택하세요' },
     { key: 'accountNumber', label: '계좌번호', placeholder: '- 없이 숫자만 입력', inputMode: 'numeric' },
     { key: 'phone', label: '휴대폰 번호', placeholder: '- 없이 숫자만 입력', inputMode: 'tel' },
     { key: 'representativeName', label: '사업자 대표자명', placeholder: '대표자명을 입력하세요' },
@@ -1478,8 +1685,51 @@ const SettlementInfoScreen = ({ onBack, shopData, setShopData }) => {
         </Card>
 
         <Card>
-          {fields.map((field, idx) => (
-            <div key={field.key} style={{ padding: `${tokens.spacing.lg}px 0`, borderBottom: idx < fields.length - 1 ? `1px solid ${colors.border}` : 'none' }}>
+          {/* 예금주명 */}
+          <div style={{ padding: `${tokens.spacing.lg}px 0`, borderBottom: `1px solid ${colors.border}` }}>
+            <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary, marginBottom: tokens.spacing.sm }}>예금주명</div>
+            {editingField === 'accountHolder' ? (
+              <div>
+                <input type="text" value={settlementInfo.accountHolder}
+                  onChange={(e) => setSettlementInfo({ ...settlementInfo, accountHolder: e.target.value })} placeholder="예금주명을 입력하세요" autoFocus
+                  style={{ width: '100%', padding: tokens.spacing.md, border: `2px solid ${colors.green500}`, borderRadius: tokens.radius.md, fontSize: tokens.fontSize.md, background: colors.bgCard, color: colors.text, outline: 'none' }} />
+                <div style={{ display: 'flex', gap: tokens.spacing.sm, marginTop: tokens.spacing.sm }}>
+                  <Button size="sm" onClick={() => handleSave('accountHolder', settlementInfo.accountHolder)}>저장</Button>
+                  <Button size="sm" variant="secondary" onClick={() => setEditingField(null)}>취소</Button>
+                </div>
+              </div>
+            ) : (
+              <div onClick={() => setEditingField('accountHolder')} style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ color: settlementInfo.accountHolder ? colors.text : colors.textTertiary }}>{settlementInfo.accountHolder || '예금주명을 입력하세요'}</span>
+                <span style={{ color: colors.green500, fontSize: tokens.fontSize.sm }}>수정</span>
+              </div>
+            )}
+          </div>
+
+          {/* 은행 선택 */}
+          <div style={{ padding: `${tokens.spacing.lg}px 0`, borderBottom: `1px solid ${colors.border}` }}>
+            <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary, marginBottom: tokens.spacing.sm }}>은행</div>
+            {editingField === 'customBank' ? (
+              <div>
+                <input type="text" value={customBankName}
+                  onChange={(e) => setCustomBankName(e.target.value)} placeholder="은행명을 입력하세요" autoFocus
+                  style={{ width: '100%', padding: tokens.spacing.md, border: `2px solid ${colors.green500}`, borderRadius: tokens.radius.md, fontSize: tokens.fontSize.md, background: colors.bgCard, color: colors.text, outline: 'none' }} />
+                <div style={{ display: 'flex', gap: tokens.spacing.sm, marginTop: tokens.spacing.sm }}>
+                  <Button size="sm" onClick={saveCustomBank}>저장</Button>
+                  <Button size="sm" variant="secondary" onClick={() => setEditingField(null)}>취소</Button>
+                </div>
+              </div>
+            ) : (
+              <div onClick={() => setShowBankSheet(true)} style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ color: settlementInfo.bankName ? colors.text : colors.textTertiary }}>{settlementInfo.bankName || '은행을 선택하세요'}</span>
+                <span style={{ color: colors.green500, fontSize: tokens.fontSize.sm }}>선택</span>
+              </div>
+            )}
+          </div>
+
+          {/* 나머지 필드들 */}
+          {fields.slice(1).map((field, idx) => (
+            <div key={field.key} style={{ padding: `${tokens.spacing.lg}px 0`, borderBottom: idx < fields.length - 2 ? `1px solid ${colors.border}` : 'none' }}>
               <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary, marginBottom: tokens.spacing.sm }}>{field.label}</div>
               {editingField === field.key ? (
                 <div>
@@ -1497,10 +1747,34 @@ const SettlementInfoScreen = ({ onBack, shopData, setShopData }) => {
                   <span style={{ color: colors.green500, fontSize: tokens.fontSize.sm }}>수정</span>
                 </div>
               )}
+              {/* 이메일 안내 문구 */}
+              {field.key === 'businessEmail' && (
+                <div style={{ marginTop: tokens.spacing.sm, fontSize: tokens.fontSize.xs, color: colors.textTertiary }}>
+                  이 주소로 세금계산서 메일이 발행되니 꼭 작성해주세요
+                </div>
+              )}
             </div>
           ))}
         </Card>
       </div>
+
+      {/* 은행 선택 바텀시트 */}
+      <BottomSheet isOpen={showBankSheet} onClose={() => setShowBankSheet(false)} title="은행 선택">
+        <div style={{ maxHeight: 400, overflowY: 'auto' }}>
+          {KOREAN_BANKS.map((bank, idx) => (
+            <button key={bank.value} onClick={() => selectBank(bank)} style={{
+              width: '100%', padding: tokens.spacing.lg, background: 'none', border: 'none',
+              borderBottom: idx < KOREAN_BANKS.length - 1 ? `1px solid ${colors.border}` : 'none',
+              fontSize: tokens.fontSize.md, color: bank.value === 'CUSTOM' ? colors.blue500 : colors.text,
+              fontWeight: bank.value === 'CUSTOM' ? 600 : 400, cursor: 'pointer', textAlign: 'left',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            }}>
+              <span>{bank.label}</span>
+              {settlementInfo.bankCode === bank.value && <span style={{ color: colors.green500 }}>✓</span>}
+            </button>
+          ))}
+        </div>
+      </BottomSheet>
     </div>
   );
 };
@@ -1591,28 +1865,137 @@ const ShopPreviewScreen = ({ onBack }) => {
 };
 
 // ============================================
-// 사장님 가이드 - 간단한 버전
+// 사장님 가이드 - JTBD 기반 주요 행동 가이드
 // ============================================
 const GuideScreen = ({ onBack }) => {
   const { colors } = useTheme();
+  const [expandedGuide, setExpandedGuide] = useState(null);
 
   const guides = [
-    { title: '럭키백이란?', content: '당일 판매가 어려운 음식을 할인된 가격에 판매하는 서비스예요. 음식물 쓰레기를 줄이고 환경에 기여할 수 있어요.' },
-    { title: '예약 → 확정 → 픽업', content: '고객이 예약하면 픽업 시간 30분 전에 자동으로 확정돼요. 확정 후에는 취소가 불가능하니 럭키백을 준비해 주세요.' },
-    { title: '정산은 언제?', content: '매월 판매한 금액은 익월 첫 영업일에 정산돼요. 정산 내역에서 확인할 수 있어요.' },
-    { title: '문제가 생겼어요', content: '픽업 시간에 고객이 안 오거나 문제가 생기면 카카오톡 채널로 문의해 주세요. 24시간 연중무휴로 답변드려요.' },
+    {
+      id: 1,
+      emoji: '🎁',
+      title: '럭키백 등록하기',
+      subtitle: '판매할 럭키백을 설정해요',
+      steps: [
+        '홈 화면에서 "럭키백 설정" 클릭',
+        '음식 카테고리 선택 (샐러드, 피자, 한식 등)',
+        '주요 메뉴 1~3개 입력',
+        '럭키백 설명 작성',
+        '정가 입력 (판매가는 50% 할인 자동 적용)',
+        '구매 갯수 제한 설정',
+      ],
+    },
+    {
+      id: 2,
+      emoji: '📅',
+      title: '픽업 시간 설정하기',
+      subtitle: '요일별 픽업 가능 시간을 설정해요',
+      steps: [
+        '설정 > 픽업 시간 메뉴 선택',
+        '요일별 운영 여부 토글로 설정',
+        '시작/종료 시간 터치해서 변경',
+        '특별 휴무일 추가 (2일 이상 기간도 가능)',
+      ],
+    },
+    {
+      id: 3,
+      emoji: '✅',
+      title: '주문 확정하기',
+      subtitle: '예약된 주문을 확정해요',
+      steps: [
+        '하단 탭 "주문" 클릭',
+        '"예약" 뱃지가 붙은 주문 카드 터치',
+        '"주문 확정" 버튼 클릭',
+        '픽업 시간까지 럭키백 준비',
+        '고객 방문 시 "픽업 완료" 처리',
+      ],
+    },
+    {
+      id: 4,
+      emoji: '🔢',
+      title: '오늘 판매 수량 조정하기',
+      subtitle: '남은 재료에 맞게 수량을 조절해요',
+      steps: [
+        '홈 화면 "오늘의 럭키백 수량" 카드 클릭',
+        '+/- 버튼으로 수량 조절',
+        '"저장하기" 클릭',
+        '또는 "오늘 판매 종료" 토글로 마감 처리',
+      ],
+    },
+    {
+      id: 5,
+      emoji: '💰',
+      title: '정산금 확인하기',
+      subtitle: '매출과 정산 내역을 확인해요',
+      steps: [
+        '설정 > 정산 내역 메뉴 선택',
+        '예상 정산금 확인',
+        '월별 카드 클릭하면 일자별 상세 확인',
+        'Excel 내보내기로 세무 자료 다운로드',
+      ],
+    },
+    {
+      id: 6,
+      emoji: '👥',
+      title: '직원 초대하기',
+      subtitle: '함께 운영할 직원을 추가해요',
+      steps: [
+        '설정 > 직원 관리 메뉴 선택',
+        '"+ 직원 초대" 버튼 클릭',
+        '이름, 이메일, 권한 입력',
+        '"초대하기" 클릭',
+        '기존 직원 카드 클릭하면 수정/삭제 가능',
+      ],
+    },
   ];
 
   return (
     <div>
       <Header title="사장님 가이드" onBack={onBack} />
       <div style={{ padding: tokens.spacing.lg }}>
-        {guides.map((guide, idx) => (
-          <Card key={idx} style={{ marginBottom: tokens.spacing.md }}>
-            <div style={{ fontSize: tokens.fontSize.md, fontWeight: 600, color: colors.text, marginBottom: tokens.spacing.sm }}>{guide.title}</div>
-            <div style={{ fontSize: tokens.fontSize.md, color: colors.textSecondary, lineHeight: 1.6 }}>{guide.content}</div>
+        <div style={{ padding: tokens.spacing.md, background: colors.green50, borderRadius: tokens.radius.md, marginBottom: tokens.spacing.xl }}>
+          <div style={{ fontSize: tokens.fontSize.sm, color: colors.green600, lineHeight: 1.6 }}>
+            럭키밀 셀러앱 사용법을 안내해 드려요.<br />
+            각 항목을 터치하면 상세 단계를 확인할 수 있어요.
+          </div>
+        </div>
+
+        {guides.map((guide) => (
+          <Card key={guide.id} style={{ marginBottom: tokens.spacing.md, cursor: 'pointer', padding: 0, overflow: 'hidden' }}
+            onClick={() => setExpandedGuide(expandedGuide === guide.id ? null : guide.id)}>
+            <div style={{ padding: tokens.spacing.xl }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.md }}>
+                <div style={{
+                  width: 44, height: 44, borderRadius: 22, background: colors.green50,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20,
+                }}>{guide.emoji}</div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: tokens.fontSize.md, fontWeight: 600, color: colors.text }}>{guide.title}</div>
+                  <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary, marginTop: 2 }}>{guide.subtitle}</div>
+                </div>
+                <span style={{ color: colors.gray400, transform: expandedGuide === guide.id ? 'rotate(90deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>›</span>
+              </div>
+            </div>
+            {expandedGuide === guide.id && (
+              <div style={{ padding: `0 ${tokens.spacing.xl}px ${tokens.spacing.xl}px`, borderTop: `1px solid ${colors.border}`, background: colors.gray50 }}>
+                <div style={{ paddingTop: tokens.spacing.lg }}>
+                  {guide.steps.map((step, idx) => (
+                    <div key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: tokens.spacing.md, marginBottom: tokens.spacing.md }}>
+                      <div style={{
+                        width: 24, height: 24, borderRadius: 12, background: colors.green500,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: tokens.fontSize.xs, fontWeight: 700, color: '#FFFFFF', flexShrink: 0,
+                      }}>{idx + 1}</div>
+                      <div style={{ fontSize: tokens.fontSize.md, color: colors.text, lineHeight: 1.5, paddingTop: 2 }}>{step}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </Card>
         ))}
+
         <div style={{ marginTop: tokens.spacing.xl }}>
           <Button fullWidth onClick={() => window.open('http://pf.kakao.com/_xiJxmxdG/chat', '_blank')}>카카오톡으로 문의하기</Button>
         </div>
@@ -1662,8 +2045,8 @@ export default function App() {
 
   const [shopData, setShopData] = useState({
     shopName: '행복한 베이커리',
-    category: '베이커리',
-    categoryId: 1,
+    category: '빵',
+    categoryId: 5,
     address: '서울시 강남구 역삼동 123-45',
     phone: '02-1234-5678',
     dailySalesCount: 5,
@@ -1675,7 +2058,7 @@ export default function App() {
     luckyBagPrice: 3900,
     originalPrice: 7800,
     luckyBagDescription: '오늘의 빵 3-4종을 랜덤으로 담아드려요. 구성은 매일 달라져요!',
-    foodCategory: 1,
+    foodCategory: 5,
     mainMenus: ['소금빵', '크루아상', '바게트'],
     purchaseLimit: '2',
     confirmMessage: '맛있는 럭키백 준비 중이에요! 픽업 시간에 방문해주세요.',
@@ -1707,7 +2090,7 @@ export default function App() {
       case 'shop-info': return <ShopInfoScreen onBack={goBack} shopData={shopData} setShopData={setShopData} />;
       case 'shop-preview': return <ShopPreviewScreen onBack={goBack} />;
       case 'employees': return <EmployeesScreen onBack={goBack} shopData={shopData} setShopData={setShopData} />;
-      case 'settlement': return <SettlementScreen onBack={goBack} />;
+      case 'settlement': return <SettlementScreen onBack={goBack} shopData={shopData} />;
       case 'settlement-info': return <SettlementInfoScreen onBack={goBack} shopData={shopData} setShopData={setShopData} />;
       case 'reviews': return <ReviewsScreen onBack={goBack} />;
       case 'guide': return <GuideScreen onBack={goBack} />;
