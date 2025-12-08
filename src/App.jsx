@@ -258,28 +258,73 @@ const HomeScreen = ({ onNavigate, shopData, setShopData }) => {
 
   return (
     <div>
-      {/* 누적 대시보드 */}
-      <div style={{ background: `linear-gradient(135deg, ${colors.green500} 0%, ${colors.green600} 100%)`, padding: tokens.spacing.xl, margin: tokens.spacing.lg, borderRadius: tokens.radius.lg }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.sm, marginBottom: tokens.spacing.lg }}>
-          <div style={{ width: 24, height: 24, background: '#FFFFFF', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ fontSize: 14 }}>🌱</span>
+      {/* 당근앱 스타일 환경 기여 카드들 */}
+      <div style={{ padding: tokens.spacing.lg, paddingBottom: 0 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: tokens.spacing.sm }}>
+          {/* CO2 절감 */}
+          <div style={{
+            background: colors.bgCard,
+            borderRadius: 20,
+            padding: tokens.spacing.lg,
+            textAlign: 'center',
+            boxShadow: `0 2px 8px ${colors.shadow}`,
+          }}>
+            <div style={{
+              width: 44, height: 44, borderRadius: 22, margin: '0 auto',
+              background: '#E8F5E9', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              marginBottom: tokens.spacing.sm,
+            }}>
+              <span style={{ fontSize: 20 }}>🌿</span>
+            </div>
+            <div style={{ fontSize: tokens.fontSize.xxl, fontWeight: 700, color: colors.text }}>
+              {totalStats.co2Saved.toFixed(0)}
+              <span style={{ fontSize: tokens.fontSize.xs, fontWeight: 500, color: colors.textTertiary }}>kg</span>
+            </div>
+            <div style={{ fontSize: tokens.fontSize.xs, color: colors.textTertiary, marginTop: 2 }}>CO₂ 절감</div>
           </div>
-          <span style={{ color: '#FFFFFF', fontWeight: 600, fontSize: tokens.fontSize.md }}>우리 가게의 환경 기여</span>
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'space-around' }}>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ color: '#FFFFFF', fontSize: tokens.fontSize.xxxl, fontWeight: 700 }}>{totalStats.co2Saved.toFixed(1)}<span style={{ fontSize: tokens.fontSize.md }}>kg</span></div>
-            <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: tokens.fontSize.sm }}>CO₂ 절감</div>
+
+          {/* 판매 개수 */}
+          <div style={{
+            background: colors.bgCard,
+            borderRadius: 20,
+            padding: tokens.spacing.lg,
+            textAlign: 'center',
+            boxShadow: `0 2px 8px ${colors.shadow}`,
+          }}>
+            <div style={{
+              width: 44, height: 44, borderRadius: 22, margin: '0 auto',
+              background: '#FFF3E0', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              marginBottom: tokens.spacing.sm,
+            }}>
+              <span style={{ fontSize: 20 }}>🎁</span>
+            </div>
+            <div style={{ fontSize: tokens.fontSize.xxl, fontWeight: 700, color: colors.text }}>
+              {totalStats.totalSold}
+              <span style={{ fontSize: tokens.fontSize.xs, fontWeight: 500, color: colors.textTertiary }}>개</span>
+            </div>
+            <div style={{ fontSize: tokens.fontSize.xs, color: colors.textTertiary, marginTop: 2 }}>럭키백 판매</div>
           </div>
-          <div style={{ width: 1, background: 'rgba(255,255,255,0.3)' }} />
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ color: '#FFFFFF', fontSize: tokens.fontSize.xxxl, fontWeight: 700 }}>{totalStats.totalSold}<span style={{ fontSize: tokens.fontSize.md }}>개</span></div>
-            <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: tokens.fontSize.sm }}>럭키백 판매</div>
-          </div>
-          <div style={{ width: 1, background: 'rgba(255,255,255,0.3)' }} />
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ color: '#FFFFFF', fontSize: tokens.fontSize.xxxl, fontWeight: 700 }}>{(totalStats.totalRevenue / 10000).toFixed(0)}<span style={{ fontSize: tokens.fontSize.md }}>만</span></div>
-            <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: tokens.fontSize.sm }}>누적 매출</div>
+
+          {/* 누적 매출 */}
+          <div style={{
+            background: colors.bgCard,
+            borderRadius: 20,
+            padding: tokens.spacing.lg,
+            textAlign: 'center',
+            boxShadow: `0 2px 8px ${colors.shadow}`,
+          }}>
+            <div style={{
+              width: 44, height: 44, borderRadius: 22, margin: '0 auto',
+              background: '#E3F2FD', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              marginBottom: tokens.spacing.sm,
+            }}>
+              <span style={{ fontSize: 20 }}>💰</span>
+            </div>
+            <div style={{ fontSize: tokens.fontSize.xxl, fontWeight: 700, color: colors.text }}>
+              {(totalStats.totalRevenue / 10000).toFixed(0)}
+              <span style={{ fontSize: tokens.fontSize.xs, fontWeight: 500, color: colors.textTertiary }}>만원</span>
+            </div>
+            <div style={{ fontSize: tokens.fontSize.xs, color: colors.textTertiary, marginTop: 2 }}>누적 매출</div>
           </div>
         </div>
       </div>
@@ -575,6 +620,7 @@ const SettingsScreen = ({ onNavigate, shopData }) => {
     ]},
     { title: '매출 관리', items: [
       { icon: '💰', title: '정산 내역', subtitle: '익월 첫 영업일 정산', screen: 'settlement' },
+      { icon: '🏦', title: '정산 정보 설정', subtitle: '계좌, 사업자 정보', screen: 'settlement-info' },
       { icon: '⭐', title: '리뷰 관리', subtitle: '고객 리뷰 확인 및 답글', screen: 'reviews' },
     ]},
     { title: '고객센터', items: [
@@ -585,6 +631,26 @@ const SettingsScreen = ({ onNavigate, shopData }) => {
 
   return (
     <div>
+      {/* 소비자 앱으로 전환하기 버튼 */}
+      <div style={{ padding: `${tokens.spacing.lg}px ${tokens.spacing.lg}px 0` }}>
+        <button onClick={() => window.open('https://www.luckymeal.io', '_blank')} style={{
+          width: '100%',
+          padding: tokens.spacing.lg,
+          background: colors.gray100,
+          border: 'none',
+          borderRadius: tokens.radius.lg,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: tokens.spacing.sm,
+          cursor: 'pointer',
+        }}>
+          <span style={{ fontSize: 18 }}>📱</span>
+          <span style={{ fontSize: tokens.fontSize.md, fontWeight: 600, color: colors.text }}>소비자 앱으로 전환하기</span>
+          <span style={{ color: colors.textTertiary }}>→</span>
+        </button>
+      </div>
+
       <Card style={{ margin: tokens.spacing.lg }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.lg }}>
           <div style={{ width: 56, height: 56, borderRadius: tokens.radius.md, background: colors.green500, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>🏪</div>
@@ -640,10 +706,17 @@ const LuckyBagSettingsScreen = ({ onBack, shopData, setShopData }) => {
   const [editingPrice, setEditingPrice] = useState(false);
   const [editingQty, setEditingQty] = useState(false);
   const [editingDesc, setEditingDesc] = useState(false);
-  const [tempPrice, setTempPrice] = useState(shopData.originalPrice);
+  const [tempPriceStr, setTempPriceStr] = useState(String(shopData.originalPrice));
 
   const salePrice = Math.round(shopData.originalPrice * (1 - DISCOUNT_RATE));
   const netAmount = Math.round(salePrice * (1 - PLATFORM_FEE - PAYMENT_FEE));
+
+  const handlePriceSave = () => {
+    const numPrice = parseInt(tempPriceStr.replace(/[^0-9]/g, ''), 10) || 1000;
+    const validPrice = Math.max(1000, numPrice);
+    setShopData({ ...shopData, originalPrice: validPrice, luckyBagPrice: Math.round(validPrice * 0.5) });
+    setEditingPrice(false);
+  };
 
   return (
     <div>
@@ -654,20 +727,43 @@ const LuckyBagSettingsScreen = ({ onBack, shopData, setShopData }) => {
           <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary, marginBottom: tokens.spacing.md }}>럭키백 정가</div>
           {editingPrice ? (
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.md, marginBottom: tokens.spacing.md }}>
-                <button onClick={() => setTempPrice(Math.max(1000, tempPrice - 1000))}
-                  style={{ width: 44, height: 44, borderRadius: 22, border: `1px solid ${colors.gray300}`, background: colors.bgCard, fontSize: 20, cursor: 'pointer', color: colors.text }}>-</button>
-                <span style={{ fontSize: tokens.fontSize.xxxl, fontWeight: 700, color: colors.text, flex: 1, textAlign: 'center' }}>{tempPrice.toLocaleString()}원</span>
-                <button onClick={() => setTempPrice(tempPrice + 1000)}
-                  style={{ width: 44, height: 44, borderRadius: 22, border: `1px solid ${colors.gray300}`, background: colors.bgCard, fontSize: 20, cursor: 'pointer', color: colors.text }}>+</button>
+              <div style={{ position: 'relative', marginBottom: tokens.spacing.md }}>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={tempPriceStr}
+                  onChange={(e) => setTempPriceStr(e.target.value.replace(/[^0-9]/g, ''))}
+                  autoFocus
+                  style={{
+                    width: '100%',
+                    padding: `${tokens.spacing.lg}px ${tokens.spacing.md}px`,
+                    paddingRight: 40,
+                    fontSize: tokens.fontSize.xxl,
+                    fontWeight: 700,
+                    border: `2px solid ${colors.green500}`,
+                    borderRadius: tokens.radius.md,
+                    background: colors.bgCard,
+                    color: colors.text,
+                    textAlign: 'center',
+                    outline: 'none',
+                  }}
+                />
+                <span style={{
+                  position: 'absolute',
+                  right: tokens.spacing.lg,
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  fontSize: tokens.fontSize.lg,
+                  color: colors.textTertiary,
+                }}>원</span>
               </div>
               <div style={{ display: 'flex', gap: tokens.spacing.sm }}>
-                <Button size="sm" onClick={() => { setShopData({ ...shopData, originalPrice: tempPrice, luckyBagPrice: Math.round(tempPrice * 0.5) }); setEditingPrice(false); }}>저장</Button>
-                <Button size="sm" variant="secondary" onClick={() => { setTempPrice(shopData.originalPrice); setEditingPrice(false); }}>취소</Button>
+                <Button size="sm" onClick={handlePriceSave}>저장</Button>
+                <Button size="sm" variant="secondary" onClick={() => { setTempPriceStr(String(shopData.originalPrice)); setEditingPrice(false); }}>취소</Button>
               </div>
             </div>
           ) : (
-            <div onClick={() => setEditingPrice(true)} style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div onClick={() => { setTempPriceStr(String(shopData.originalPrice)); setEditingPrice(true); }} style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
                 <div style={{ fontSize: tokens.fontSize.xxl, fontWeight: 700, color: colors.text }}>{shopData.originalPrice.toLocaleString()}원</div>
               </div>
@@ -676,10 +772,6 @@ const LuckyBagSettingsScreen = ({ onBack, shopData, setShopData }) => {
           )}
 
           <div style={{ marginTop: tokens.spacing.lg, padding: tokens.spacing.md, background: colors.gray50, borderRadius: tokens.radius.md }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: tokens.spacing.sm }}>
-              <span style={{ color: colors.textTertiary }}>할인율</span>
-              <span style={{ fontWeight: 600, color: colors.green500 }}>50% (고정)</span>
-            </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: tokens.spacing.sm }}>
               <span style={{ color: colors.textTertiary }}>판매가</span>
               <span style={{ fontWeight: 600, color: colors.blue500 }}>{salePrice.toLocaleString()}원</span>
@@ -1070,6 +1162,188 @@ const SettlementScreen = ({ onBack }) => {
 };
 
 // ============================================
+// 정산 정보 설정 - 계좌, 사업자 정보
+// ============================================
+const SettlementInfoScreen = ({ onBack, shopData, setShopData }) => {
+  const { colors } = useTheme();
+  const [editingField, setEditingField] = useState(null);
+
+  // 정산 정보 (초기값)
+  const [settlementInfo, setSettlementInfo] = useState({
+    accountHolder: shopData.settlementInfo?.accountHolder || '',
+    bankName: shopData.settlementInfo?.bankName || '',
+    accountNumber: shopData.settlementInfo?.accountNumber || '',
+    phone: shopData.settlementInfo?.phone || '',
+    businessType: shopData.settlementInfo?.businessType || 'individual', // individual or corporate
+    representativeName: shopData.settlementInfo?.representativeName || '',
+    businessEmail: shopData.settlementInfo?.businessEmail || '',
+  });
+
+  const handleSave = (field, value) => {
+    const newInfo = { ...settlementInfo, [field]: value };
+    setSettlementInfo(newInfo);
+    setShopData({ ...shopData, settlementInfo: newInfo });
+    setEditingField(null);
+  };
+
+  const fields = [
+    { key: 'accountHolder', label: '예금주명', placeholder: '예금주명을 입력하세요' },
+    { key: 'bankName', label: '은행', placeholder: '은행을 선택하세요' },
+    { key: 'accountNumber', label: '계좌번호', placeholder: '- 없이 숫자만 입력', inputMode: 'numeric' },
+    { key: 'phone', label: '휴대폰 번호', placeholder: '- 없이 숫자만 입력', inputMode: 'tel' },
+    { key: 'representativeName', label: '사업자 대표자명', placeholder: '대표자명을 입력하세요' },
+    { key: 'businessEmail', label: '사업자 이메일', placeholder: '이메일을 입력하세요', inputMode: 'email' },
+  ];
+
+  return (
+    <div>
+      <Header title="정산 정보 설정" onBack={onBack} />
+      <div style={{ padding: tokens.spacing.lg }}>
+        {/* 사업자 유형 선택 */}
+        <Card style={{ marginBottom: tokens.spacing.lg }}>
+          <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary, marginBottom: tokens.spacing.md }}>사업자 유형</div>
+          <div style={{ display: 'flex', gap: tokens.spacing.sm }}>
+            {[
+              { value: 'individual', label: '개인 사업자' },
+              { value: 'corporate', label: '법인 사업자' },
+            ].map(type => (
+              <button key={type.value} onClick={() => handleSave('businessType', type.value)} style={{
+                flex: 1, padding: tokens.spacing.md,
+                border: `2px solid ${settlementInfo.businessType === type.value ? colors.green500 : colors.border}`,
+                borderRadius: tokens.radius.md,
+                background: settlementInfo.businessType === type.value ? colors.green50 : colors.bgCard,
+                color: settlementInfo.businessType === type.value ? colors.green600 : colors.text,
+                fontWeight: 600, cursor: 'pointer',
+              }}>
+                {type.label}
+              </button>
+            ))}
+          </div>
+        </Card>
+
+        {/* 계좌 정보 */}
+        <div style={{ fontSize: tokens.fontSize.sm, fontWeight: 600, color: colors.textTertiary, marginBottom: tokens.spacing.sm, paddingLeft: 4 }}>계좌 정보</div>
+        <Card style={{ marginBottom: tokens.spacing.lg }}>
+          {fields.slice(0, 3).map((field, idx) => (
+            <div key={field.key} style={{
+              padding: `${tokens.spacing.lg}px 0`,
+              borderBottom: idx < 2 ? `1px solid ${colors.border}` : 'none',
+            }}>
+              <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary, marginBottom: tokens.spacing.sm }}>{field.label}</div>
+              {editingField === field.key ? (
+                <div>
+                  <input
+                    type="text"
+                    inputMode={field.inputMode || 'text'}
+                    value={settlementInfo[field.key]}
+                    onChange={(e) => setSettlementInfo({ ...settlementInfo, [field.key]: e.target.value })}
+                    placeholder={field.placeholder}
+                    autoFocus
+                    style={{
+                      width: '100%', padding: tokens.spacing.md, border: `2px solid ${colors.green500}`,
+                      borderRadius: tokens.radius.md, fontSize: tokens.fontSize.md, background: colors.bgCard,
+                      color: colors.text, outline: 'none',
+                    }}
+                  />
+                  <div style={{ display: 'flex', gap: tokens.spacing.sm, marginTop: tokens.spacing.sm }}>
+                    <Button size="sm" onClick={() => handleSave(field.key, settlementInfo[field.key])}>저장</Button>
+                    <Button size="sm" variant="secondary" onClick={() => setEditingField(null)}>취소</Button>
+                  </div>
+                </div>
+              ) : (
+                <div onClick={() => setEditingField(field.key)} style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ color: settlementInfo[field.key] ? colors.text : colors.textTertiary }}>
+                    {settlementInfo[field.key] || field.placeholder}
+                  </span>
+                  <span style={{ color: colors.green500, fontSize: tokens.fontSize.sm }}>수정</span>
+                </div>
+              )}
+            </div>
+          ))}
+        </Card>
+
+        {/* 사업자 정보 */}
+        <div style={{ fontSize: tokens.fontSize.sm, fontWeight: 600, color: colors.textTertiary, marginBottom: tokens.spacing.sm, paddingLeft: 4 }}>사업자 정보</div>
+        <Card style={{ marginBottom: tokens.spacing.lg }}>
+          {fields.slice(4).map((field, idx) => (
+            <div key={field.key} style={{
+              padding: `${tokens.spacing.lg}px 0`,
+              borderBottom: idx < fields.slice(4).length - 1 ? `1px solid ${colors.border}` : 'none',
+            }}>
+              <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary, marginBottom: tokens.spacing.sm }}>{field.label}</div>
+              {editingField === field.key ? (
+                <div>
+                  <input
+                    type="text"
+                    inputMode={field.inputMode || 'text'}
+                    value={settlementInfo[field.key]}
+                    onChange={(e) => setSettlementInfo({ ...settlementInfo, [field.key]: e.target.value })}
+                    placeholder={field.placeholder}
+                    autoFocus
+                    style={{
+                      width: '100%', padding: tokens.spacing.md, border: `2px solid ${colors.green500}`,
+                      borderRadius: tokens.radius.md, fontSize: tokens.fontSize.md, background: colors.bgCard,
+                      color: colors.text, outline: 'none',
+                    }}
+                  />
+                  <div style={{ display: 'flex', gap: tokens.spacing.sm, marginTop: tokens.spacing.sm }}>
+                    <Button size="sm" onClick={() => handleSave(field.key, settlementInfo[field.key])}>저장</Button>
+                    <Button size="sm" variant="secondary" onClick={() => setEditingField(null)}>취소</Button>
+                  </div>
+                </div>
+              ) : (
+                <div onClick={() => setEditingField(field.key)} style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ color: settlementInfo[field.key] ? colors.text : colors.textTertiary }}>
+                    {settlementInfo[field.key] || field.placeholder}
+                  </span>
+                  <span style={{ color: colors.green500, fontSize: tokens.fontSize.sm }}>수정</span>
+                </div>
+              )}
+            </div>
+          ))}
+        </Card>
+
+        {/* 연락처 */}
+        <div style={{ fontSize: tokens.fontSize.sm, fontWeight: 600, color: colors.textTertiary, marginBottom: tokens.spacing.sm, paddingLeft: 4 }}>연락처</div>
+        <Card>
+          <div style={{ padding: `${tokens.spacing.lg}px 0` }}>
+            <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary, marginBottom: tokens.spacing.sm }}>휴대폰 번호</div>
+            {editingField === 'phone' ? (
+              <div>
+                <input
+                  type="tel"
+                  inputMode="tel"
+                  value={settlementInfo.phone}
+                  onChange={(e) => setSettlementInfo({ ...settlementInfo, phone: e.target.value.replace(/[^0-9]/g, '') })}
+                  placeholder="- 없이 숫자만 입력"
+                  autoFocus
+                  style={{
+                    width: '100%', padding: tokens.spacing.md, border: `2px solid ${colors.green500}`,
+                    borderRadius: tokens.radius.md, fontSize: tokens.fontSize.md, background: colors.bgCard,
+                    color: colors.text, outline: 'none',
+                  }}
+                />
+                <div style={{ display: 'flex', gap: tokens.spacing.sm, marginTop: tokens.spacing.sm }}>
+                  <Button size="sm" onClick={() => handleSave('phone', settlementInfo.phone)}>저장</Button>
+                  <Button size="sm" variant="secondary" onClick={() => setEditingField(null)}>취소</Button>
+                </div>
+              </div>
+            ) : (
+              <div onClick={() => setEditingField('phone')} style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ color: settlementInfo.phone ? colors.text : colors.textTertiary }}>
+                  {settlementInfo.phone || '- 없이 숫자만 입력'}
+                </span>
+                <span style={{ color: colors.green500, fontSize: tokens.fontSize.sm }}>수정</span>
+              </div>
+            )}
+          </div>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
+// ============================================
 // 리뷰 관리
 // ============================================
 const ReviewsScreen = ({ onBack }) => {
@@ -1402,6 +1676,7 @@ export default function App() {
       case 'shop-preview': return <ShopPreviewScreen onBack={goBack} />;
       case 'employees': return <EmployeesScreen onBack={goBack} shopData={shopData} setShopData={setShopData} />;
       case 'settlement': return <SettlementScreen onBack={goBack} />;
+      case 'settlement-info': return <SettlementInfoScreen onBack={goBack} shopData={shopData} setShopData={setShopData} />;
       case 'reviews': return <ReviewsScreen onBack={goBack} />;
       case 'guide': return <GuideScreen onBack={goBack} />;
       case 'contact': return <ContactScreen onBack={goBack} />;
