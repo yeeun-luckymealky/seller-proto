@@ -1,422 +1,471 @@
-import React, { useState } from 'react';
+import React, { useState, createContext, useContext, useEffect } from 'react';
 
 // ============================================
-// TDS (Toss Design System) 토큰
-// - 마진: 메인 15px, 서브페이지 22px
-// - 버튼 높이: 53-55px
-// - 네비게이션 높이: 50px
-// - 아이콘: 22x22px
-// - 텍스트: 16-20px (가독성 최적 범위)
+// 테마 컨텍스트 (다크모드/라이트모드)
 // ============================================
-const tds = {
-  color: {
-    gray50: '#F9FAFB', gray100: '#F2F4F6', gray200: '#E5E8EB',
-    gray300: '#D1D6DB', gray400: '#B0B8C1', gray500: '#8B95A1',
-    gray600: '#6B7684', gray700: '#4E5968', gray800: '#333D4B', gray900: '#191F28',
-    blue50: '#E8F3FF', blue100: '#C9E2FF', blue500: '#3182F6', blue600: '#1B64DA',
-    green50: '#E8FAF0', green500: '#30C85E',
-    red50: '#FFEBEE', red500: '#F44336',
-    orange50: '#FFF3E0', orange500: '#FF9800',
-    white: '#FFFFFF',
-  },
-  margin: { main: 15, sub: 22 },
-  radius: { sm: 8, md: 12, lg: 16 },
-  // 터치 타깃: 최소 44px, 인접 시 57px+
-  touch: { min: 44, safe: 57 },
-  // 버튼 높이: 53-55px
-  button: { height: 54 },
-  // 네비게이션 높이: 50px
-  nav: { height: 50 },
-  // 툴바 높이: 42px
-  toolbar: { height: 42 },
+const ThemeContext = createContext();
+
+const useTheme = () => useContext(ThemeContext);
+
+const lightColors = {
+  bg: '#F9FAFB',
+  bgCard: '#FFFFFF',
+  bgElevated: '#FFFFFF',
+  gray50: '#F9FAFB', gray100: '#F2F4F6', gray200: '#E5E8EB',
+  gray300: '#D1D6DB', gray400: '#B0B8C1', gray500: '#8B95A1',
+  gray600: '#6B7684', gray700: '#4E5968', gray800: '#333D4B', gray900: '#191F28',
+  blue50: '#E8F3FF', blue100: '#C9E2FF', blue500: '#3182F6', blue600: '#1B64DA',
+  green50: '#E8FAF0', green100: '#B1F1CC', green500: '#30C85E', green600: '#1DAB47',
+  red50: '#FFEBEE', red100: '#FFCDD2', red500: '#F44336', red600: '#E53935',
+  orange50: '#FFF3E0', orange100: '#FFE0B2', orange500: '#FF9800',
+  white: '#FFFFFF',
+  text: '#191F28',
+  textSecondary: '#6B7684',
+  textTertiary: '#8B95A1',
+  border: '#E5E8EB',
+  shadow: 'rgba(0,0,0,0.08)',
+  overlay: 'rgba(0,0,0,0.4)',
+};
+
+const darkColors = {
+  bg: '#17171C',
+  bgCard: '#1E1E24',
+  bgElevated: '#2C2C35',
+  gray50: '#2C2C35', gray100: '#3D3D47', gray200: '#4E4E59',
+  gray300: '#6B6B78', gray400: '#8B8B98', gray500: '#A8A8B3',
+  gray600: '#C5C5CD', gray700: '#DCDCE3', gray800: '#ECECF1', gray900: '#F9F9FB',
+  blue50: '#1A2744', blue100: '#1E3A5F', blue500: '#4B96FF', blue600: '#6EADFF',
+  green50: '#1A3328', green100: '#1E4D35', green500: '#4ADE80', green600: '#6EE7A0',
+  red50: '#3D1A1A', red100: '#5C2626', red500: '#FF6B6B', red600: '#FF8A8A',
+  orange50: '#3D2E1A', orange100: '#5C4326', orange500: '#FFB347', orange600: '#FFC56B',
+  white: '#1E1E24',
+  text: '#F9F9FB',
+  textSecondary: '#C5C5CD',
+  textTertiary: '#A8A8B3',
+  border: '#3D3D47',
+  shadow: 'rgba(0,0,0,0.3)',
+  overlay: 'rgba(0,0,0,0.6)',
 };
 
 // ============================================
-// 백엔드 상수 매핑
+// 디자인 토큰
 // ============================================
-const ORDER_STATUS = {
-  PAID: 'PAID',           // 결제완료 (예약)
-  CONFIRMED: 'CONFIRMED', // 확정
-  COMPLETED: 'COMPLETED', // 픽업완료
+const tokens = {
+  spacing: { xs: 4, sm: 8, md: 12, lg: 16, xl: 20, xxl: 24, xxxl: 32 },
+  radius: { sm: 8, md: 12, lg: 16, xl: 20, full: 9999 },
+  fontSize: { xs: 11, sm: 12, md: 14, lg: 16, xl: 18, xxl: 20, xxxl: 24, xxxxl: 28 },
 };
 
 // ============================================
-// TDS 컴포넌트
-// - Minimum Features: 필수 컴포넌트만
-// - Sleek Experience: 매끈한 전환
+// 공통 컴포넌트
 // ============================================
+const Card = ({ children, style, onClick }) => {
+  const { colors } = useTheme();
+  return (
+    <div onClick={onClick} style={{
+      background: colors.bgCard,
+      borderRadius: tokens.radius.lg,
+      padding: tokens.spacing.xl,
+      boxShadow: `0 1px 3px ${colors.shadow}`,
+      cursor: onClick ? 'pointer' : 'default',
+      transition: 'background 0.2s, box-shadow 0.2s',
+      ...style
+    }}>{children}</div>
+  );
+};
 
-// 기본 버튼 (터치 영역 54px, TDS 기준)
-const Button = ({ children, variant = 'primary', fullWidth, onClick, disabled }) => {
-  const styles = {
-    primary: { bg: tds.color.blue500, color: tds.color.white },
-    secondary: { bg: tds.color.gray100, color: tds.color.gray800 },
-    danger: { bg: tds.color.red500, color: tds.color.white },
-    ghost: { bg: 'transparent', color: tds.color.blue500 },
+const Badge = ({ children, variant = 'default' }) => {
+  const { colors } = useTheme();
+  const variants = {
+    default: { bg: colors.gray100, color: colors.gray700 },
+    primary: { bg: colors.blue50, color: colors.blue600 },
+    success: { bg: colors.green50, color: colors.green600 },
+    warning: { bg: colors.orange50, color: colors.orange500 },
+    danger: { bg: colors.red50, color: colors.red600 },
+    new: { bg: colors.red500, color: '#FFFFFF' },
   };
-  const s = styles[variant];
+  const v = variants[variant];
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', padding: '4px 8px',
+      borderRadius: tokens.radius.sm, fontSize: tokens.fontSize.xs,
+      fontWeight: 600, background: v.bg, color: v.color,
+      transition: 'background 0.2s, color 0.2s',
+    }}>{children}</span>
+  );
+};
+
+const Button = ({ children, variant = 'primary', size = 'md', fullWidth, onClick, disabled, style }) => {
+  const { colors } = useTheme();
+  const variants = {
+    primary: { bg: colors.blue500, color: '#FFFFFF' },
+    secondary: { bg: colors.gray100, color: colors.text },
+    ghost: { bg: 'transparent', color: colors.blue500 },
+    danger: { bg: colors.red500, color: '#FFFFFF' },
+    success: { bg: colors.green500, color: '#FFFFFF' },
+  };
+  const sizes = { sm: { padding: '8px 12px', fontSize: 13 }, md: { padding: '12px 16px', fontSize: 15 }, lg: { padding: '16px 20px', fontSize: 16 } };
+  const v = variants[variant];
+  const s = sizes[size];
   return (
     <button onClick={onClick} disabled={disabled} style={{
-      height: tds.button.height,
-      padding: '0 20px',
-      background: disabled ? tds.color.gray200 : s.bg,
-      color: disabled ? tds.color.gray400 : s.color,
-      border: 'none',
-      borderRadius: tds.radius.md,
-      fontSize: 16,
-      fontWeight: 600,
-      width: fullWidth ? '100%' : 'auto',
-      cursor: disabled ? 'not-allowed' : 'pointer',
-      transition: 'all 0.15s ease',
+      background: disabled ? colors.gray200 : v.bg,
+      color: disabled ? colors.gray400 : v.color,
+      border: 'none', borderRadius: tokens.radius.md,
+      padding: s.padding, fontSize: s.fontSize, fontWeight: 600,
+      width: fullWidth ? '100%' : 'auto', cursor: disabled ? 'not-allowed' : 'pointer',
+      transition: 'all 0.2s', ...style,
     }}>{children}</button>
   );
 };
 
-// 토글 (터치 영역 확보)
-const Toggle = ({ checked, onChange, label }) => (
-  <div onClick={() => onChange(!checked)} style={{
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    minHeight: tds.touch.safe,
-    cursor: 'pointer',
-  }}>
-    {label && <span style={{ fontSize: 16, color: tds.color.gray900 }}>{label}</span>}
-    <div style={{
-      width: 51, height: 31, borderRadius: 16, padding: 2,
-      background: checked ? tds.color.blue500 : tds.color.gray300,
-      transition: 'background 0.2s',
+const Toggle = ({ checked, onChange, label }) => {
+  const { colors } = useTheme();
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      {label && <span style={{ fontSize: tokens.fontSize.md, color: colors.text }}>{label}</span>}
+      <div onClick={() => onChange(!checked)} style={{
+        width: 52, height: 32, borderRadius: 16, padding: 2, cursor: 'pointer',
+        background: checked ? colors.blue500 : colors.gray300,
+        transition: 'background 0.2s',
+      }}>
+        <div style={{
+          width: 28, height: 28, borderRadius: 14, background: '#FFFFFF',
+          transform: checked ? 'translateX(20px)' : 'translateX(0)',
+          transition: 'transform 0.2s', boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
+        }} />
+      </div>
+    </div>
+  );
+};
+
+const ListItem = ({ icon, title, subtitle, right, onClick, showArrow = true }) => {
+  const { colors } = useTheme();
+  return (
+    <div onClick={onClick} style={{
+      display: 'flex', alignItems: 'center', padding: `${tokens.spacing.lg}px 0`,
+      borderBottom: `1px solid ${colors.border}`, cursor: onClick ? 'pointer' : 'default',
+      transition: 'border-color 0.2s',
     }}>
+      {icon && <div style={{ marginRight: tokens.spacing.md, fontSize: 20 }}>{icon}</div>}
+      <div style={{ flex: 1 }}>
+        <div style={{ fontSize: tokens.fontSize.md, color: colors.text, fontWeight: 500, transition: 'color 0.2s' }}>{title}</div>
+        {subtitle && <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary, marginTop: 2, transition: 'color 0.2s' }}>{subtitle}</div>}
+      </div>
+      {right && <div style={{ marginRight: tokens.spacing.sm }}>{right}</div>}
+      {showArrow && onClick && <div style={{ color: colors.gray400 }}>›</div>}
+    </div>
+  );
+};
+
+const Header = ({ title, onBack, right }) => {
+  const { colors } = useTheme();
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      padding: tokens.spacing.lg, background: colors.bgCard,
+      borderBottom: `1px solid ${colors.border}`, position: 'sticky', top: 0, zIndex: 100,
+      transition: 'background 0.2s, border-color 0.2s',
+    }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.md }}>
+        {onBack && <button onClick={onBack} style={{ background: 'none', border: 'none', fontSize: 20, cursor: 'pointer', padding: 4, color: colors.text }}>←</button>}
+        <span style={{ fontSize: tokens.fontSize.xl, fontWeight: 700, color: colors.text, transition: 'color 0.2s' }}>{title}</span>
+      </div>
+      {right}
+    </div>
+  );
+};
+
+const TabBar = ({ tabs, activeTab, onChange }) => {
+  const { colors } = useTheme();
+  return (
+    <div style={{ display: 'flex', background: colors.bgCard, borderBottom: `1px solid ${colors.border}`, transition: 'background 0.2s, border-color 0.2s' }}>
+      {tabs.map(tab => (
+        <button key={tab.id} onClick={() => onChange(tab.id)} style={{
+          flex: 1, padding: `${tokens.spacing.md}px ${tokens.spacing.lg}px`,
+          background: 'none', border: 'none', cursor: 'pointer',
+          color: activeTab === tab.id ? colors.blue500 : colors.textTertiary,
+          fontWeight: activeTab === tab.id ? 600 : 400, fontSize: tokens.fontSize.md,
+          borderBottom: activeTab === tab.id ? `2px solid ${colors.blue500}` : '2px solid transparent',
+          transition: 'color 0.2s',
+        }}>{tab.label}</button>
+      ))}
+    </div>
+  );
+};
+
+const BottomSheet = ({ isOpen, onClose, title, children }) => {
+  const { colors } = useTheme();
+  if (!isOpen) return null;
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 1000 }}>
+      <div onClick={onClose} style={{ position: 'absolute', inset: 0, background: colors.overlay, transition: 'background 0.2s' }} />
       <div style={{
-        width: 27, height: 27, borderRadius: 14,
-        background: tds.color.white,
-        transform: checked ? 'translateX(20px)' : 'translateX(0)',
-        transition: 'transform 0.2s',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-      }} />
+        position: 'absolute', bottom: 0, left: 0, right: 0, background: colors.bgElevated,
+        borderRadius: `${tokens.radius.xl}px ${tokens.radius.xl}px 0 0`,
+        maxHeight: '85vh', overflow: 'hidden', display: 'flex', flexDirection: 'column',
+        transition: 'background 0.2s',
+      }}>
+        <div style={{ padding: tokens.spacing.lg, borderBottom: `1px solid ${colors.border}` }}>
+          <div style={{ width: 40, height: 4, background: colors.gray300, borderRadius: 2, margin: '0 auto 12px' }} />
+          <div style={{ fontSize: tokens.fontSize.lg, fontWeight: 700, color: colors.text, transition: 'color 0.2s' }}>{title}</div>
+        </div>
+        <div style={{ padding: tokens.spacing.xl, overflowY: 'auto', flex: 1 }}>{children}</div>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
-// 리스트 아이템 (터치 영역 57px+)
-const ListItem = ({ title, value, onClick, showArrow = true }) => (
-  <div onClick={onClick} style={{
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    minHeight: tds.touch.safe,
-    padding: `0 ${tds.margin.main}px`,
-    background: tds.color.white,
-    cursor: onClick ? 'pointer' : 'default',
-    borderBottom: `1px solid ${tds.color.gray100}`,
-  }}>
-    <span style={{ fontSize: 16, color: tds.color.gray900 }}>{title}</span>
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-      {value && <span style={{ fontSize: 16, color: tds.color.gray500 }}>{value}</span>}
-      {showArrow && onClick && <span style={{ color: tds.color.gray400, fontSize: 18 }}>›</span>}
-    </div>
-  </div>
-);
-
-// 헤더 (툴바 높이 42px)
-const Header = ({ title, onBack, right }) => (
-  <div style={{
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    height: tds.toolbar.height,
-    padding: `0 ${tds.margin.main}px`,
-    background: tds.color.white,
-    borderBottom: `1px solid ${tds.color.gray100}`,
-    position: 'sticky',
-    top: 0,
-    zIndex: 100,
-  }}>
-    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-      {onBack && (
-        <button onClick={onBack} style={{
-          width: tds.touch.min, height: tds.touch.min,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          background: 'none', border: 'none', fontSize: 20, cursor: 'pointer',
-          marginLeft: -12,
-        }}>←</button>
-      )}
-      <span style={{ fontSize: 18, fontWeight: 700 }}>{title}</span>
-    </div>
-    {right}
-  </div>
-);
-
-// 바텀 네비게이션 (높이 50px)
 const BottomNav = ({ activeTab, onChange }) => {
+  const { colors } = useTheme();
   const tabs = [
     { id: 'home', label: '홈', icon: '🏠' },
     { id: 'orders', label: '주문', icon: '📋' },
-    { id: 'settings', label: '내 가게', icon: '⚙️' },
+    { id: 'settings', label: '설정', icon: '⚙️' },
   ];
   return (
     <div style={{
-      display: 'flex',
-      height: tds.nav.height,
-      background: tds.color.white,
-      borderTop: `1px solid ${tds.color.gray100}`,
-      position: 'fixed',
-      bottom: 0,
-      left: 0,
-      right: 0,
-      maxWidth: 480,
-      margin: '0 auto',
+      display: 'flex', justifyContent: 'space-around', padding: `${tokens.spacing.md}px 0`,
+      background: colors.bgCard, borderTop: `1px solid ${colors.border}`,
+      position: 'sticky', bottom: 0, transition: 'background 0.2s, border-color 0.2s',
     }}>
       {tabs.map(tab => (
         <button key={tab.id} onClick={() => onChange(tab.id)} style={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 2,
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-          color: activeTab === tab.id ? tds.color.blue500 : tds.color.gray500,
+          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
+          background: 'none', border: 'none', cursor: 'pointer', padding: tokens.spacing.sm,
+          color: activeTab === tab.id ? colors.blue500 : colors.textTertiary,
+          transition: 'color 0.2s',
         }}>
           <span style={{ fontSize: 20 }}>{tab.icon}</span>
-          <span style={{ fontSize: 11, fontWeight: activeTab === tab.id ? 600 : 400 }}>{tab.label}</span>
+          <span style={{ fontSize: tokens.fontSize.xs, fontWeight: activeTab === tab.id ? 600 : 400 }}>{tab.label}</span>
         </button>
       ))}
     </div>
   );
 };
 
-// 바텀시트 (Context-based 원칙)
-const BottomSheet = ({ isOpen, onClose, title, children }) => {
-  if (!isOpen) return null;
+const EmptyState = ({ icon, title, description, action }) => {
+  const { colors } = useTheme();
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 1000 }}>
-      <div onClick={onClose} style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.4)' }} />
-      <div style={{
-        position: 'absolute',
-        bottom: 0, left: 0, right: 0,
-        maxWidth: 480,
-        margin: '0 auto',
-        background: tds.color.white,
-        borderRadius: `${tds.radius.lg}px ${tds.radius.lg}px 0 0`,
-        maxHeight: '80vh',
-        overflow: 'hidden',
-      }}>
-        <div style={{ padding: `16px ${tds.margin.sub}px`, borderBottom: `1px solid ${tds.color.gray100}` }}>
-          <div style={{ width: 36, height: 4, background: tds.color.gray300, borderRadius: 2, margin: '0 auto 12px' }} />
-          {title && <div style={{ fontSize: 18, fontWeight: 700, textAlign: 'center' }}>{title}</div>}
-        </div>
-        <div style={{ padding: tds.margin.sub, paddingBottom: 34, overflowY: 'auto' }}>{children}</div>
-      </div>
+    <div style={{ textAlign: 'center', padding: `${tokens.spacing.xxxl}px ${tokens.spacing.xl}px` }}>
+      <div style={{ fontSize: 48, marginBottom: tokens.spacing.lg }}>{icon}</div>
+      <div style={{ fontSize: tokens.fontSize.lg, fontWeight: 600, color: colors.text, marginBottom: tokens.spacing.sm, transition: 'color 0.2s' }}>{title}</div>
+      <div style={{ fontSize: tokens.fontSize.md, color: colors.textTertiary, marginBottom: tokens.spacing.xl, transition: 'color 0.2s' }}>{description}</div>
+      {action}
     </div>
   );
 };
 
 // ============================================
-// 홈 화면
-// One Thing per One Page: "오늘 팔 수 있는 상태인가?"
-// Value First: 현황을 먼저, 액션은 그 다음
+// 상수 (백엔드 매핑)
 // ============================================
-const HomeScreen = ({ data, setData, onNavigate }) => {
-  const [showQtySheet, setShowQtySheet] = useState(false);
+const ORDER_STATUS = {
+  ORDER: 'ORDER',
+  PAID: 'PAID',
+  CONFIRMED: 'CONFIRMED',
+  USER_CANCEL: 'USER_CANCEL',
+  PLACE_CANCEL: 'PLACE_CANCEL',
+  ADMIN_CANCEL: 'ADMIN_CANCEL',
+  FAILED: 'FAILED',
+};
 
-  const remain = data.totalQty - data.soldQty;
-  const isSoldOut = data.isSoldOut;
+const PLACE_CURRENT_STATUS = {
+  TODAY_OPEN: 'TODAY_OPEN',
+  TOMORROW_OPEN: 'TOMORROW_OPEN',
+  CLOSED: 'CLOSED',
+  SOLD_OUT: 'SOLD_OUT',
+};
+
+const PLACE_ROLE_GRADE = {
+  ADMIN: 0,
+  MANAGER: 1,
+  STAFF: 2,
+};
+
+// ============================================
+// 홈 화면 - JTBD: 오늘 현황 한눈에 파악, 판매 종료/재개
+// ============================================
+const HomeScreen = ({ onNavigate, shopData, setShopData }) => {
+  const { colors } = useTheme();
+  const [showQuantitySheet, setShowQuantitySheet] = useState(false);
+
+  const getCurrentStatus = () => {
+    if (shopData.isSoldOut) return PLACE_CURRENT_STATUS.SOLD_OUT;
+    if (shopData.isClosed) return PLACE_CURRENT_STATUS.CLOSED;
+    return PLACE_CURRENT_STATUS.TODAY_OPEN;
+  };
+
+  const currentStatus = getCurrentStatus();
+  const stats = [
+    { label: '예약', value: shopData.paidCount, color: colors.orange500, status: ORDER_STATUS.PAID },
+    { label: '확정', value: shopData.confirmedCount, color: colors.blue500, status: ORDER_STATUS.CONFIRMED },
+    { label: '픽업완료', value: shopData.pickedUpCount, color: colors.green500 },
+  ];
+
+  const inventory = {
+    totalCount: shopData.dailySalesCount,
+    soldCount: shopData.soldCount,
+    remainCount: shopData.dailySalesCount - shopData.soldCount,
+  };
 
   return (
-    <div style={{ paddingBottom: tds.nav.height + 20 }}>
-      {/* 핵심 정보: 남은 수량 (One Thing) */}
-      <div style={{
-        padding: `32px ${tds.margin.main}px`,
-        background: tds.color.white,
-        textAlign: 'center',
-      }}>
-        <div style={{ fontSize: 14, color: tds.color.gray500, marginBottom: 8 }}>
-          {new Date().toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', weekday: 'short' })}
+    <div style={{ paddingBottom: tokens.spacing.xl }}>
+      {/* 오늘 현황 카드 */}
+      <Card style={{ margin: tokens.spacing.lg }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: tokens.spacing.lg }}>
+          <span style={{ fontSize: tokens.fontSize.md, fontWeight: 600, color: colors.text }}>오늘 현황</span>
+          <span style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary }}>
+            {new Date().toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', weekday: 'short' })}
+          </span>
         </div>
 
-        {isSoldOut ? (
-          <>
-            <div style={{ fontSize: 48, fontWeight: 700, color: tds.color.gray400 }}>판매 종료</div>
-            <div style={{ fontSize: 16, color: tds.color.gray500, marginTop: 8 }}>
-              오늘 판매가 종료되었어요
+        {/* 재고 현황 */}
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          padding: tokens.spacing.lg, background: colors.gray50,
+          borderRadius: tokens.radius.md, marginBottom: tokens.spacing.lg,
+          transition: 'background 0.2s',
+        }}>
+          <div style={{ textAlign: 'center', flex: 1 }}>
+            <div style={{ fontSize: tokens.fontSize.xxxxl, fontWeight: 700, color: colors.blue500 }}>
+              {inventory.remainCount}
             </div>
-          </>
-        ) : (
-          <>
-            <div style={{ fontSize: 48, fontWeight: 700, color: tds.color.blue500 }}>{remain}</div>
-            <div style={{ fontSize: 16, color: tds.color.gray500, marginTop: 8 }}>
-              {data.totalQty}개 중 남은 수량
+            <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary }}>남은 수량</div>
+          </div>
+          <div style={{ width: 1, height: 40, background: colors.gray200 }} />
+          <div style={{ textAlign: 'center', flex: 1 }}>
+            <div style={{ fontSize: tokens.fontSize.xxxxl, fontWeight: 700, color: colors.gray400 }}>
+              {inventory.totalCount}
             </div>
-          </>
+            <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary }}>전체 수량</div>
+          </div>
+        </div>
+
+        {/* 주문 상태별 현황 */}
+        <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+          {stats.map(stat => (
+            <div key={stat.label} style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: tokens.fontSize.xxxl, fontWeight: 700, color: stat.color }}>{stat.value}</div>
+              <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary }}>{stat.label}</div>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      {/* 판매 종료 토글 */}
+      <Card style={{ margin: `0 ${tokens.spacing.lg}px ${tokens.spacing.lg}px` }}>
+        <Toggle
+          checked={currentStatus === PLACE_CURRENT_STATUS.SOLD_OUT}
+          onChange={(v) => setShopData({ ...shopData, isSoldOut: v })}
+          label="오늘 판매 종료"
+        />
+        {currentStatus === PLACE_CURRENT_STATUS.SOLD_OUT && (
+          <div style={{ marginTop: tokens.spacing.md, padding: tokens.spacing.md, background: colors.gray50, borderRadius: tokens.radius.sm, transition: 'background 0.2s' }}>
+            <span style={{ fontSize: tokens.fontSize.sm, color: colors.textSecondary }}>
+              판매가 종료되었어요. 다시 판매하려면 토글을 꺼주세요.
+            </span>
+          </div>
         )}
-      </div>
+      </Card>
 
-      {/* 주문 현황 (3개만 - Minimum Features) */}
-      <div style={{
-        display: 'flex',
-        padding: `16px ${tds.margin.main}px`,
-        gap: 12,
-        background: tds.color.gray50,
-      }}>
-        {[
-          { label: '예약', count: data.paidCount, color: tds.color.orange500 },
-          { label: '확정', count: data.confirmedCount, color: tds.color.blue500 },
-          { label: '완료', count: data.completedCount, color: tds.color.green500 },
-        ].map(item => (
-          <div key={item.label} style={{
-            flex: 1,
-            padding: 16,
-            background: tds.color.white,
-            borderRadius: tds.radius.md,
-            textAlign: 'center',
-          }}>
-            <div style={{ fontSize: 24, fontWeight: 700, color: item.color }}>{item.count}</div>
-            <div style={{ fontSize: 13, color: tds.color.gray500, marginTop: 4 }}>{item.label}</div>
-          </div>
-        ))}
-      </div>
-
-      {/* 확정 대기 알림 (Context-based) */}
-      {data.paidCount > 0 && (
-        <div
-          onClick={() => onNavigate('orders')}
+      {/* 확정 전 주문 알림 배너 */}
+      {shopData.paidCount > 0 && (
+        <Card
           style={{
-            margin: `16px ${tds.margin.main}px`,
-            padding: 16,
-            background: tds.color.blue50,
-            borderRadius: tds.radius.md,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            cursor: 'pointer',
+            margin: `0 ${tokens.spacing.lg}px ${tokens.spacing.lg}px`,
+            background: colors.blue50,
+            border: `1px solid ${colors.blue100}`,
+            transition: 'background 0.2s, border-color 0.2s',
           }}
+          onClick={() => onNavigate('orders')}
         >
-          <div>
-            <div style={{ fontSize: 16, fontWeight: 600, color: tds.color.blue600 }}>
-              확정 대기 {data.paidCount}건
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div>
+              <div style={{ fontSize: tokens.fontSize.md, fontWeight: 600, color: colors.blue600 }}>
+                확정 대기 주문 {shopData.paidCount}건
+              </div>
+              <div style={{ fontSize: tokens.fontSize.sm, color: colors.blue500, marginTop: 4 }}>
+                픽업 시간 전에 확정해 주세요
+              </div>
             </div>
-            <div style={{ fontSize: 14, color: tds.color.blue500, marginTop: 2 }}>
-              픽업 전 확정해 주세요
-            </div>
+            <span style={{ color: colors.blue500 }}>›</span>
           </div>
-          <span style={{ fontSize: 20, color: tds.color.blue500 }}>›</span>
-        </div>
+        </Card>
       )}
 
-      {/* 액션 영역 */}
-      <div style={{ padding: `8px ${tds.margin.main}px` }}>
-        {/* 판매 종료 토글 */}
-        <div style={{
-          padding: 16,
-          background: tds.color.white,
-          borderRadius: tds.radius.md,
-          marginBottom: 12,
-        }}>
-          <Toggle
-            checked={isSoldOut}
-            onChange={(v) => setData({ ...data, isSoldOut: v })}
-            label="오늘 판매 종료"
-          />
-        </div>
-
-        {/* 수량 변경 (Clear CTA) */}
-        <div
-          onClick={() => setShowQtySheet(true)}
-          style={{
-            padding: 16,
-            background: tds.color.white,
-            borderRadius: tds.radius.md,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            cursor: 'pointer',
-          }}
-        >
+      {/* 오늘의 수량 변경 */}
+      <Card style={{ margin: `0 ${tokens.spacing.lg}px ${tokens.spacing.lg}px` }} onClick={() => setShowQuantitySheet(true)}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <div>
-            <div style={{ fontSize: 14, color: tds.color.gray500 }}>오늘 판매 수량</div>
-            <div style={{ fontSize: 20, fontWeight: 700, marginTop: 4 }}>{data.totalQty}개</div>
+            <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary }}>오늘의 럭키백 수량</div>
+            <div style={{ fontSize: tokens.fontSize.xxl, fontWeight: 700, color: colors.text, marginTop: 4 }}>
+              {shopData.dailySalesCount}개
+            </div>
           </div>
-          <Button variant="secondary">변경</Button>
+          <Button variant="secondary" size="sm">변경</Button>
         </div>
+      </Card>
+
+      {/* 빠른 액션 */}
+      <div style={{
+        display: 'grid', gridTemplateColumns: '1fr 1fr',
+        gap: tokens.spacing.md, margin: `0 ${tokens.spacing.lg}px ${tokens.spacing.lg}px`
+      }}>
+        <Card onClick={() => onNavigate('luckybag-settings')} style={{ textAlign: 'center', padding: tokens.spacing.lg }}>
+          <div style={{ fontSize: 24, marginBottom: tokens.spacing.sm }}>🎁</div>
+          <div style={{ fontSize: tokens.fontSize.sm, fontWeight: 500, color: colors.text }}>럭키백 설정</div>
+        </Card>
+        <Card onClick={() => onNavigate('pickup-settings')} style={{ textAlign: 'center', padding: tokens.spacing.lg }}>
+          <div style={{ fontSize: 24, marginBottom: tokens.spacing.sm }}>📅</div>
+          <div style={{ fontSize: tokens.fontSize.sm, fontWeight: 500, color: colors.text }}>픽업 시간</div>
+        </Card>
       </div>
 
-      {/* 수량 변경 시트 (Easy to Answer) */}
-      <BottomSheet isOpen={showQtySheet} onClose={() => setShowQtySheet(false)} title="오늘 수량 변경">
-        <div style={{ padding: '24px 0' }}>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 32,
-          }}>
+      {/* 수량 변경 바텀시트 */}
+      <BottomSheet isOpen={showQuantitySheet} onClose={() => setShowQuantitySheet(false)} title="럭키백 수량 변경">
+        <div style={{ marginBottom: tokens.spacing.xl }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: tokens.spacing.lg, background: colors.gray50, borderRadius: tokens.radius.md, transition: 'background 0.2s' }}>
             <button
-              onClick={() => setData({ ...data, totalQty: Math.max(1, data.totalQty - 1) })}
-              style={{
-                width: tds.touch.safe,
-                height: tds.touch.safe,
-                borderRadius: tds.touch.safe / 2,
-                border: `1px solid ${tds.color.gray300}`,
-                background: tds.color.white,
-                fontSize: 24,
-                cursor: 'pointer',
-              }}
-            >−</button>
-            <span style={{ fontSize: 40, fontWeight: 700, minWidth: 60, textAlign: 'center' }}>
-              {data.totalQty}
-            </span>
+              onClick={() => setShopData({ ...shopData, dailySalesCount: Math.max(1, shopData.dailySalesCount - 1) })}
+              style={{ width: 44, height: 44, borderRadius: 22, border: `1px solid ${colors.gray300}`, background: colors.bgCard, fontSize: 20, cursor: 'pointer', color: colors.text, transition: 'background 0.2s, border-color 0.2s' }}
+            >-</button>
+            <span style={{ fontSize: tokens.fontSize.xxxl, fontWeight: 700, color: colors.text }}>{shopData.dailySalesCount}</span>
             <button
-              onClick={() => setData({ ...data, totalQty: data.totalQty + 1 })}
-              style={{
-                width: tds.touch.safe,
-                height: tds.touch.safe,
-                borderRadius: tds.touch.safe / 2,
-                border: `1px solid ${tds.color.gray300}`,
-                background: tds.color.white,
-                fontSize: 24,
-                cursor: 'pointer',
-              }}
+              onClick={() => setShopData({ ...shopData, dailySalesCount: shopData.dailySalesCount + 1 })}
+              style={{ width: 44, height: 44, borderRadius: 22, border: `1px solid ${colors.gray300}`, background: colors.bgCard, fontSize: 20, cursor: 'pointer', color: colors.text, transition: 'background 0.2s, border-color 0.2s' }}
             >+</button>
           </div>
-          <div style={{
-            marginTop: 24,
-            padding: 12,
-            background: tds.color.gray50,
-            borderRadius: tds.radius.sm,
-            fontSize: 14,
-            color: tds.color.gray600,
-            textAlign: 'center',
-          }}>
-            오늘만 적용돼요
+        </div>
+        <div style={{ padding: tokens.spacing.md, background: colors.blue50, borderRadius: tokens.radius.md, marginBottom: tokens.spacing.xl, transition: 'background 0.2s' }}>
+          <div style={{ fontSize: tokens.fontSize.sm, color: colors.blue600 }}>
+            오늘 판매 수량만 변경돼요. 기본 설정은 럭키백 설정에서 변경할 수 있어요.
           </div>
         </div>
-        <Button fullWidth onClick={() => setShowQtySheet(false)}>확인</Button>
+        <Button fullWidth onClick={() => setShowQuantitySheet(false)}>저장하기</Button>
       </BottomSheet>
     </div>
   );
 };
 
 // ============================================
-// 주문 화면
-// One Thing per One Page: "이 주문을 어떻게 할까?"
-// Tap & Scroll: 탭으로 필터, 탭으로 액션
+// 주문 관리 화면 - JTBD: 주문 확인, 확정, 픽업 완료, 취소
 // ============================================
-const OrdersScreen = ({ data, setData }) => {
-  const [tab, setTab] = useState('paid');
-  const [selected, setSelected] = useState(null);
+const OrdersScreen = ({ onNavigate }) => {
+  const { colors } = useTheme();
+  const [activeTab, setActiveTab] = useState('paid');
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [cancelSheet, setCancelSheet] = useState(null);
 
   const orders = {
     paid: [
-      { id: 1, code: 'A01', name: '김**', qty: 2, price: 3900, time: '14:00-15:00' },
-      { id: 2, code: 'A02', name: '이**', qty: 1, price: 3900, time: '14:00-15:00' },
+      { id: 1, code: 'A001', orderUid: 'ORD-2024120701', name: '김**', luckyBagCount: 2, price: 7800, discountPrice: 3900, pickupDate: '2024-12-07', pickupStartTime: '14:00', pickupEndTime: '15:00', status: ORDER_STATUS.PAID, isPickupChecked: false },
+      { id: 2, code: 'A002', orderUid: 'ORD-2024120702', name: '이**', luckyBagCount: 1, price: 3900, discountPrice: 3900, pickupDate: '2024-12-07', pickupStartTime: '14:00', pickupEndTime: '15:00', status: ORDER_STATUS.PAID, isPickupChecked: false },
     ],
     confirmed: [
-      { id: 3, code: 'A03', name: '박**', qty: 1, price: 3900, time: '15:00-16:00' },
+      { id: 3, code: 'A003', orderUid: 'ORD-2024120703', name: '박**', luckyBagCount: 1, price: 3900, discountPrice: 3900, pickupDate: '2024-12-07', pickupStartTime: '15:00', pickupEndTime: '16:00', status: ORDER_STATUS.CONFIRMED, isPickupChecked: false },
     ],
     completed: [
-      { id: 4, code: 'A04', name: '최**', qty: 2, price: 7800, time: '12:00-13:00', completedAt: '12:32' },
+      { id: 4, code: 'A004', orderUid: 'ORD-2024120704', name: '최**', luckyBagCount: 2, price: 7800, discountPrice: 7800, pickupDate: '2024-12-07', pickupStartTime: '12:00', pickupEndTime: '13:00', status: ORDER_STATUS.CONFIRMED, isPickupChecked: true },
     ],
   };
 
@@ -426,230 +475,212 @@ const OrdersScreen = ({ data, setData }) => {
     { id: 'completed', label: '완료' },
   ];
 
-  const currentOrders = orders[tab];
+  const currentOrders = orders[activeTab];
 
-  // 주문 확정 (Tap & Scroll 원칙)
-  const confirmOrder = (order) => {
-    setData({ ...data, confirmedCount: data.confirmedCount + 1, paidCount: data.paidCount - 1 });
-    setSelected(null);
-  };
-
-  // 픽업 완료
-  const completePickup = (order) => {
-    setData({ ...data, completedCount: data.completedCount + 1, confirmedCount: data.confirmedCount - 1 });
-    setSelected(null);
+  const getStatusBadge = (order) => {
+    if (order.isPickupChecked) return <Badge variant="success">픽업완료</Badge>;
+    if (order.status === ORDER_STATUS.CONFIRMED) return <Badge variant="primary">확정</Badge>;
+    if (order.status === ORDER_STATUS.PAID) return <Badge variant="warning">예약</Badge>;
+    return null;
   };
 
   return (
-    <div style={{ paddingBottom: tds.nav.height + 20 }}>
-      {/* 탭 (Tap & Scroll) */}
-      <div style={{
-        display: 'flex',
-        background: tds.color.white,
-        borderBottom: `1px solid ${tds.color.gray100}`,
-        position: 'sticky',
-        top: 0,
-        zIndex: 10,
-      }}>
-        {tabs.map(t => (
-          <button
-            key={t.id}
-            onClick={() => setTab(t.id)}
-            style={{
-              flex: 1,
-              height: tds.touch.safe,
-              background: 'none',
-              border: 'none',
-              borderBottom: tab === t.id ? `2px solid ${tds.color.blue500}` : '2px solid transparent',
-              color: tab === t.id ? tds.color.blue500 : tds.color.gray500,
-              fontSize: 15,
-              fontWeight: tab === t.id ? 600 : 400,
-              cursor: 'pointer',
-            }}
-          >{t.label}</button>
-        ))}
-      </div>
+    <div style={{ paddingBottom: tokens.spacing.xl }}>
+      <TabBar tabs={tabs} activeTab={activeTab} onChange={setActiveTab} />
 
-      {/* 주문 목록 */}
       {currentOrders.length === 0 ? (
-        <div style={{ padding: 48, textAlign: 'center' }}>
-          <div style={{ fontSize: 40, marginBottom: 16 }}>📋</div>
-          <div style={{ fontSize: 16, color: tds.color.gray500 }}>
-            {tab === 'paid' && '예약된 주문이 없어요'}
-            {tab === 'confirmed' && '확정된 주문이 없어요'}
-            {tab === 'completed' && '완료된 주문이 없어요'}
-          </div>
-        </div>
+        <EmptyState
+          icon="📋"
+          title="주문이 없어요"
+          description={activeTab === 'paid' ? '새로운 예약이 들어오면 알려드릴게요' : '해당 상태의 주문이 없어요'}
+        />
       ) : (
-        <div style={{ padding: `12px ${tds.margin.main}px` }}>
+        <div style={{ padding: tokens.spacing.lg }}>
           {currentOrders.map(order => (
-            <div
-              key={order.id}
-              onClick={() => setSelected(order)}
-              style={{
-                padding: 16,
-                background: tds.color.white,
-                borderRadius: tds.radius.md,
-                marginBottom: 12,
-                cursor: 'pointer',
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <span style={{
-                    padding: '4px 10px',
-                    background: tds.color.blue50,
-                    color: tds.color.blue600,
-                    borderRadius: tds.radius.sm,
-                    fontSize: 14,
-                    fontWeight: 600,
-                  }}>{order.code}</span>
-                  <span style={{ fontSize: 16, fontWeight: 500 }}>{order.name}</span>
+            <Card key={order.id} style={{ marginBottom: tokens.spacing.md }} onClick={() => setSelectedOrder(order)}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: tokens.spacing.md }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.sm }}>
+                  <span style={{ fontSize: tokens.fontSize.lg, fontWeight: 700, color: colors.blue500 }}>{order.code}</span>
+                  {getStatusBadge(order)}
                 </div>
-                <span style={{ fontSize: 16, fontWeight: 600 }}>
-                  {order.price.toLocaleString()}원
-                </span>
+                <span style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary }}>{order.name}</span>
               </div>
-              <div style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                marginTop: 12,
-                fontSize: 14,
-                color: tds.color.gray500,
-              }}>
-                <span>럭키백 {order.qty}개</span>
-                <span>픽업 {order.time}</span>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary }}>럭키백 {order.luckyBagCount}개</div>
+                  <div style={{ fontSize: tokens.fontSize.md, fontWeight: 600, color: colors.text, marginTop: 2 }}>
+                    {order.discountPrice.toLocaleString()}원
+                  </div>
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary }}>픽업</div>
+                  <div style={{ fontSize: tokens.fontSize.md, fontWeight: 500, color: colors.text }}>
+                    {order.pickupStartTime} - {order.pickupEndTime}
+                  </div>
+                </div>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
       )}
 
-      {/* 주문 상세 시트 (Clear CTA) */}
-      <BottomSheet
-        isOpen={!!selected}
-        onClose={() => setSelected(null)}
-        title={selected ? `주문 ${selected.code}` : ''}
-      >
-        {selected && (
+      {/* 주문 상세 바텀시트 */}
+      <BottomSheet isOpen={!!selectedOrder} onClose={() => setSelectedOrder(null)} title={`주문 ${selectedOrder?.code}`}>
+        {selectedOrder && (
           <>
-            <div style={{ marginBottom: 24 }}>
-              <div style={{
-                padding: 16,
-                background: tds.color.gray50,
-                borderRadius: tds.radius.md,
-                marginBottom: 16,
-              }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                  <span style={{ color: tds.color.gray500 }}>고객</span>
-                  <span style={{ fontWeight: 500 }}>{selected.name}</span>
+            <div style={{ marginBottom: tokens.spacing.xl }}>
+              <div style={{ padding: tokens.spacing.lg, background: colors.gray50, borderRadius: tokens.radius.md, marginBottom: tokens.spacing.lg, transition: 'background 0.2s' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: tokens.spacing.sm }}>
+                  <span style={{ color: colors.textTertiary }}>주문번호</span>
+                  <span style={{ fontWeight: 500, color: colors.text }}>{selectedOrder.orderUid}</span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                  <span style={{ color: tds.color.gray500 }}>수량</span>
-                  <span style={{ fontWeight: 500 }}>럭키백 {selected.qty}개</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: tokens.spacing.sm }}>
+                  <span style={{ color: colors.textTertiary }}>고객</span>
+                  <span style={{ fontWeight: 500, color: colors.text }}>{selectedOrder.name}</span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                  <span style={{ color: tds.color.gray500 }}>픽업 시간</span>
-                  <span style={{ fontWeight: 500 }}>{selected.time}</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: tokens.spacing.sm }}>
+                  <span style={{ color: colors.textTertiary }}>수량</span>
+                  <span style={{ fontWeight: 500, color: colors.text }}>럭키백 {selectedOrder.luckyBagCount}개</span>
                 </div>
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  paddingTop: 12,
-                  borderTop: `1px solid ${tds.color.gray200}`,
-                  marginTop: 8,
-                }}>
-                  <span style={{ fontWeight: 600 }}>결제 금액</span>
-                  <span style={{ fontWeight: 700, color: tds.color.blue500 }}>
-                    {selected.price.toLocaleString()}원
-                  </span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: tokens.spacing.sm }}>
+                  <span style={{ color: colors.textTertiary }}>픽업 시간</span>
+                  <span style={{ fontWeight: 500, color: colors.text }}>{selectedOrder.pickupStartTime} - {selectedOrder.pickupEndTime}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', paddingTop: tokens.spacing.md, borderTop: `1px solid ${colors.gray200}`, marginTop: tokens.spacing.sm }}>
+                  <span style={{ fontWeight: 600, color: colors.text }}>결제 금액</span>
+                  <span style={{ fontWeight: 700, color: colors.blue500 }}>{selectedOrder.discountPrice.toLocaleString()}원</span>
                 </div>
               </div>
             </div>
 
-            {/* CTA - 상태별 다른 액션 */}
-            {tab === 'paid' && (
-              <div style={{ display: 'flex', gap: 12 }}>
-                <Button variant="secondary" fullWidth onClick={() => setSelected(null)}>
-                  취소
-                </Button>
-                <Button fullWidth onClick={() => confirmOrder(selected)}>
-                  주문 확정
-                </Button>
+            {activeTab === 'paid' && (
+              <div style={{ display: 'flex', gap: tokens.spacing.md }}>
+                <Button variant="secondary" fullWidth onClick={() => { setCancelSheet(selectedOrder); setSelectedOrder(null); }}>취소</Button>
+                <Button fullWidth onClick={() => setSelectedOrder(null)}>주문 확정</Button>
               </div>
             )}
-            {tab === 'confirmed' && (
-              <Button fullWidth onClick={() => completePickup(selected)}>
-                픽업 완료
-              </Button>
+            {activeTab === 'confirmed' && (
+              <Button fullWidth onClick={() => setSelectedOrder(null)}>픽업 완료</Button>
             )}
-            {tab === 'completed' && (
-              <Button variant="secondary" fullWidth onClick={() => setSelected(null)}>
-                닫기
-              </Button>
+            {activeTab === 'completed' && (
+              <Button variant="secondary" fullWidth onClick={() => setSelectedOrder(null)}>닫기</Button>
             )}
           </>
         )}
       </BottomSheet>
+
+      {/* 취소 바텀시트 */}
+      <BottomSheet isOpen={!!cancelSheet} onClose={() => setCancelSheet(null)} title="주문 취소">
+        <div style={{ marginBottom: tokens.spacing.xl }}>
+          <div style={{ fontSize: tokens.fontSize.md, color: colors.text, marginBottom: tokens.spacing.lg }}>
+            주문 {cancelSheet?.code}를 취소하시겠어요?
+          </div>
+          <div style={{ padding: tokens.spacing.md, background: colors.red50, borderRadius: tokens.radius.md, transition: 'background 0.2s' }}>
+            <div style={{ fontSize: tokens.fontSize.sm, color: colors.red600 }}>
+              취소하면 고객에게 자동으로 알림이 전송되고, 결제 금액이 환불됩니다.
+            </div>
+          </div>
+        </div>
+        <div style={{ display: 'flex', gap: tokens.spacing.md }}>
+          <Button variant="secondary" fullWidth onClick={() => setCancelSheet(null)}>아니요</Button>
+          <Button variant="danger" fullWidth onClick={() => setCancelSheet(null)}>취소하기</Button>
+        </div>
+      </BottomSheet>
     </div>
   );
 };
 
 // ============================================
-// 설정 화면
-// Minimum Features: 필수 메뉴만
-// Tap & Scroll: 리스트 형태
+// 설정 화면 - JTBD: 가게/직원/정산 관리
 // ============================================
-const SettingsScreen = ({ onNavigate, data }) => {
+const SettingsScreen = ({ onNavigate, shopData }) => {
+  const { colors, isDark, toggleTheme } = useTheme();
+
+  const menuGroups = [
+    {
+      title: '판매 설정',
+      items: [
+        { icon: '🎁', title: '럭키백 설정', subtitle: '가격, 구성, 수량', screen: 'luckybag-settings' },
+        { icon: '📅', title: '픽업 시간', subtitle: '픽업 가능 시간대 설정', screen: 'pickup-settings' },
+      ]
+    },
+    {
+      title: '가게 관리',
+      items: [
+        { icon: '🏪', title: '가게 정보', subtitle: '기본 정보, 사진', screen: 'shop-info' },
+        { icon: '👥', title: '직원 관리', subtitle: '직원 초대 및 권한', screen: 'employees' },
+      ]
+    },
+    {
+      title: '매출 관리',
+      items: [
+        { icon: '💰', title: '정산 내역', subtitle: '월별 정산 확인', screen: 'settlement' },
+        { icon: '⭐', title: '리뷰 관리', subtitle: '고객 리뷰 확인 및 답글', screen: 'reviews' },
+      ]
+    },
+    {
+      title: '고객센터',
+      items: [
+        { icon: '📖', title: '사장님 가이드', subtitle: '앱 사용법 안내', screen: 'guide' },
+        { icon: '💬', title: '문의하기', subtitle: '1:1 문의', screen: 'contact' },
+      ]
+    },
+  ];
+
   return (
-    <div style={{ paddingBottom: tds.nav.height + 20 }}>
+    <div style={{ paddingBottom: tokens.spacing.xl }}>
       {/* 가게 정보 요약 */}
-      <div style={{
-        padding: `24px ${tds.margin.main}px`,
-        background: tds.color.white,
-        borderBottom: `1px solid ${tds.color.gray100}`,
-      }}>
-        <div style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>{data.shopName}</div>
-        <div style={{ fontSize: 14, color: tds.color.gray500 }}>{data.category}</div>
-      </div>
-
-      {/* 메뉴 그룹 - 핵심만 (Minimum Features) */}
-      <div style={{ marginTop: 8 }}>
-        <div style={{ padding: `16px ${tds.margin.main}px 8px`, fontSize: 13, color: tds.color.gray500 }}>
-          판매 설정
+      <Card style={{ margin: tokens.spacing.lg }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.lg }}>
+          <div style={{
+            width: 56, height: 56, borderRadius: tokens.radius.md,
+            background: colors.gray100, display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 24, transition: 'background 0.2s',
+          }}>🏪</div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: tokens.fontSize.lg, fontWeight: 700, color: colors.text }}>{shopData.shopName}</div>
+            <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary, marginTop: 2 }}>{shopData.category}</div>
+          </div>
+          <Badge variant="success">운영중</Badge>
         </div>
-        <ListItem title="럭키백 설정" onClick={() => onNavigate('luckybag')} />
-        <ListItem title="픽업 시간" onClick={() => onNavigate('pickup')} />
-      </div>
+      </Card>
 
-      <div style={{ marginTop: 8 }}>
-        <div style={{ padding: `16px ${tds.margin.main}px 8px`, fontSize: 13, color: tds.color.gray500 }}>
-          가게 관리
+      {/* 다크모드 토글 */}
+      <Card style={{ margin: `0 ${tokens.spacing.lg}px ${tokens.spacing.lg}px` }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.md }}>
+            <span style={{ fontSize: 20 }}>{isDark ? '🌙' : '☀️'}</span>
+            <span style={{ fontSize: tokens.fontSize.md, color: colors.text }}>다크 모드</span>
+          </div>
+          <Toggle checked={isDark} onChange={toggleTheme} />
         </div>
-        <ListItem title="가게 정보" onClick={() => onNavigate('shop-info')} />
-        <ListItem title="직원 관리" onClick={() => onNavigate('employees')} />
-      </div>
+      </Card>
 
-      <div style={{ marginTop: 8 }}>
-        <div style={{ padding: `16px ${tds.margin.main}px 8px`, fontSize: 13, color: tds.color.gray500 }}>
-          정산
+      {/* 메뉴 그룹 */}
+      {menuGroups.map((group, idx) => (
+        <div key={idx} style={{ marginBottom: tokens.spacing.lg }}>
+          <div style={{ padding: `0 ${tokens.spacing.lg}px`, marginBottom: tokens.spacing.sm }}>
+            <span style={{ fontSize: tokens.fontSize.sm, fontWeight: 600, color: colors.textTertiary }}>{group.title}</span>
+          </div>
+          <Card style={{ margin: `0 ${tokens.spacing.lg}px`, padding: `0 ${tokens.spacing.lg}px` }}>
+            {group.items.map((item, i) => (
+              <ListItem
+                key={i}
+                icon={item.icon}
+                title={item.title}
+                subtitle={item.subtitle}
+                onClick={() => onNavigate(item.screen)}
+              />
+            ))}
+          </Card>
         </div>
-        <ListItem title="정산 내역" onClick={() => onNavigate('settlement')} />
-        <ListItem title="리뷰 관리" onClick={() => onNavigate('reviews')} />
-      </div>
+      ))}
 
-      <div style={{ marginTop: 8 }}>
-        <div style={{ padding: `16px ${tds.margin.main}px 8px`, fontSize: 13, color: tds.color.gray500 }}>
-          고객센터
-        </div>
-        <ListItem title="사장님 가이드" onClick={() => onNavigate('guide')} />
-        <ListItem title="문의하기" onClick={() => onNavigate('contact')} />
-      </div>
-
-      {/* 소비자앱으로 전환 */}
-      <div style={{ padding: `24px ${tds.margin.main}px` }}>
+      {/* 소비자앱 전환 */}
+      <div style={{ padding: `0 ${tokens.spacing.lg}px`, marginTop: tokens.spacing.xl }}>
         <Button variant="ghost" fullWidth onClick={() => onNavigate('consumer-mode')}>
-          소비자앱으로 전환
+          소비자앱으로 전환 →
         </Button>
       </div>
     </div>
@@ -657,415 +688,294 @@ const SettingsScreen = ({ onNavigate, data }) => {
 };
 
 // ============================================
-// 서브 화면들 (One Thing per One Page)
+// 서브 화면들
 // ============================================
 
-// 럭키백 설정 - "럭키백 어떻게 구성할까?"
-const LuckyBagScreen = ({ onBack, data, setData }) => {
+// 럭키백 설정
+const LuckyBagSettingsScreen = ({ onBack, shopData, setShopData }) => {
+  const { colors } = useTheme();
   const [showPriceSheet, setShowPriceSheet] = useState(false);
   const [showQtySheet, setShowQtySheet] = useState(false);
-  const [tempPrice, setTempPrice] = useState(data.luckyBagPrice);
-  const [tempQty, setTempQty] = useState(data.defaultQty);
+  const [tempPrice, setTempPrice] = useState(shopData.luckyBagPrice);
+  const [tempQty, setTempQty] = useState(shopData.dailySalesCount);
 
   return (
     <div>
       <Header title="럭키백 설정" onBack={onBack} />
-
-      <div style={{ padding: `16px ${tds.margin.main}px` }}>
-        {/* 가격 설정 */}
-        <div
-          onClick={() => { setTempPrice(data.luckyBagPrice); setShowPriceSheet(true); }}
-          style={{
-            padding: 16,
-            background: tds.color.white,
-            borderRadius: tds.radius.md,
-            marginBottom: 12,
-            cursor: 'pointer',
-          }}
-        >
-          <div style={{ fontSize: 14, color: tds.color.gray500, marginBottom: 4 }}>판매 가격</div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div style={{ fontSize: 20, fontWeight: 700 }}>
-              {data.luckyBagPrice.toLocaleString()}원
+      <div style={{ padding: tokens.spacing.lg }}>
+        <Card style={{ marginBottom: tokens.spacing.lg }} onClick={() => { setTempPrice(shopData.luckyBagPrice); setShowPriceSheet(true); }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary }}>판매 가격</div>
+              <div style={{ fontSize: tokens.fontSize.xxl, fontWeight: 700, color: colors.text, marginTop: 4 }}>
+                {shopData.luckyBagPrice.toLocaleString()}원
+              </div>
+              <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary, marginTop: 2 }}>
+                정가 {shopData.originalPrice.toLocaleString()}원 ({Math.round((1 - shopData.luckyBagPrice / shopData.originalPrice) * 100)}% 할인)
+              </div>
             </div>
-            <span style={{ color: tds.color.gray400, fontSize: 18 }}>›</span>
+            <span style={{ color: colors.gray400, fontSize: 20 }}>›</span>
           </div>
-          <div style={{ fontSize: 13, color: tds.color.gray500, marginTop: 4 }}>
-            정가 {data.originalPrice.toLocaleString()}원 (
-            {Math.round((1 - data.luckyBagPrice / data.originalPrice) * 100)}% 할인)
-          </div>
-        </div>
+        </Card>
 
-        {/* 기본 수량 */}
-        <div
-          onClick={() => { setTempQty(data.defaultQty); setShowQtySheet(true); }}
-          style={{
-            padding: 16,
-            background: tds.color.white,
-            borderRadius: tds.radius.md,
-            marginBottom: 12,
-            cursor: 'pointer',
-          }}
-        >
-          <div style={{ fontSize: 14, color: tds.color.gray500, marginBottom: 4 }}>기본 판매 수량</div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div style={{ fontSize: 20, fontWeight: 700 }}>{data.defaultQty}개</div>
-            <span style={{ color: tds.color.gray400, fontSize: 18 }}>›</span>
+        <Card style={{ marginBottom: tokens.spacing.lg }} onClick={() => { setTempQty(shopData.dailySalesCount); setShowQtySheet(true); }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary }}>기본 판매 수량</div>
+              <div style={{ fontSize: tokens.fontSize.xxl, fontWeight: 700, color: colors.text, marginTop: 4 }}>
+                {shopData.dailySalesCount}개
+              </div>
+              <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary, marginTop: 2 }}>
+                매일 이 수량으로 판매 시작
+              </div>
+            </div>
+            <span style={{ color: colors.gray400, fontSize: 20 }}>›</span>
           </div>
-          <div style={{ fontSize: 13, color: tds.color.gray500, marginTop: 4 }}>
-            매일 이 수량으로 판매가 시작돼요
-          </div>
-        </div>
+        </Card>
 
-        {/* 구성품 */}
-        <div style={{
-          padding: 16,
-          background: tds.color.white,
-          borderRadius: tds.radius.md,
-        }}>
-          <div style={{ fontSize: 14, color: tds.color.gray500, marginBottom: 8 }}>구성 안내</div>
-          <div style={{ fontSize: 16, lineHeight: 1.6 }}>
-            {data.luckyBagDescription || '오늘의 베이커리 3-4종을 담아드려요'}
+        <Card>
+          <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary, marginBottom: tokens.spacing.sm }}>구성 안내</div>
+          <div style={{ fontSize: tokens.fontSize.md, color: colors.text, lineHeight: 1.6 }}>
+            {shopData.luckyBagDescription}
           </div>
-        </div>
+        </Card>
       </div>
 
       {/* 가격 변경 시트 */}
-      <BottomSheet isOpen={showPriceSheet} onClose={() => setShowPriceSheet(false)} title="판매 가격">
-        <div style={{ marginBottom: 24 }}>
-          <input
-            type="number"
-            value={tempPrice}
-            onChange={(e) => setTempPrice(Number(e.target.value))}
-            style={{
-              width: '100%',
-              padding: 16,
-              fontSize: 24,
-              fontWeight: 700,
-              textAlign: 'center',
-              border: `1px solid ${tds.color.gray200}`,
-              borderRadius: tds.radius.md,
-              outline: 'none',
-            }}
-          />
-          <div style={{ textAlign: 'center', marginTop: 12, color: tds.color.gray500, fontSize: 14 }}>
-            정가 대비 {Math.round((1 - tempPrice / data.originalPrice) * 100)}% 할인
-          </div>
-        </div>
-        <Button fullWidth onClick={() => { setData({ ...data, luckyBagPrice: tempPrice }); setShowPriceSheet(false); }}>
-          저장
-        </Button>
-      </BottomSheet>
-
-      {/* 수량 변경 시트 */}
-      <BottomSheet isOpen={showQtySheet} onClose={() => setShowQtySheet(false)} title="기본 판매 수량">
-        <div style={{ padding: '24px 0' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 32 }}>
+      <BottomSheet isOpen={showPriceSheet} onClose={() => setShowPriceSheet(false)} title="판매 가격 변경">
+        <div style={{ marginBottom: tokens.spacing.xl }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: tokens.spacing.lg }}>
             <button
-              onClick={() => setTempQty(Math.max(1, tempQty - 1))}
-              style={{
-                width: tds.touch.safe, height: tds.touch.safe,
-                borderRadius: tds.touch.safe / 2,
-                border: `1px solid ${tds.color.gray300}`,
-                background: tds.color.white,
-                fontSize: 24,
-                cursor: 'pointer',
-              }}
-            >−</button>
-            <span style={{ fontSize: 40, fontWeight: 700, minWidth: 60, textAlign: 'center' }}>{tempQty}</span>
+              onClick={() => setTempPrice(Math.max(100, tempPrice - 100))}
+              style={{ width: 48, height: 48, borderRadius: 24, border: `1px solid ${colors.gray300}`, background: colors.bgCard, fontSize: 20, cursor: 'pointer', color: colors.text }}
+            >-</button>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: tokens.fontSize.xxxl, fontWeight: 700, color: colors.text }}>{tempPrice.toLocaleString()}원</div>
+              <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary, marginTop: 4 }}>
+                {Math.round((1 - tempPrice / shopData.originalPrice) * 100)}% 할인
+              </div>
+            </div>
             <button
-              onClick={() => setTempQty(tempQty + 1)}
-              style={{
-                width: tds.touch.safe, height: tds.touch.safe,
-                borderRadius: tds.touch.safe / 2,
-                border: `1px solid ${tds.color.gray300}`,
-                background: tds.color.white,
-                fontSize: 24,
-                cursor: 'pointer',
-              }}
+              onClick={() => setTempPrice(tempPrice + 100)}
+              style={{ width: 48, height: 48, borderRadius: 24, border: `1px solid ${colors.gray300}`, background: colors.bgCard, fontSize: 20, cursor: 'pointer', color: colors.text }}
             >+</button>
           </div>
         </div>
-        <Button fullWidth onClick={() => { setData({ ...data, defaultQty: tempQty }); setShowQtySheet(false); }}>
-          저장
-        </Button>
+        <Button fullWidth onClick={() => { setShopData({ ...shopData, luckyBagPrice: tempPrice }); setShowPriceSheet(false); }}>저장하기</Button>
+      </BottomSheet>
+
+      {/* 수량 변경 시트 */}
+      <BottomSheet isOpen={showQtySheet} onClose={() => setShowQtySheet(false)} title="기본 판매 수량 변경">
+        <div style={{ marginBottom: tokens.spacing.xl }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: tokens.spacing.xl }}>
+            <button
+              onClick={() => setTempQty(Math.max(1, tempQty - 1))}
+              style={{ width: 48, height: 48, borderRadius: 24, border: `1px solid ${colors.gray300}`, background: colors.bgCard, fontSize: 20, cursor: 'pointer', color: colors.text }}
+            >-</button>
+            <span style={{ fontSize: tokens.fontSize.xxxl, fontWeight: 700, color: colors.text }}>{tempQty}개</span>
+            <button
+              onClick={() => setTempQty(tempQty + 1)}
+              style={{ width: 48, height: 48, borderRadius: 24, border: `1px solid ${colors.gray300}`, background: colors.bgCard, fontSize: 20, cursor: 'pointer', color: colors.text }}
+            >+</button>
+          </div>
+        </div>
+        <Button fullWidth onClick={() => { setShopData({ ...shopData, dailySalesCount: tempQty }); setShowQtySheet(false); }}>저장하기</Button>
       </BottomSheet>
     </div>
   );
 };
 
-// 픽업 시간 설정 - "언제 픽업 받을까?"
-const PickupScreen = ({ onBack, data, setData }) => {
-  const [showTimeSheet, setShowTimeSheet] = useState(false);
-  const [editingSlot, setEditingSlot] = useState(null);
-
+// 픽업 시간 설정
+const PickupSettingsScreen = ({ onBack, shopData, setShopData }) => {
+  const { colors } = useTheme();
   const weekdays = ['월', '화', '수', '목', '금', '토', '일'];
 
   return (
     <div>
-      <Header title="픽업 시간" onBack={onBack} />
-
-      <div style={{ padding: `16px ${tds.margin.main}px` }}>
-        <div style={{
-          padding: 16,
-          background: tds.color.blue50,
-          borderRadius: tds.radius.md,
-          marginBottom: 16,
-        }}>
-          <div style={{ fontSize: 14, color: tds.color.blue600 }}>
-            설정한 시간에 고객이 픽업을 예약할 수 있어요
+      <Header title="픽업 시간 설정" onBack={onBack} />
+      <div style={{ padding: tokens.spacing.lg }}>
+        <div style={{ padding: tokens.spacing.md, background: colors.blue50, borderRadius: tokens.radius.md, marginBottom: tokens.spacing.lg, transition: 'background 0.2s' }}>
+          <div style={{ fontSize: tokens.fontSize.sm, color: colors.blue600 }}>
+            설정한 시간에 고객이 픽업 예약을 할 수 있어요
           </div>
         </div>
 
-        {data.pickupSlots.map((slot, idx) => (
-          <div
-            key={idx}
-            onClick={() => { setEditingSlot(idx); setShowTimeSheet(true); }}
-            style={{
-              padding: 16,
-              background: tds.color.white,
-              borderRadius: tds.radius.md,
-              marginBottom: 12,
-              cursor: 'pointer',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        {shopData.pickupSlots.map((slot, idx) => (
+          <Card key={idx} style={{ marginBottom: tokens.spacing.md }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
-                <div style={{ fontSize: 16, fontWeight: 600 }}>
+                <div style={{ fontSize: tokens.fontSize.lg, fontWeight: 600, color: colors.text }}>
                   {slot.start} - {slot.end}
                 </div>
-                <div style={{ fontSize: 13, color: tds.color.gray500, marginTop: 4 }}>
+                <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary, marginTop: 4 }}>
                   {slot.days.map(d => weekdays[d]).join(', ')}
                 </div>
               </div>
-              <span style={{ color: tds.color.gray400, fontSize: 18 }}>›</span>
+              <Button variant="ghost" size="sm">수정</Button>
             </div>
-          </div>
+          </Card>
         ))}
 
-        <Button
-          variant="secondary"
-          fullWidth
-          onClick={() => {
-            setData({
-              ...data,
-              pickupSlots: [...data.pickupSlots, { start: '18:00', end: '19:00', days: [0, 1, 2, 3, 4] }]
-            });
-          }}
-        >
-          + 픽업 시간 추가
-        </Button>
+        <Button variant="secondary" fullWidth onClick={() => {
+          setShopData({
+            ...shopData,
+            pickupSlots: [...shopData.pickupSlots, { start: '18:00', end: '19:00', days: [0, 1, 2, 3, 4] }]
+          });
+        }}>+ 픽업 시간 추가</Button>
       </div>
     </div>
   );
 };
 
-// 가게 정보 - "가게 정보 확인/수정"
-const ShopInfoScreen = ({ onBack, data }) => {
+// 가게 정보
+const ShopInfoScreen = ({ onBack, shopData }) => {
+  const { colors } = useTheme();
   return (
     <div>
       <Header title="가게 정보" onBack={onBack} />
-
-      <div style={{ background: tds.color.white }}>
-        <ListItem title="가게명" value={data.shopName} showArrow={false} />
-        <ListItem title="카테고리" value={data.category} showArrow={false} />
-        <ListItem title="주소" value={data.address} showArrow={false} />
-        <ListItem title="전화번호" value={data.phone} showArrow={false} />
-      </div>
-
-      <div style={{ padding: `24px ${tds.margin.main}px` }}>
-        <div style={{ fontSize: 13, color: tds.color.gray500, lineHeight: 1.6 }}>
-          가게 정보 변경이 필요하시면 고객센터로 문의해 주세요.
-        </div>
+      <div style={{ padding: tokens.spacing.lg }}>
+        <Card>
+          <ListItem title="가게명" right={<span style={{ color: colors.text }}>{shopData.shopName}</span>} showArrow={false} />
+          <ListItem title="카테고리" right={<span style={{ color: colors.text }}>{shopData.category}</span>} showArrow={false} />
+          <ListItem title="주소" right={<span style={{ color: colors.text }}>{shopData.address}</span>} showArrow={false} />
+          <ListItem title="전화번호" right={<span style={{ color: colors.text }}>{shopData.phone}</span>} showArrow={false} />
+        </Card>
       </div>
     </div>
   );
 };
 
-// 직원 관리 - "누가 접근할 수 있을까?"
-const EmployeesScreen = ({ onBack, data }) => {
-  const roleLabels = { 0: '관리자', 1: '매니저', 2: '직원' };
+// 직원 관리
+const EmployeesScreen = ({ onBack, shopData }) => {
+  const { colors } = useTheme();
+  const roleLabels = { [PLACE_ROLE_GRADE.ADMIN]: '관리자', [PLACE_ROLE_GRADE.MANAGER]: '매니저', [PLACE_ROLE_GRADE.STAFF]: '직원' };
 
   return (
     <div>
       <Header title="직원 관리" onBack={onBack} />
-
-      <div style={{ padding: `16px ${tds.margin.main}px` }}>
-        {data.employees.map((emp, idx) => (
-          <div key={idx} style={{
-            padding: 16,
-            background: tds.color.white,
-            borderRadius: tds.radius.md,
-            marginBottom: 12,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}>
-            <div>
-              <div style={{ fontSize: 16, fontWeight: 500 }}>{emp.name}</div>
-              <div style={{ fontSize: 13, color: tds.color.gray500, marginTop: 2 }}>{emp.phone}</div>
+      <div style={{ padding: tokens.spacing.lg }}>
+        {shopData.employees.map((emp, idx) => (
+          <Card key={idx} style={{ marginBottom: tokens.spacing.md }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <div style={{ fontSize: tokens.fontSize.md, fontWeight: 600, color: colors.text }}>{emp.name}</div>
+                <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary, marginTop: 2 }}>{emp.phone}</div>
+              </div>
+              <Badge variant={emp.grade === PLACE_ROLE_GRADE.ADMIN ? 'primary' : 'default'}>
+                {roleLabels[emp.grade]}
+              </Badge>
             </div>
-            <span style={{
-              padding: '4px 10px',
-              background: emp.role === 0 ? tds.color.blue50 : tds.color.gray100,
-              color: emp.role === 0 ? tds.color.blue600 : tds.color.gray600,
-              borderRadius: tds.radius.sm,
-              fontSize: 13,
-            }}>{roleLabels[emp.role]}</span>
-          </div>
+          </Card>
         ))}
-
         <Button variant="secondary" fullWidth>+ 직원 초대</Button>
       </div>
     </div>
   );
 };
 
-// 정산 내역 - "얼마 벌었을까?"
+// 정산 내역
 const SettlementScreen = ({ onBack }) => {
+  const { colors } = useTheme();
   const settlements = [
-    { month: '2024년 11월', amount: 1250000, status: 'paid', paidAt: '12/15' },
-    { month: '2024년 10월', amount: 980000, status: 'paid', paidAt: '11/15' },
+    { month: '2024년 11월', amount: 1250000, status: 'completed', paidAt: '2024-12-15' },
+    { month: '2024년 10월', amount: 980000, status: 'completed', paidAt: '2024-11-15' },
   ];
 
   return (
     <div>
       <Header title="정산 내역" onBack={onBack} />
-
-      <div style={{ padding: `16px ${tds.margin.main}px` }}>
+      <div style={{ padding: tokens.spacing.lg }}>
         {/* 이번 달 예상 */}
-        <div style={{
-          padding: 20,
-          background: tds.color.blue500,
-          borderRadius: tds.radius.md,
-          marginBottom: 16,
-          color: tds.color.white,
-        }}>
-          <div style={{ fontSize: 14, opacity: 0.8 }}>12월 예상 정산금</div>
-          <div style={{ fontSize: 28, fontWeight: 700, marginTop: 8 }}>
+        <Card style={{ marginBottom: tokens.spacing.lg, background: colors.blue500 }}>
+          <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: tokens.fontSize.sm }}>12월 예상 정산금</div>
+          <div style={{ color: '#FFFFFF', fontSize: tokens.fontSize.xxxl, fontWeight: 700, marginTop: tokens.spacing.sm }}>
             1,580,000원
           </div>
-          <div style={{ fontSize: 13, opacity: 0.8, marginTop: 4 }}>
+          <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: tokens.fontSize.sm, marginTop: tokens.spacing.xs }}>
             1/15 지급 예정
           </div>
-        </div>
+        </Card>
 
-        {/* 지난 정산 */}
         {settlements.map((s, idx) => (
-          <div key={idx} style={{
-            padding: 16,
-            background: tds.color.white,
-            borderRadius: tds.radius.md,
-            marginBottom: 12,
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: 15 }}>{s.month}</span>
-              <span style={{
-                padding: '2px 8px',
-                background: tds.color.green50,
-                color: tds.color.green500,
-                borderRadius: 4,
-                fontSize: 12,
-              }}>지급완료</span>
+          <Card key={idx} style={{ marginBottom: tokens.spacing.md }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div>
+                <div style={{ fontSize: tokens.fontSize.md, color: colors.text }}>{s.month}</div>
+                <div style={{ fontSize: tokens.fontSize.xxl, fontWeight: 700, color: colors.text, marginTop: tokens.spacing.xs }}>
+                  {s.amount.toLocaleString()}원
+                </div>
+              </div>
+              <Badge variant="success">지급완료</Badge>
             </div>
-            <div style={{ fontSize: 20, fontWeight: 700, marginTop: 8 }}>
-              {s.amount.toLocaleString()}원
-            </div>
-            <div style={{ fontSize: 13, color: tds.color.gray500, marginTop: 4 }}>
-              {s.paidAt} 지급
-            </div>
-          </div>
+          </Card>
         ))}
       </div>
     </div>
   );
 };
 
-// 리뷰 관리 - "고객 피드백 확인"
+// 리뷰 관리
 const ReviewsScreen = ({ onBack }) => {
+  const { colors } = useTheme();
   const reviews = [
-    { id: 1, name: '김**', rating: 5, content: '빵이 정말 맛있어요!', date: '12/5', hasPhoto: true },
-    { id: 2, name: '이**', rating: 4, content: '가성비 좋아요', date: '12/3', hasPhoto: false },
+    { id: 1, name: '김**', rating: 5, content: '빵이 정말 맛있어요! 다음에 또 올게요 🥐', date: '2024-12-05', hasPhoto: true },
+    { id: 2, name: '이**', rating: 4, content: '가성비 좋아요', date: '2024-12-03', hasPhoto: false },
   ];
 
   return (
     <div>
       <Header title="리뷰 관리" onBack={onBack} />
+      <div style={{ padding: tokens.spacing.lg }}>
+        {/* 평점 요약 */}
+        <Card style={{ marginBottom: tokens.spacing.lg, textAlign: 'center' }}>
+          <div style={{ fontSize: tokens.fontSize.xxxxl, fontWeight: 700, color: colors.text }}>4.8</div>
+          <div style={{ fontSize: tokens.fontSize.xl, color: colors.orange500, marginTop: tokens.spacing.xs }}>★★★★★</div>
+          <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary, marginTop: tokens.spacing.sm }}>리뷰 156개</div>
+        </Card>
 
-      <div style={{ padding: `16px ${tds.margin.main}px` }}>
-        {/* 평균 평점 */}
-        <div style={{
-          padding: 20,
-          background: tds.color.white,
-          borderRadius: tds.radius.md,
-          marginBottom: 16,
-          textAlign: 'center',
-        }}>
-          <div style={{ fontSize: 36, fontWeight: 700 }}>4.8</div>
-          <div style={{ fontSize: 20, color: tds.color.orange500, marginTop: 4 }}>★★★★★</div>
-          <div style={{ fontSize: 13, color: tds.color.gray500, marginTop: 8 }}>리뷰 156개</div>
-        </div>
-
-        {/* 리뷰 목록 */}
         {reviews.map(review => (
-          <div key={review.id} style={{
-            padding: 16,
-            background: tds.color.white,
-            borderRadius: tds.radius.md,
-            marginBottom: 12,
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontWeight: 500 }}>{review.name}</span>
-                <span style={{ color: tds.color.orange500, fontSize: 14 }}>
-                  {'★'.repeat(review.rating)}
-                </span>
+          <Card key={review.id} style={{ marginBottom: tokens.spacing.md }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: tokens.spacing.sm }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.sm }}>
+                <span style={{ fontWeight: 600, color: colors.text }}>{review.name}</span>
+                <span style={{ color: colors.orange500 }}>{'★'.repeat(review.rating)}</span>
               </div>
-              <span style={{ fontSize: 13, color: tds.color.gray500 }}>{review.date}</span>
+              <span style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary }}>{review.date}</span>
             </div>
-            <div style={{ fontSize: 15, lineHeight: 1.5 }}>{review.content}</div>
+            <div style={{ fontSize: tokens.fontSize.md, color: colors.text, lineHeight: 1.5 }}>{review.content}</div>
             {review.hasPhoto && (
-              <div style={{
-                marginTop: 8,
-                padding: '4px 8px',
-                background: tds.color.gray100,
-                borderRadius: 4,
-                fontSize: 12,
-                color: tds.color.gray600,
-                display: 'inline-block',
-              }}>📷 사진 리뷰</div>
+              <Badge variant="default" style={{ marginTop: tokens.spacing.sm }}>📷 사진 리뷰</Badge>
             )}
-          </div>
+          </Card>
         ))}
       </div>
     </div>
   );
 };
 
-// 사장님 가이드 - 도움말
+// 가이드
 const GuideScreen = ({ onBack }) => {
+  const { colors } = useTheme();
   const guides = [
-    { title: '럭키백 판매 시작하기', desc: '처음 판매를 시작하는 방법' },
-    { title: '주문 관리하기', desc: '예약, 확정, 픽업 완료 처리' },
-    { title: '정산 안내', desc: '정산 주기와 수수료 안내' },
+    { icon: '🚀', title: '시작하기', desc: '럭키백 판매 시작하는 방법' },
+    { icon: '📦', title: '주문 관리', desc: '예약, 확정, 픽업 완료 처리 방법' },
+    { icon: '💵', title: '정산 안내', desc: '정산 주기와 수수료 안내' },
   ];
 
   return (
     <div>
       <Header title="사장님 가이드" onBack={onBack} />
-
-      <div style={{ padding: `16px ${tds.margin.main}px` }}>
+      <div style={{ padding: tokens.spacing.lg }}>
         {guides.map((guide, idx) => (
-          <div key={idx} style={{
-            padding: 16,
-            background: tds.color.white,
-            borderRadius: tds.radius.md,
-            marginBottom: 12,
-            cursor: 'pointer',
-          }}>
-            <div style={{ fontSize: 16, fontWeight: 500 }}>{guide.title}</div>
-            <div style={{ fontSize: 14, color: tds.color.gray500, marginTop: 4 }}>{guide.desc}</div>
-          </div>
+          <Card key={idx} style={{ marginBottom: tokens.spacing.md }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.md }}>
+              <div style={{ fontSize: 32 }}>{guide.icon}</div>
+              <div>
+                <div style={{ fontSize: tokens.fontSize.md, fontWeight: 600, color: colors.text }}>{guide.title}</div>
+                <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary, marginTop: 2 }}>{guide.desc}</div>
+              </div>
+            </div>
+          </Card>
         ))}
       </div>
     </div>
@@ -1074,16 +984,18 @@ const GuideScreen = ({ onBack }) => {
 
 // 문의하기
 const ContactScreen = ({ onBack }) => {
+  const { colors } = useTheme();
   return (
     <div>
       <Header title="문의하기" onBack={onBack} />
-
-      <div style={{ padding: `24px ${tds.margin.main}px`, textAlign: 'center' }}>
-        <div style={{ fontSize: 48, marginBottom: 16 }}>💬</div>
-        <div style={{ fontSize: 18, fontWeight: 600, marginBottom: 8 }}>도움이 필요하신가요?</div>
-        <div style={{ fontSize: 14, color: tds.color.gray500, marginBottom: 24, lineHeight: 1.6 }}>
+      <div style={{ padding: tokens.spacing.lg, textAlign: 'center' }}>
+        <div style={{ fontSize: 64, marginBottom: tokens.spacing.xl }}>💬</div>
+        <div style={{ fontSize: tokens.fontSize.xl, fontWeight: 600, color: colors.text, marginBottom: tokens.spacing.sm }}>
+          도움이 필요하신가요?
+        </div>
+        <div style={{ fontSize: tokens.fontSize.md, color: colors.textTertiary, marginBottom: tokens.spacing.xl, lineHeight: 1.6 }}>
           카카오톡 채널로 문의해 주세요.<br />
-          평일 10:00 - 18:00 답변 드려요.
+          평일 10:00 - 18:00 답변드려요.
         </div>
         <Button fullWidth>카카오톡으로 문의하기</Button>
       </div>
@@ -1095,75 +1007,75 @@ const ContactScreen = ({ onBack }) => {
 // 앱 메인
 // ============================================
 export default function App() {
-  const [screen, setScreen] = useState('home');
-  const [mainTab, setMainTab] = useState('home');
+  const [activeTab, setActiveTab] = useState('home');
+  const [currentScreen, setCurrentScreen] = useState('home');
+  const [isDark, setIsDark] = useState(false);
 
-  // 앱 데이터 (실제로는 API에서 가져옴)
-  const [data, setData] = useState({
-    // 가게 정보
+  // 시스템 테마 감지
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    setIsDark(mediaQuery.matches);
+
+    const handler = (e) => setIsDark(e.matches);
+    mediaQuery.addEventListener('change', handler);
+    return () => mediaQuery.removeEventListener('change', handler);
+  }, []);
+
+  const colors = isDark ? darkColors : lightColors;
+  const toggleTheme = () => setIsDark(!isDark);
+
+  const [shopData, setShopData] = useState({
     shopName: '행복한 베이커리',
     category: '베이커리',
     address: '서울시 강남구 역삼동 123-45',
     phone: '02-1234-5678',
-
-    // 오늘 현황
-    totalQty: 5,
-    soldQty: 2,
+    dailySalesCount: 5,
+    soldCount: 2,
     paidCount: 2,
     confirmedCount: 1,
-    completedCount: 3,
+    pickedUpCount: 3,
     isSoldOut: false,
-
-    // 럭키백 설정
+    isClosed: false,
     luckyBagPrice: 3900,
     originalPrice: 7800,
-    defaultQty: 5,
-    luckyBagDescription: '오늘의 빵 3-4종을 담아드려요',
-
-    // 픽업 시간
+    luckyBagDescription: '오늘의 빵 3-4종을 랜덤으로 담아드려요. 구성은 매일 달라져요!',
     pickupSlots: [
       { start: '14:00', end: '15:00', days: [0, 1, 2, 3, 4] },
       { start: '20:00', end: '21:00', days: [0, 1, 2, 3, 4, 5, 6] },
     ],
-
-    // 직원
     employees: [
-      { name: '홍길동', phone: '010-1234-5678', role: 0 },
-      { name: '김직원', phone: '010-8765-4321', role: 2 },
+      { name: '홍길동', phone: '010-1234-5678', grade: PLACE_ROLE_GRADE.ADMIN },
+      { name: '김직원', phone: '010-9876-5432', grade: PLACE_ROLE_GRADE.STAFF },
     ],
   });
 
-  // 네비게이션
-  const navigate = (target) => {
-    if (['home', 'orders', 'settings'].includes(target)) {
-      setMainTab(target);
-      setScreen(target);
-    } else {
-      setScreen(target);
+  const navigate = (screen) => {
+    if (['home', 'orders', 'settings'].includes(screen)) {
+      setActiveTab(screen);
     }
+    setCurrentScreen(screen);
   };
 
   const goBack = () => {
-    setScreen(mainTab);
+    setCurrentScreen(activeTab);
   };
 
-  // 화면 렌더링
   const renderScreen = () => {
-    switch (screen) {
+    switch (currentScreen) {
       case 'home':
-        return <HomeScreen data={data} setData={setData} onNavigate={navigate} />;
+        return <HomeScreen onNavigate={navigate} shopData={shopData} setShopData={setShopData} />;
       case 'orders':
-        return <OrdersScreen data={data} setData={setData} />;
+        return <OrdersScreen onNavigate={navigate} />;
       case 'settings':
-        return <SettingsScreen data={data} onNavigate={navigate} />;
-      case 'luckybag':
-        return <LuckyBagScreen onBack={goBack} data={data} setData={setData} />;
-      case 'pickup':
-        return <PickupScreen onBack={goBack} data={data} setData={setData} />;
+        return <SettingsScreen onNavigate={navigate} shopData={shopData} />;
+      case 'luckybag-settings':
+        return <LuckyBagSettingsScreen onBack={goBack} shopData={shopData} setShopData={setShopData} />;
+      case 'pickup-settings':
+        return <PickupSettingsScreen onBack={goBack} shopData={shopData} setShopData={setShopData} />;
       case 'shop-info':
-        return <ShopInfoScreen onBack={goBack} data={data} />;
+        return <ShopInfoScreen onBack={goBack} shopData={shopData} />;
       case 'employees':
-        return <EmployeesScreen onBack={goBack} data={data} />;
+        return <EmployeesScreen onBack={goBack} shopData={shopData} />;
       case 'settlement':
         return <SettlementScreen onBack={goBack} />;
       case 'reviews':
@@ -1173,26 +1085,25 @@ export default function App() {
       case 'contact':
         return <ContactScreen onBack={goBack} />;
       default:
-        return <HomeScreen data={data} setData={setData} onNavigate={navigate} />;
+        return <HomeScreen onNavigate={navigate} shopData={shopData} setShopData={setShopData} />;
     }
   };
 
-  // 메인 탭 화면인지 확인
-  const isMainScreen = ['home', 'orders', 'settings'].includes(screen);
+  const showBottomNav = ['home', 'orders', 'settings'].includes(currentScreen);
 
   return (
-    <div style={{
-      maxWidth: 480,
-      margin: '0 auto',
-      minHeight: '100vh',
-      background: tds.color.gray50,
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-      WebkitFontSmoothing: 'antialiased',
-    }}>
-      {renderScreen()}
-      {isMainScreen && (
-        <BottomNav activeTab={mainTab} onChange={navigate} />
-      )}
-    </div>
+    <ThemeContext.Provider value={{ colors, isDark, toggleTheme }}>
+      <div style={{
+        maxWidth: 480,
+        margin: '0 auto',
+        minHeight: '100vh',
+        background: colors.bg,
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        transition: 'background 0.3s',
+      }}>
+        {renderScreen()}
+        {showBottomNav && <BottomNav activeTab={activeTab} onChange={navigate} />}
+      </div>
+    </ThemeContext.Provider>
   );
 }
