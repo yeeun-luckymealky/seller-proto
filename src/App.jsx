@@ -1731,13 +1731,27 @@ const SettlementScreen = ({ onBack, shopData }) => {
       {selectedMonth ? (
         // 일자별 상세 보기
         <div style={{ padding: tokens.spacing.lg }}>
-          <div style={{ marginBottom: tokens.spacing.lg }}>
-            <div style={{ fontSize: tokens.fontSize.xl, fontWeight: 700, color: colors.text, marginBottom: tokens.spacing.sm }}>
-              {selectedMonth.month} 정산 상세
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: tokens.spacing.lg }}>
+            <div>
+              <div style={{ fontSize: tokens.fontSize.xl, fontWeight: 700, color: colors.text, marginBottom: tokens.spacing.sm }}>
+                {selectedMonth.month} 정산 상세
+              </div>
+              <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary }}>
+                플랫폼 수수료 9.8% + 결제 수수료 3.0%
+              </div>
             </div>
-            <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary }}>
-              플랫폼 수수료 9.8% + 결제 수수료 3.0%
-            </div>
+            <button onClick={() => setShowExportSheet(true)} style={{
+              display: 'flex', alignItems: 'center', gap: 6,
+              padding: `${tokens.spacing.sm}px ${tokens.spacing.md}px`,
+              background: colors.green500, color: '#FFFFFF',
+              border: 'none', borderRadius: tokens.radius.sm,
+              fontSize: tokens.fontSize.sm, fontWeight: 500, cursor: 'pointer',
+            }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFFFFF">
+                <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+              </svg>
+              Excel
+            </button>
           </div>
 
           {/* 스크롤 가능한 테이블 컨테이너 */}
@@ -2235,63 +2249,63 @@ const GuideScreen = ({ onBack }) => {
       id: 1,
       emoji: '🎁',
       title: '럭키백 등록하기',
-      subtitle: '판매할 럭키백을 설정해요',
+      subtitle: '우리 가게 럭키백을 소개해요',
       steps: [
-        '홈 화면에서 "럭키백 설정" 클릭',
-        '음식 카테고리 선택 (샐러드, 피자, 한식 등)',
-        '주요 메뉴 1~3개 입력',
-        '럭키백 설명 작성',
-        '정가 입력 (판매가는 50% 할인 자동 적용)',
-        '구매 갯수 제한 설정',
+        '홈에서 럭키백 설정을 눌러요',
+        '어떤 음식인지 카테고리를 골라요',
+        '대표 메뉴 1~3개를 적어요',
+        '럭키백을 소개하는 한 줄을 써요',
+        '정가를 적으면 판매가는 자동으로 50% 할인돼요',
+        '한 사람이 살 수 있는 개수를 정해요',
       ],
     },
     {
       id: 2,
       emoji: '📅',
       title: '픽업 시간 설정하기',
-      subtitle: '요일별 픽업 가능 시간을 설정해요',
+      subtitle: '고객이 방문할 시간을 정해요',
       steps: [
-        '설정 > 픽업 시간 메뉴 선택',
-        '요일별 운영 여부 토글로 설정',
-        '시작/종료 시간 터치해서 변경',
-        '특별 휴무일 추가 (2일 이상 기간도 가능)',
+        '전체 탭에서 픽업 시간을 눌러요',
+        '영업하는 요일을 켜고 꺼요',
+        '시간을 눌러서 픽업 가능 시간을 바꿔요',
+        '연휴나 특별 휴무일도 미리 등록할 수 있어요',
       ],
     },
     {
       id: 3,
       emoji: '✅',
       title: '주문 확정하기',
-      subtitle: '예약된 주문을 확정해요',
+      subtitle: '들어온 예약을 확정해요',
       steps: [
-        '하단 탭 "주문" 클릭',
-        '"예약" 뱃지가 붙은 주문 카드 터치',
-        '"주문 확정" 버튼 클릭',
-        '픽업 시간까지 럭키백 준비',
-        '고객 방문 시 "픽업 완료" 처리',
+        '아래 주문 탭을 눌러요',
+        '예약 표시가 있는 주문을 눌러요',
+        '주문 확정을 눌러요',
+        '픽업 시간 전까지 럭키백을 준비해요',
+        '고객이 오면 픽업 완료를 눌러요',
       ],
     },
     {
       id: 4,
       emoji: '🔢',
-      title: '오늘 판매 수량 조정하기',
-      subtitle: '남은 재료에 맞게 수량을 조절해요',
+      title: '오늘 수량 바꾸기',
+      subtitle: '남은 재료만큼 수량을 조절해요',
       steps: [
-        '홈 화면 "오늘의 럭키백 수량" 카드 클릭',
-        '+/- 버튼으로 수량 조절',
-        '"저장하기" 클릭',
-        '또는 "오늘 판매 종료" 토글로 마감 처리',
+        '홈에서 남은 수량 카드를 눌러요',
+        '+, - 버튼으로 수량을 조절해요',
+        '저장하기를 눌러요',
+        '오늘 그만 팔고 싶으면 판매 마감을 켜요',
       ],
     },
     {
       id: 5,
       emoji: '💰',
       title: '정산금 확인하기',
-      subtitle: '매출과 정산 내역을 확인해요',
+      subtitle: '이번 달 정산 금액을 확인해요',
       steps: [
-        '설정 > 정산 내역 메뉴 선택',
-        '예상 정산금 확인',
-        '월별 카드 클릭하면 일자별 상세 확인',
-        'Excel 내보내기로 세무 자료 다운로드',
+        '전체 탭에서 정산 내역을 눌러요',
+        '이번 달 예상 정산금을 확인해요',
+        '지난 달을 누르면 상세 내역이 나와요',
+        'Excel로 내보내서 세무 자료로 쓸 수 있어요',
       ],
     },
     {
@@ -2300,11 +2314,11 @@ const GuideScreen = ({ onBack }) => {
       title: '직원 초대하기',
       subtitle: '함께 운영할 직원을 추가해요',
       steps: [
-        '설정 > 직원 관리 메뉴 선택',
-        '"+ 직원 초대" 버튼 클릭',
-        '이름, 이메일, 권한 입력',
-        '"초대하기" 클릭',
-        '기존 직원 카드 클릭하면 수정/삭제 가능',
+        '전체 탭에서 직원 관리를 눌러요',
+        '직원 초대를 눌러요',
+        '이름, 이메일, 권한을 적어요',
+        '초대하기를 누르면 직원에게 안내가 가요',
+        '직원 카드를 누르면 정보를 바꾸거나 삭제할 수 있어요',
       ],
     },
   ];
@@ -2315,8 +2329,8 @@ const GuideScreen = ({ onBack }) => {
       <div style={{ padding: tokens.spacing.lg }}>
         <div style={{ padding: tokens.spacing.md, background: colors.green50, borderRadius: tokens.radius.md, marginBottom: tokens.spacing.xl }}>
           <div style={{ fontSize: tokens.fontSize.sm, color: colors.green600, lineHeight: 1.6 }}>
-            럭키밀 셀러앱 사용법을 안내해 드려요.<br />
-            각 항목을 터치하면 상세 단계를 확인할 수 있어요.
+            럭키밀 판매자 앱 사용법을 안내해 드려요.<br />
+            궁금한 항목을 누르면 자세한 방법을 볼 수 있어요.
           </div>
         </div>
 
