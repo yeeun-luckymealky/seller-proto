@@ -198,12 +198,25 @@ const BottomSheet = ({ isOpen, onClose, title, children }) => {
   const { colors } = useTheme();
   if (!isOpen) return null;
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 1000 }}>
+    <div style={{
+      position: 'fixed',
+      top: 0, bottom: 0, left: 0, right: 0,
+      zIndex: 1000,
+      display: 'flex',
+      justifyContent: 'center',
+    }}>
       <div onClick={onClose} style={{ position: 'absolute', inset: 0, background: colors.overlay, transition: 'background 0.2s' }} />
       <div style={{
-        position: 'absolute', bottom: 0, left: 0, right: 0, background: colors.bgElevated,
+        position: 'absolute',
+        bottom: 0,
+        width: '100%',
+        maxWidth: 480,
+        background: colors.bgElevated,
         borderRadius: `${tokens.radius.xl}px ${tokens.radius.xl}px 0 0`,
-        maxHeight: '85vh', overflow: 'hidden', display: 'flex', flexDirection: 'column',
+        maxHeight: '85vh',
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
         transition: 'background 0.2s',
       }}>
         <div style={{ padding: tokens.spacing.lg, borderBottom: `1px solid ${colors.border}` }}>
@@ -225,9 +238,20 @@ const BottomNav = ({ activeTab, onChange }) => {
   ];
   return (
     <div style={{
-      display: 'flex', justifyContent: 'space-around', padding: `${tokens.spacing.md}px 0`,
-      background: colors.bgCard, borderTop: `1px solid ${colors.border}`,
-      position: 'sticky', bottom: 0, transition: 'background 0.2s, border-color 0.2s',
+      display: 'flex',
+      justifyContent: 'space-around',
+      padding: `${tokens.spacing.md}px 0`,
+      paddingBottom: `calc(${tokens.spacing.md}px + env(safe-area-inset-bottom, 0px))`,
+      background: colors.bgCard,
+      borderTop: `1px solid ${colors.border}`,
+      position: 'fixed',
+      bottom: 0,
+      left: '50%',
+      transform: 'translateX(-50%)',
+      width: '100%',
+      maxWidth: 480,
+      transition: 'background 0.2s, border-color 0.2s',
+      zIndex: 100,
     }}>
       {tabs.map(tab => (
         <button key={tab.id} onClick={() => onChange(tab.id)} style={{
@@ -309,7 +333,7 @@ const HomeScreen = ({ onNavigate, shopData, setShopData }) => {
   };
 
   return (
-    <div style={{ paddingBottom: tokens.spacing.xl }}>
+    <div>
       {/* 오늘 현황 카드 */}
       <Card style={{ margin: tokens.spacing.lg }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: tokens.spacing.lg }}>
@@ -485,7 +509,7 @@ const OrdersScreen = ({ onNavigate }) => {
   };
 
   return (
-    <div style={{ paddingBottom: tokens.spacing.xl }}>
+    <div>
       <TabBar tabs={tabs} activeTab={activeTab} onChange={setActiveTab} />
 
       {currentOrders.length === 0 ? (
@@ -629,7 +653,7 @@ const SettingsScreen = ({ onNavigate, shopData }) => {
   ];
 
   return (
-    <div style={{ paddingBottom: tokens.spacing.xl }}>
+    <div>
       {/* 가게 정보 요약 */}
       <Card style={{ margin: tokens.spacing.lg }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.lg }}>
@@ -1091,6 +1115,8 @@ export default function App() {
 
   const showBottomNav = ['home', 'orders', 'settings'].includes(currentScreen);
 
+  const BOTTOM_NAV_HEIGHT = 60;
+
   return (
     <ThemeContext.Provider value={{ colors, isDark, toggleTheme }}>
       <div style={{
@@ -1100,8 +1126,11 @@ export default function App() {
         background: colors.bg,
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
         transition: 'background 0.3s',
+        position: 'relative',
       }}>
-        {renderScreen()}
+        <div style={{ paddingBottom: showBottomNav ? BOTTOM_NAV_HEIGHT : 0 }}>
+          {renderScreen()}
+        </div>
         {showBottomNav && <BottomNav activeTab={activeTab} onChange={navigate} />}
       </div>
     </ThemeContext.Provider>
