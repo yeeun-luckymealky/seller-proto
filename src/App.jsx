@@ -480,11 +480,12 @@ const OrdersScreen = ({ onNavigate }) => {
   const [cancelSheet, setCancelSheet] = useState(null);
 
   // 오늘의 주문 (탭 없이 일렬 리스팅, 상태별 컬러 칩)
+  // 주문 코드는 한글 네 글자 (백엔드 Code 엔티티 참조)
   const todayOrders = [
-    { id: 1, code: 'A001', orderUid: 'ORD-2024120801', name: '김**', mannerScore: 85, luckyBagCount: 2, price: 7800, discountPrice: 3900, pickupStartTime: '14:00', pickupEndTime: '15:00', status: ORDER_STATUS.PAID, isPickupChecked: false },
-    { id: 2, code: 'A002', orderUid: 'ORD-2024120802', name: '이**', mannerScore: 92, luckyBagCount: 1, price: 3900, discountPrice: 3900, pickupStartTime: '14:00', pickupEndTime: '15:00', status: ORDER_STATUS.PAID, isPickupChecked: false },
-    { id: 3, code: 'A003', orderUid: 'ORD-2024120803', name: '박**', mannerScore: 78, luckyBagCount: 1, price: 3900, discountPrice: 3900, pickupStartTime: '15:00', pickupEndTime: '16:00', status: ORDER_STATUS.CONFIRMED, isPickupChecked: false },
-    { id: 4, code: 'A004', orderUid: 'ORD-2024120804', name: '최**', mannerScore: 88, luckyBagCount: 2, price: 7800, discountPrice: 7800, pickupStartTime: '12:00', pickupEndTime: '13:00', status: ORDER_STATUS.CONFIRMED, isPickupChecked: true },
+    { id: 1, code: '맑은하늘', orderUid: 'ORD-2024120801', name: '김**', mannerScore: 85, luckyBagCount: 2, price: 7800, discountPrice: 3900, pickupStartTime: '14:00', pickupEndTime: '15:00', status: ORDER_STATUS.PAID, isPickupChecked: false },
+    { id: 2, code: '좋은아침', orderUid: 'ORD-2024120802', name: '이**', mannerScore: 92, luckyBagCount: 1, price: 3900, discountPrice: 3900, pickupStartTime: '14:00', pickupEndTime: '15:00', status: ORDER_STATUS.PAID, isPickupChecked: false },
+    { id: 3, code: '행복가득', orderUid: 'ORD-2024120803', name: '박**', mannerScore: 78, luckyBagCount: 1, price: 3900, discountPrice: 3900, pickupStartTime: '15:00', pickupEndTime: '16:00', status: ORDER_STATUS.CONFIRMED, isPickupChecked: false },
+    { id: 4, code: '따뜻한빵', orderUid: 'ORD-2024120804', name: '최**', mannerScore: 88, luckyBagCount: 2, price: 7800, discountPrice: 7800, pickupStartTime: '12:00', pickupEndTime: '13:00', status: ORDER_STATUS.CONFIRMED, isPickupChecked: true },
   ];
 
   const getStatusBadge = (order) => {
@@ -666,15 +667,15 @@ const SalesHistoryScreen = ({ onBack }) => {
 
   const salesHistory = [
     { date: '2024-12-07', orders: [
-      { id: 101, code: 'A010', name: '김**', luckyBagCount: 2, discountPrice: 7800, pickupTime: '14:32' },
-      { id: 102, code: 'A011', name: '이**', luckyBagCount: 1, discountPrice: 3900, pickupTime: '15:15' },
+      { id: 101, code: '푸른바다', name: '김**', luckyBagCount: 2, discountPrice: 7800, pickupTime: '14:32' },
+      { id: 102, code: '하얀구름', name: '이**', luckyBagCount: 1, discountPrice: 3900, pickupTime: '15:15' },
     ]},
     { date: '2024-12-06', orders: [
-      { id: 103, code: 'A008', name: '박**', luckyBagCount: 3, discountPrice: 11700, pickupTime: '13:22' },
-      { id: 104, code: 'A009', name: '최**', luckyBagCount: 1, discountPrice: 3900, pickupTime: '20:45' },
+      { id: 103, code: '달콤케익', name: '박**', luckyBagCount: 3, discountPrice: 11700, pickupTime: '13:22' },
+      { id: 104, code: '싱싱과일', name: '최**', luckyBagCount: 1, discountPrice: 3900, pickupTime: '20:45' },
     ]},
     { date: '2024-12-05', orders: [
-      { id: 105, code: 'A005', name: '정**', luckyBagCount: 2, discountPrice: 7800, pickupTime: '14:10' },
+      { id: 105, code: '향긋커피', name: '정**', luckyBagCount: 2, discountPrice: 7800, pickupTime: '14:10' },
     ]},
   ];
 
