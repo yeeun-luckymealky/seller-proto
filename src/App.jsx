@@ -375,7 +375,7 @@ const HomeScreen = ({ onNavigate, shopData, setShopData }) => {
       {/* 사장님 인사 */}
       <div style={{ padding: `${tokens.spacing.xl}px ${tokens.spacing.lg}px ${tokens.spacing.md}px` }}>
         <div style={{ fontSize: tokens.fontSize.xxl, fontWeight: 700, color: colors.text }}>
-          안녕하세요, 사장님
+          안녕하세요, {shopData.shopName} 사장님 :)
         </div>
         <div style={{ fontSize: tokens.fontSize.md, color: colors.textTertiary, marginTop: 4 }}>
           {new Date().toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', weekday: 'long' })}
@@ -408,23 +408,28 @@ const HomeScreen = ({ onNavigate, shopData, setShopData }) => {
 
                 {/* 점 */}
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 1 }}>
-                  <div style={{
-                    width: isCurrent ? 24 : 20, height: isCurrent ? 24 : 20,
-                    borderRadius: '50%',
-                    background: isCompleted || isCurrent ? colors.green500 : colors.bgCard,
-                    border: `2px solid ${isCompleted || isCurrent ? colors.green500 : colors.gray300}`,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  }}>
-                    {(isCompleted || isCurrent) && (
-                      <div style={{ width: 8, height: 8, borderRadius: 4, background: '#FFFFFF' }} />
-                    )}
+                  {/* 점 컨테이너 - 높이 고정 */}
+                  <div style={{ width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{
+                      width: isCurrent ? 24 : 16, height: isCurrent ? 24 : 16,
+                      borderRadius: '50%',
+                      background: isCompleted || isCurrent ? colors.green500 : colors.bgCard,
+                      border: `2px solid ${isCompleted || isCurrent ? colors.green500 : colors.gray300}`,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      transition: 'all 0.2s ease',
+                    }}>
+                      {(isCompleted || isCurrent) && (
+                        <div style={{ width: isCurrent ? 8 : 6, height: isCurrent ? 8 : 6, borderRadius: '50%', background: '#FFFFFF' }} />
+                      )}
+                    </div>
                   </div>
 
-                  {/* 라벨 */}
+                  {/* 라벨 - 고정된 위치 */}
                   <div style={{
-                    marginTop: tokens.spacing.sm, textAlign: 'center',
+                    marginTop: 8, textAlign: 'center',
                     color: isCurrent ? colors.green600 : isCompleted ? colors.text : colors.textTertiary,
                     fontWeight: isCurrent ? 600 : 400, fontSize: tokens.fontSize.xs,
+                    lineHeight: 1.3,
                   }}>
                     {step.label}
                   </div>
@@ -660,15 +665,54 @@ const SalesHistoryScreen = ({ onBack }) => {
   const [hideCanceled, setHideCanceled] = useState(false);
 
   const salesHistory = [
+    { date: '2024-12-08', orders: [
+      { id: 130, code: '행복한밤', name: '문**', luckyBagCount: 2, discountPrice: 7800, status: 'completed' },
+      { id: 131, code: '달빛정원', name: '송**', luckyBagCount: 1, discountPrice: 3900, status: 'completed' },
+    ]},
     { date: '2024-12-07', orders: [
       { id: 101, code: '푸른바다', name: '김**', luckyBagCount: 2, discountPrice: 7800, status: 'completed' },
       { id: 102, code: '하얀구름', name: '이**', luckyBagCount: 1, discountPrice: 3900, status: 'completed' },
       { id: 107, code: '시원바람', name: '한**', luckyBagCount: 1, discountPrice: 3900, status: ORDER_STATUS.USER_CANCEL },
+      { id: 125, code: '초록숲속', name: '유**', luckyBagCount: 3, discountPrice: 11700, status: 'completed' },
     ]},
     { date: '2024-12-06', orders: [
       { id: 103, code: '달콤케익', name: '박**', luckyBagCount: 3, discountPrice: 11700, status: 'completed' },
       { id: 104, code: '싱싱과일', name: '최**', luckyBagCount: 1, discountPrice: 3900, status: 'completed' },
       { id: 108, code: '밝은햇살', name: '조**', luckyBagCount: 2, discountPrice: 7800, status: ORDER_STATUS.PLACE_CANCEL },
+      { id: 126, code: '별빛마을', name: '권**', luckyBagCount: 2, discountPrice: 7800, status: 'completed' },
+    ]},
+    { date: '2024-12-05', orders: [
+      { id: 109, code: '맑은아침', name: '정**', luckyBagCount: 1, discountPrice: 3900, status: 'completed' },
+      { id: 110, code: '따뜻한빵', name: '강**', luckyBagCount: 2, discountPrice: 7800, status: 'completed' },
+      { id: 111, code: '고소향기', name: '임**', luckyBagCount: 1, discountPrice: 3900, status: 'completed' },
+      { id: 127, code: '바람소리', name: '황**', luckyBagCount: 3, discountPrice: 11700, status: 'completed' },
+    ]},
+    { date: '2024-12-04', orders: [
+      { id: 112, code: '행복미소', name: '윤**', luckyBagCount: 2, discountPrice: 7800, status: 'completed' },
+      { id: 113, code: '꽃향기야', name: '장**', luckyBagCount: 1, discountPrice: 3900, status: ORDER_STATUS.USER_CANCEL },
+      { id: 114, code: '새벽이슬', name: '신**', luckyBagCount: 3, discountPrice: 11700, status: 'completed' },
+    ]},
+    { date: '2024-12-03', orders: [
+      { id: 115, code: '산들바람', name: '오**', luckyBagCount: 2, discountPrice: 7800, status: 'completed' },
+      { id: 116, code: '은하수길', name: '서**', luckyBagCount: 1, discountPrice: 3900, status: 'completed' },
+      { id: 117, code: '노을빛깔', name: '안**', luckyBagCount: 2, discountPrice: 7800, status: ORDER_STATUS.PLACE_CANCEL },
+    ]},
+    { date: '2024-12-02', orders: [
+      { id: 118, code: '달빛소나', name: '홍**', luckyBagCount: 1, discountPrice: 3900, status: 'completed' },
+      { id: 119, code: '파란하늘', name: '전**', luckyBagCount: 3, discountPrice: 11700, status: 'completed' },
+    ]},
+    { date: '2024-12-01', orders: [
+      { id: 120, code: '초록나무', name: '손**', luckyBagCount: 2, discountPrice: 7800, status: 'completed' },
+      { id: 121, code: '황금들판', name: '민**', luckyBagCount: 1, discountPrice: 3900, status: 'completed' },
+      { id: 128, code: '꿈길따라', name: '배**', luckyBagCount: 2, discountPrice: 7800, status: 'completed' },
+    ]},
+    { date: '2024-11-30', orders: [
+      { id: 122, code: '붉은노을', name: '백**', luckyBagCount: 2, discountPrice: 7800, status: 'completed' },
+      { id: 129, code: '보름달밤', name: '남**', luckyBagCount: 1, discountPrice: 3900, status: ORDER_STATUS.USER_CANCEL },
+    ]},
+    { date: '2024-11-29', orders: [
+      { id: 123, code: '시원소나', name: '노**', luckyBagCount: 1, discountPrice: 3900, status: 'completed' },
+      { id: 124, code: '향긋커피', name: '하**', luckyBagCount: 3, discountPrice: 11700, status: 'completed' },
     ]},
   ];
 
@@ -731,27 +775,49 @@ const SalesHistoryScreen = ({ onBack }) => {
 // ============================================
 // 설정 화면
 // ============================================
+// 토스 스타일 설정 메뉴 아이콘
+const SettingsIcon = ({ type, color, bgColor }) => {
+  const iconSize = 18;
+  const icons = {
+    luckybag: <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill={color}><path d="M20 7h-4V4c0-1.1-.9-2-2-2h-4c-1.1 0-2 .9-2 2v3H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zM10 4h4v3h-4V4z"/></svg>,
+    clock: <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill={color}><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>,
+    shop: <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill={color}><path d="M20 4H4v2h16V4zm1 10v-2l-1-5H4l-1 5v2h1v6h10v-6h4v6h2v-6h1zm-9 4H6v-4h6v4z"/></svg>,
+    preview: <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill={color}><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>,
+    team: <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill={color}><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>,
+    settlement: <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill={color}><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>,
+    bank: <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill={color}><path d="M4 10v7h3v-7H4zm6 0v7h3v-7h-3zM2 22h19v-3H2v3zm14-12v7h3v-7h-3zm-4.5-9L2 6v2h19V6l-9.5-5z"/></svg>,
+    star: <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill={color}><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>,
+    guide: <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill={color}><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>,
+    chat: <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill={color}><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.17L4 17.17V4h16v12z"/></svg>,
+  };
+  return (
+    <div style={{ width: 36, height: 36, borderRadius: 10, background: bgColor, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      {icons[type]}
+    </div>
+  );
+};
+
 const SettingsScreen = ({ onNavigate, shopData }) => {
   const { colors, isDark, toggleTheme } = useTheme();
 
   const menuGroups = [
     { title: '판매 설정', items: [
-      { icon: '🎁', title: '럭키백 설정', subtitle: '가격, 구성, 메시지', screen: 'luckybag-settings' },
-      { icon: '📅', title: '픽업 시간', subtitle: '요일별 시간 및 휴무 설정', screen: 'pickup-settings' },
+      { iconType: 'luckybag', iconColor: colors.orange500, iconBg: colors.orange50, title: '럭키백 설정', subtitle: '우리 가게만의 럭키백을 소개해요', screen: 'luckybag-settings' },
+      { iconType: 'clock', iconColor: colors.blue500, iconBg: colors.blue50, title: '픽업 시간', subtitle: '고객이 방문할 시간을 정해요', screen: 'pickup-settings' },
     ]},
     { title: '가게 관리', items: [
-      { icon: '🏪', title: '가게 정보', subtitle: '기본 정보, 사진, 카테고리', screen: 'shop-info' },
-      { icon: '👀', title: '내 가게 미리보기', subtitle: '소비자 화면에서 보이는 모습', screen: 'shop-preview' },
-      { icon: '👥', title: '직원 관리', subtitle: '직원 초대 및 권한', screen: 'employees' },
+      { iconType: 'shop', iconColor: colors.green500, iconBg: colors.green50, title: '가게 정보', subtitle: '가게를 소개하는 정보를 관리해요', screen: 'shop-info' },
+      { iconType: 'preview', iconColor: colors.purple500 || '#9333EA', iconBg: colors.purple50 || '#F3E8FF', title: '내 가게 미리보기', subtitle: '고객에게 어떻게 보이는지 확인해요', screen: 'shop-preview' },
+      { iconType: 'team', iconColor: colors.cyan500 || '#06B6D4', iconBg: colors.cyan50 || '#ECFEFF', title: '직원 관리', subtitle: '함께 일할 직원을 초대해요', screen: 'employees' },
     ]},
     { title: '매출 관리', items: [
-      { icon: '💰', title: '정산 내역', subtitle: '익월 첫 영업일 정산', screen: 'settlement' },
-      { icon: '🏦', title: '정산 정보 설정', subtitle: '계좌, 사업자 정보', screen: 'settlement-info' },
-      { icon: '⭐', title: '리뷰 관리', subtitle: '고객 리뷰 확인 및 답글', screen: 'reviews' },
+      { iconType: 'settlement', iconColor: colors.green600, iconBg: colors.green50, title: '정산 내역', subtitle: '매출과 정산 금액을 확인해요', screen: 'settlement' },
+      { iconType: 'bank', iconColor: colors.blue600, iconBg: colors.blue50, title: '정산 정보 설정', subtitle: '정산받을 계좌를 등록해요', screen: 'settlement-info' },
+      { iconType: 'star', iconColor: colors.yellow500 || '#EAB308', iconBg: colors.yellow50 || '#FEFCE8', title: '리뷰 관리', subtitle: '고객의 소중한 후기를 확인해요', screen: 'reviews' },
     ]},
     { title: '고객센터', items: [
-      { icon: '📖', title: '사장님 가이드', subtitle: '앱 사용법 안내', screen: 'guide' },
-      { icon: '💬', title: '문의하기', subtitle: '1:1 문의', screen: 'contact' },
+      { iconType: 'guide', iconColor: colors.gray600, iconBg: colors.gray100, title: '사장님 가이드', subtitle: '럭키밀을 더 잘 활용하는 방법이에요', screen: 'guide' },
+      { iconType: 'chat', iconColor: colors.gray500, iconBg: colors.gray100, title: '문의하기', subtitle: '궁금한 점을 바로 물어보세요', screen: 'contact' },
     ]},
   ];
 
@@ -801,7 +867,9 @@ const SettingsScreen = ({ onNavigate, shopData }) => {
                 display: 'flex', alignItems: 'center', padding: `${tokens.spacing.lg}px 0`,
                 borderBottom: i < group.items.length - 1 ? `1px solid ${colors.border}` : 'none', cursor: 'pointer',
               }}>
-                <div style={{ marginRight: tokens.spacing.md, fontSize: 20 }}>{item.icon}</div>
+                <div style={{ marginRight: tokens.spacing.md }}>
+                  <SettingsIcon type={item.iconType} color={item.iconColor} bgColor={item.iconBg} />
+                </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: tokens.fontSize.md, color: colors.text, fontWeight: 500 }}>{item.title}</div>
                   <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary, marginTop: 2 }}>{item.subtitle}</div>
@@ -1022,6 +1090,10 @@ const PickupSettingsScreen = ({ onBack, shopData, setShopData }) => {
   const { colors } = useTheme();
   const [showTimeSheet, setShowTimeSheet] = useState(null);
   const [showHolidaySheet, setShowHolidaySheet] = useState(false);
+  const [showBulkSheet, setShowBulkSheet] = useState(false);
+  const [bulkSelectedDays, setBulkSelectedDays] = useState([]);
+  const [bulkStartTime, setBulkStartTime] = useState('14:00');
+  const [bulkEndTime, setBulkEndTime] = useState('15:00');
   const [holidayStartDate, setHolidayStartDate] = useState('');
   const [holidayEndDate, setHolidayEndDate] = useState('');
   const [holidayReason, setHolidayReason] = useState('');
@@ -1083,6 +1155,26 @@ const PickupSettingsScreen = ({ onBack, shopData, setShopData }) => {
     setSpecialHolidays(specialHolidays.filter((_, i) => i !== idx));
   };
 
+  const toggleBulkDay = (day) => {
+    if (bulkSelectedDays.includes(day)) {
+      setBulkSelectedDays(bulkSelectedDays.filter(d => d !== day));
+    } else {
+      setBulkSelectedDays([...bulkSelectedDays, day]);
+    }
+  };
+
+  const applyBulkSettings = () => {
+    const newDays = pickupDays.map(day => {
+      if (bulkSelectedDays.includes(day.day)) {
+        return { ...day, isOpen: true, startTime: bulkStartTime, endTime: bulkEndTime };
+      }
+      return day;
+    });
+    setPickupDays(newDays);
+    setShowBulkSheet(false);
+    setBulkSelectedDays([]);
+  };
+
   const formatDateRange = (start, end) => {
     const s = new Date(start);
     const e = new Date(end);
@@ -1102,7 +1194,15 @@ const PickupSettingsScreen = ({ onBack, shopData, setShopData }) => {
 
         {/* 요일별 설정 */}
         <div style={{ marginBottom: tokens.spacing.xl }}>
-          <div style={{ fontSize: tokens.fontSize.md, fontWeight: 600, color: colors.text, marginBottom: tokens.spacing.lg }}>요일별 픽업 시간</div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: tokens.spacing.lg }}>
+            <div style={{ fontSize: tokens.fontSize.md, fontWeight: 600, color: colors.text }}>요일별 픽업 시간</div>
+            <button onClick={() => setShowBulkSheet(true)} style={{
+              padding: `${tokens.spacing.xs}px ${tokens.spacing.md}px`,
+              background: colors.green50, color: colors.green600,
+              border: `1px solid ${colors.green200}`, borderRadius: tokens.radius.sm,
+              fontSize: tokens.fontSize.sm, fontWeight: 500, cursor: 'pointer',
+            }}>일괄로 설정하기</button>
+          </div>
           {pickupDays.map((day, idx) => (
             <div key={day.day} style={{
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -1206,6 +1306,42 @@ const PickupSettingsScreen = ({ onBack, shopData, setShopData }) => {
         </div>
         <Button fullWidth onClick={addHoliday} disabled={!holidayStartDate}>추가하기</Button>
       </BottomSheet>
+
+      {/* 일괄 설정 시트 */}
+      <BottomSheet isOpen={showBulkSheet} onClose={() => setShowBulkSheet(false)} title="픽업 시간 일괄 설정">
+        <div style={{ marginBottom: tokens.spacing.lg }}>
+          <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary, marginBottom: tokens.spacing.md }}>적용할 요일을 선택하세요</div>
+          <div style={{ display: 'flex', gap: tokens.spacing.sm, flexWrap: 'wrap' }}>
+            {weekdays.map(day => (
+              <button key={day} onClick={() => toggleBulkDay(day)} style={{
+                width: 44, height: 44, borderRadius: 22,
+                background: bulkSelectedDays.includes(day) ? colors.green500 : colors.gray100,
+                color: bulkSelectedDays.includes(day) ? '#FFFFFF' : colors.textSecondary,
+                border: 'none', fontSize: tokens.fontSize.md, fontWeight: 600, cursor: 'pointer',
+              }}>{day}</button>
+            ))}
+          </div>
+        </div>
+        <div style={{ marginBottom: tokens.spacing.lg }}>
+          <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary, marginBottom: tokens.spacing.sm }}>픽업 시간</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.md }}>
+            <select value={bulkStartTime} onChange={(e) => setBulkStartTime(e.target.value)} style={{
+              flex: 1, padding: tokens.spacing.md, border: `1px solid ${colors.border}`,
+              borderRadius: tokens.radius.md, fontSize: tokens.fontSize.md, background: colors.bgCard, color: colors.text,
+            }}>
+              {timeOptions.map(t => <option key={t} value={t}>{t}</option>)}
+            </select>
+            <span style={{ color: colors.textTertiary }}>~</span>
+            <select value={bulkEndTime} onChange={(e) => setBulkEndTime(e.target.value)} style={{
+              flex: 1, padding: tokens.spacing.md, border: `1px solid ${colors.border}`,
+              borderRadius: tokens.radius.md, fontSize: tokens.fontSize.md, background: colors.bgCard, color: colors.text,
+            }}>
+              {timeOptions.map(t => <option key={t} value={t}>{t}</option>)}
+            </select>
+          </div>
+        </div>
+        <Button fullWidth onClick={applyBulkSettings} disabled={bulkSelectedDays.length === 0}>적용하기</Button>
+      </BottomSheet>
     </div>
   );
 };
@@ -1218,6 +1354,7 @@ const ShopInfoScreen = ({ onBack, shopData, setShopData }) => {
   const [editingField, setEditingField] = useState(null);
   const [tempValue, setTempValue] = useState('');
   const [showCategorySheet, setShowCategorySheet] = useState(false);
+  const fileInputRef = React.useRef(null);
 
   const fields = [
     { key: 'shopName', label: '가게명' },
@@ -1235,10 +1372,25 @@ const ShopInfoScreen = ({ onBack, shopData, setShopData }) => {
     setEditingField(null);
   };
 
-  const addPhoto = () => {
+  const handlePhotoSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (file && (shopData.photos || []).length < 5) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const newPhotos = [...(shopData.photos || []), event.target.result];
+        setShopData({ ...shopData, photos: newPhotos });
+      };
+      reader.readAsDataURL(file);
+    }
+    // Reset input for re-selection
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const openGallery = () => {
     if ((shopData.photos || []).length < 5) {
-      const newPhotos = [...(shopData.photos || []), `https://picsum.photos/400/300?random=${Date.now()}`];
-      setShopData({ ...shopData, photos: newPhotos });
+      fileInputRef.current?.click();
     }
   };
 
@@ -1269,15 +1421,25 @@ const ShopInfoScreen = ({ onBack, shopData, setShopData }) => {
               </div>
             ))}
             {(shopData.photos || []).length < 5 && (
-              <button onClick={addPhoto} style={{
+              <button onClick={openGallery} style={{
                 width: 100, height: 100, borderRadius: tokens.radius.md, border: `2px dashed ${colors.gray300}`,
                 background: colors.gray50, display: 'flex', flexDirection: 'column', alignItems: 'center',
                 justifyContent: 'center', cursor: 'pointer', flexShrink: 0,
               }}>
-                <span style={{ fontSize: 24, color: colors.gray400 }}>+</span>
-                <span style={{ fontSize: tokens.fontSize.xs, color: colors.textTertiary, marginTop: 4 }}>추가</span>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill={colors.gray400}>
+                  <path d="M19 7v2.99s-1.99.01-2 0V7h-3s.01-1.99 0-2h3V2h2v3h3v2h-3zm-3 4V8h-3V5H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-8h-3zM5 19l3-4 2 3 3-4 4 5H5z"/>
+                </svg>
+                <span style={{ fontSize: tokens.fontSize.xs, color: colors.textTertiary, marginTop: 4 }}>갤러리에서 선택</span>
               </button>
             )}
+            {/* Hidden file input */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handlePhotoSelect}
+              style={{ display: 'none' }}
+            />
           </div>
         </Card>
 
@@ -1578,55 +1740,68 @@ const SettlementScreen = ({ onBack, shopData }) => {
             </div>
           </div>
 
-          {/* 테이블 헤더 */}
-          <div style={{ background: colors.gray100, borderRadius: `${tokens.radius.md}px ${tokens.radius.md}px 0 0`, padding: tokens.spacing.md, overflowX: 'auto' }}>
-            <div style={{ display: 'flex', minWidth: 800, fontSize: tokens.fontSize.xs, fontWeight: 600, color: colors.textTertiary }}>
-              <div style={{ width: 60 }}>픽업일</div>
-              <div style={{ flex: 1, minWidth: 120 }}>상품명</div>
-              <div style={{ width: 60, textAlign: 'right' }}>정가</div>
-              <div style={{ width: 60, textAlign: 'right' }}>판매가</div>
-              <div style={{ width: 40, textAlign: 'right' }}>수량</div>
-              <div style={{ width: 70, textAlign: 'right' }}>거래금액</div>
-              <div style={{ width: 70, textAlign: 'right' }}>플랫폼</div>
-              <div style={{ width: 60, textAlign: 'right' }}>결제</div>
-              <div style={{ width: 80, textAlign: 'right' }}>정산금액</div>
-            </div>
-          </div>
-
-          {/* 테이블 바디 */}
-          <div style={{ background: colors.bgCard, borderRadius: `0 0 ${tokens.radius.md}px ${tokens.radius.md}px`, boxShadow: `0 1px 3px ${colors.shadow}`, overflowX: 'auto' }}>
-            {selectedMonth.details.map((row, idx) => (
-              <div key={idx} style={{
-                display: 'flex', minWidth: 800, padding: tokens.spacing.md,
-                borderBottom: idx < selectedMonth.details.length - 1 ? `1px solid ${colors.border}` : 'none',
-                fontSize: tokens.fontSize.xs, color: colors.text,
+          {/* 스크롤 가능한 테이블 컨테이너 */}
+          <div style={{
+            overflowX: 'auto',
+            borderRadius: tokens.radius.md,
+            boxShadow: `0 1px 3px ${colors.shadow}`,
+          }}>
+            <div style={{ minWidth: 800 }}>
+              {/* 테이블 헤더 - sticky */}
+              <div style={{
+                position: 'sticky', top: 0, zIndex: 1,
+                background: colors.gray100,
+                padding: tokens.spacing.md,
+                display: 'flex',
+                fontSize: tokens.fontSize.xs, fontWeight: 600, color: colors.textTertiary,
               }}>
-                <div style={{ width: 60 }}>{formatDate(row.pickupDate)}</div>
-                <div style={{ flex: 1, minWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{row.productName}</div>
-                <div style={{ width: 60, textAlign: 'right' }}>{row.originalPrice.toLocaleString()}</div>
-                <div style={{ width: 60, textAlign: 'right' }}>{row.salePrice.toLocaleString()}</div>
-                <div style={{ width: 40, textAlign: 'right' }}>{row.quantity}</div>
-                <div style={{ width: 70, textAlign: 'right' }}>{row.transactionAmount.toLocaleString()}</div>
-                <div style={{ width: 70, textAlign: 'right', color: colors.red500 }}>-{row.platformFee.toLocaleString()}</div>
-                <div style={{ width: 60, textAlign: 'right', color: colors.red500 }}>-{row.paymentFee.toLocaleString()}</div>
-                <div style={{ width: 80, textAlign: 'right', fontWeight: 600, color: colors.green600 }}>{row.settlementAmount.toLocaleString()}</div>
+                <div style={{ width: 60 }}>픽업일</div>
+                <div style={{ flex: 1, minWidth: 120 }}>상품명</div>
+                <div style={{ width: 60, textAlign: 'right' }}>정가</div>
+                <div style={{ width: 60, textAlign: 'right' }}>판매가</div>
+                <div style={{ width: 40, textAlign: 'right' }}>수량</div>
+                <div style={{ width: 70, textAlign: 'right' }}>거래금액</div>
+                <div style={{ width: 70, textAlign: 'right' }}>플랫폼</div>
+                <div style={{ width: 60, textAlign: 'right' }}>결제</div>
+                <div style={{ width: 80, textAlign: 'right' }}>정산금액</div>
               </div>
-            ))}
 
-            {/* 합계 */}
-            <div style={{
-              display: 'flex', minWidth: 800, padding: tokens.spacing.md,
-              background: colors.green50, fontSize: tokens.fontSize.sm, fontWeight: 600,
-            }}>
-              <div style={{ width: 60 }}>합계</div>
-              <div style={{ flex: 1, minWidth: 120 }}></div>
-              <div style={{ width: 60, textAlign: 'right' }}></div>
-              <div style={{ width: 60, textAlign: 'right' }}></div>
-              <div style={{ width: 40, textAlign: 'right' }}>{selectedMonth.details.reduce((sum, r) => sum + r.quantity, 0)}</div>
-              <div style={{ width: 70, textAlign: 'right' }}>{selectedMonth.details.reduce((sum, r) => sum + r.transactionAmount, 0).toLocaleString()}</div>
-              <div style={{ width: 70, textAlign: 'right', color: colors.red500 }}>-{selectedMonth.details.reduce((sum, r) => sum + r.platformFee, 0).toLocaleString()}</div>
-              <div style={{ width: 60, textAlign: 'right', color: colors.red500 }}>-{selectedMonth.details.reduce((sum, r) => sum + r.paymentFee, 0).toLocaleString()}</div>
-              <div style={{ width: 80, textAlign: 'right', color: colors.green600 }}>{selectedMonth.details.reduce((sum, r) => sum + r.settlementAmount, 0).toLocaleString()}</div>
+              {/* 테이블 바디 */}
+              <div style={{ background: colors.bgCard }}>
+                {selectedMonth.details.map((row, idx) => (
+                  <div key={idx} style={{
+                    display: 'flex', padding: tokens.spacing.md,
+                    borderBottom: idx < selectedMonth.details.length - 1 ? `1px solid ${colors.border}` : 'none',
+                    fontSize: tokens.fontSize.xs, color: colors.text,
+                  }}>
+                    <div style={{ width: 60 }}>{formatDate(row.pickupDate)}</div>
+                    <div style={{ flex: 1, minWidth: 120, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{row.productName}</div>
+                    <div style={{ width: 60, textAlign: 'right' }}>{row.originalPrice.toLocaleString()}</div>
+                    <div style={{ width: 60, textAlign: 'right' }}>{row.salePrice.toLocaleString()}</div>
+                    <div style={{ width: 40, textAlign: 'right' }}>{row.quantity}</div>
+                    <div style={{ width: 70, textAlign: 'right' }}>{row.transactionAmount.toLocaleString()}</div>
+                    <div style={{ width: 70, textAlign: 'right', color: colors.red500 }}>-{row.platformFee.toLocaleString()}</div>
+                    <div style={{ width: 60, textAlign: 'right', color: colors.red500 }}>-{row.paymentFee.toLocaleString()}</div>
+                    <div style={{ width: 80, textAlign: 'right', fontWeight: 600, color: colors.green600 }}>{row.settlementAmount.toLocaleString()}</div>
+                  </div>
+                ))}
+
+                {/* 합계 */}
+                <div style={{
+                  display: 'flex', padding: tokens.spacing.md,
+                  background: colors.green50, fontSize: tokens.fontSize.sm, fontWeight: 600,
+                }}>
+                  <div style={{ width: 60 }}>합계</div>
+                  <div style={{ flex: 1, minWidth: 120 }}></div>
+                  <div style={{ width: 60, textAlign: 'right' }}></div>
+                  <div style={{ width: 60, textAlign: 'right' }}></div>
+                  <div style={{ width: 40, textAlign: 'right' }}>{selectedMonth.details.reduce((sum, r) => sum + r.quantity, 0)}</div>
+                  <div style={{ width: 70, textAlign: 'right' }}>{selectedMonth.details.reduce((sum, r) => sum + r.transactionAmount, 0).toLocaleString()}</div>
+                  <div style={{ width: 70, textAlign: 'right', color: colors.red500 }}>-{selectedMonth.details.reduce((sum, r) => sum + r.platformFee, 0).toLocaleString()}</div>
+                  <div style={{ width: 60, textAlign: 'right', color: colors.red500 }}>-{selectedMonth.details.reduce((sum, r) => sum + r.paymentFee, 0).toLocaleString()}</div>
+                  <div style={{ width: 80, textAlign: 'right', color: colors.green600 }}>{selectedMonth.details.reduce((sum, r) => sum + r.settlementAmount, 0).toLocaleString()}</div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -1975,14 +2150,74 @@ const ShopPreviewScreen = ({ onBack }) => {
     <div>
       <Header title="내 가게 미리보기" onBack={onBack} />
       <div style={{ padding: tokens.spacing.lg }}>
-        <Card style={{ marginBottom: tokens.spacing.lg, textAlign: 'center' }}>
-          <div style={{ fontSize: 64, marginBottom: tokens.spacing.lg }}>👀</div>
-          <div style={{ fontSize: tokens.fontSize.lg, fontWeight: 600, color: colors.text, marginBottom: tokens.spacing.sm }}>소비자 화면에서 확인하기</div>
-          <div style={{ fontSize: tokens.fontSize.md, color: colors.textTertiary, marginBottom: tokens.spacing.xl, lineHeight: 1.6 }}>
-            내 가게가 고객에게 어떻게 보이는지<br />럭키밀 앱에서 확인해 보세요
+        {/* 앱 스크린샷 미리보기 */}
+        <div style={{
+          display: 'flex', justifyContent: 'center', marginBottom: tokens.spacing.lg,
+        }}>
+          {/* 폰 프레임 */}
+          <div style={{
+            width: 280, background: '#1A1A1A', borderRadius: 36, padding: 12,
+            boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+          }}>
+            {/* 노치 */}
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 8 }}>
+              <div style={{ width: 80, height: 24, background: '#000', borderRadius: 12 }} />
+            </div>
+            {/* 앱 화면 */}
+            <div style={{
+              background: '#FFFFFF', borderRadius: 24, overflow: 'hidden',
+              height: 480,
+            }}>
+              {/* 앱 헤더 */}
+              <div style={{ padding: 16, borderBottom: '1px solid #F0F0F0' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ width: 8, height: 8, borderRadius: 4, background: '#22C55E' }} />
+                  <span style={{ fontSize: 11, color: '#666' }}>영업중</span>
+                </div>
+                <div style={{ fontSize: 18, fontWeight: 700, color: '#111', marginTop: 8 }}>행복한 빵집</div>
+                <div style={{ fontSize: 12, color: '#888', marginTop: 4 }}>빵 · 서울 강남구</div>
+              </div>
+              {/* 가게 이미지 */}
+              <div style={{ height: 140, background: 'linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{ fontSize: 48 }}>🥐</span>
+              </div>
+              {/* 럭키백 카드 */}
+              <div style={{ padding: 16 }}>
+                <div style={{ background: '#F8FAFC', borderRadius: 12, padding: 14 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: '#111' }}>오늘의 럭키백</div>
+                      <div style={{ fontSize: 11, color: '#888', marginTop: 4 }}>크루아상, 바게트 외 1종</div>
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                      <div style={{ fontSize: 11, color: '#888', textDecoration: 'line-through' }}>7,800원</div>
+                      <div style={{ fontSize: 15, fontWeight: 700, color: '#22C55E' }}>3,900원</div>
+                    </div>
+                  </div>
+                </div>
+                {/* 픽업 시간 */}
+                <div style={{ marginTop: 12, padding: 12, background: '#ECFDF5', borderRadius: 8 }}>
+                  <div style={{ fontSize: 11, color: '#059669', fontWeight: 500 }}>오늘 픽업 가능</div>
+                  <div style={{ fontSize: 12, color: '#065F46', marginTop: 2 }}>19:00 ~ 20:00</div>
+                </div>
+              </div>
+              {/* 예약 버튼 */}
+              <div style={{ padding: '0 16px 16px' }}>
+                <div style={{ background: '#22C55E', borderRadius: 12, padding: 14, textAlign: 'center' }}>
+                  <span style={{ color: '#FFF', fontSize: 14, fontWeight: 600 }}>예약하기</span>
+                </div>
+              </div>
+            </div>
           </div>
-          <Button fullWidth onClick={() => window.open(previewUrl, '_blank')}>새 창에서 보기 →</Button>
-        </Card>
+        </div>
+
+        <div style={{ textAlign: 'center', marginBottom: tokens.spacing.lg }}>
+          <div style={{ fontSize: tokens.fontSize.md, color: colors.textTertiary, lineHeight: 1.6 }}>
+            고객이 보는 화면이에요
+          </div>
+        </div>
+
+        <Button fullWidth onClick={() => window.open(previewUrl, '_blank')}>실제 앱에서 확인하기</Button>
       </div>
     </div>
   );
