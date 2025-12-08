@@ -472,34 +472,20 @@ const HomeScreen = ({ onNavigate, shopData, setShopData }) => {
 };
 
 // ============================================
-// 주문 관리 화면 - JTBD: 주문 확인, 확정, 픽업 완료, 취소
+// 주문 관리 화면 - JTBD: 오늘 주문 확인, 확정, 픽업 완료, 취소
 // ============================================
 const OrdersScreen = ({ onNavigate }) => {
   const { colors } = useTheme();
-  const [activeTab, setActiveTab] = useState('paid');
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [cancelSheet, setCancelSheet] = useState(null);
 
-  const orders = {
-    paid: [
-      { id: 1, code: 'A001', orderUid: 'ORD-2024120701', name: '김**', luckyBagCount: 2, price: 7800, discountPrice: 3900, pickupDate: '2024-12-07', pickupStartTime: '14:00', pickupEndTime: '15:00', status: ORDER_STATUS.PAID, isPickupChecked: false },
-      { id: 2, code: 'A002', orderUid: 'ORD-2024120702', name: '이**', luckyBagCount: 1, price: 3900, discountPrice: 3900, pickupDate: '2024-12-07', pickupStartTime: '14:00', pickupEndTime: '15:00', status: ORDER_STATUS.PAID, isPickupChecked: false },
-    ],
-    confirmed: [
-      { id: 3, code: 'A003', orderUid: 'ORD-2024120703', name: '박**', luckyBagCount: 1, price: 3900, discountPrice: 3900, pickupDate: '2024-12-07', pickupStartTime: '15:00', pickupEndTime: '16:00', status: ORDER_STATUS.CONFIRMED, isPickupChecked: false },
-    ],
-    completed: [
-      { id: 4, code: 'A004', orderUid: 'ORD-2024120704', name: '최**', luckyBagCount: 2, price: 7800, discountPrice: 7800, pickupDate: '2024-12-07', pickupStartTime: '12:00', pickupEndTime: '13:00', status: ORDER_STATUS.CONFIRMED, isPickupChecked: true },
-    ],
-  };
-
-  const tabs = [
-    { id: 'paid', label: `예약 ${orders.paid.length}` },
-    { id: 'confirmed', label: `확정 ${orders.confirmed.length}` },
-    { id: 'completed', label: '완료' },
+  // 오늘의 주문 (탭 없이 일렬 리스팅, 상태별 컬러 칩)
+  const todayOrders = [
+    { id: 1, code: 'A001', orderUid: 'ORD-2024120801', name: '김**', mannerScore: 85, luckyBagCount: 2, price: 7800, discountPrice: 3900, pickupStartTime: '14:00', pickupEndTime: '15:00', status: ORDER_STATUS.PAID, isPickupChecked: false },
+    { id: 2, code: 'A002', orderUid: 'ORD-2024120802', name: '이**', mannerScore: 92, luckyBagCount: 1, price: 3900, discountPrice: 3900, pickupStartTime: '14:00', pickupEndTime: '15:00', status: ORDER_STATUS.PAID, isPickupChecked: false },
+    { id: 3, code: 'A003', orderUid: 'ORD-2024120803', name: '박**', mannerScore: 78, luckyBagCount: 1, price: 3900, discountPrice: 3900, pickupStartTime: '15:00', pickupEndTime: '16:00', status: ORDER_STATUS.CONFIRMED, isPickupChecked: false },
+    { id: 4, code: 'A004', orderUid: 'ORD-2024120804', name: '최**', mannerScore: 88, luckyBagCount: 2, price: 7800, discountPrice: 7800, pickupStartTime: '12:00', pickupEndTime: '13:00', status: ORDER_STATUS.CONFIRMED, isPickupChecked: true },
   ];
-
-  const currentOrders = orders[activeTab];
 
   const getStatusBadge = (order) => {
     if (order.isPickupChecked) return <Badge variant="success">픽업완료</Badge>;
@@ -508,19 +494,68 @@ const OrdersScreen = ({ onNavigate }) => {
     return null;
   };
 
+  const getMannerScoreColor = (score) => {
+    if (score >= 90) return colors.green500;
+    if (score >= 70) return colors.blue500;
+    if (score >= 50) return colors.orange500;
+    return colors.red500;
+  };
+
+  // 주문 상태에 따른 액션 버튼
+  const renderActionButtons = (order) => {
+    if (order.isPickupChecked) {
+      return <Button variant="secondary" fullWidth onClick={() => setSelectedOrder(null)}>닫기</Button>;
+    }
+    if (order.status === ORDER_STATUS.CONFIRMED) {
+      return <Button fullWidth onClick={() => setSelectedOrder(null)}>픽업 완료</Button>;
+    }
+    if (order.status === ORDER_STATUS.PAID) {
+      return (
+        <div style={{ display: 'flex', gap: tokens.spacing.md }}>
+          <Button variant="secondary" fullWidth onClick={() => { setCancelSheet(order); setSelectedOrder(null); }}>취소</Button>
+          <Button fullWidth onClick={() => setSelectedOrder(null)}>주문 확정</Button>
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <div>
-      <TabBar tabs={tabs} activeTab={activeTab} onChange={setActiveTab} />
+      {/* 헤더 - 판매 내역 보기 */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: tokens.spacing.lg,
+        background: colors.bgCard,
+        borderBottom: `1px solid ${colors.border}`,
+      }}>
+        <span style={{ fontSize: tokens.fontSize.xl, fontWeight: 700, color: colors.text }}>오늘 주문</span>
+        <button
+          onClick={() => onNavigate('sales-history')}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: colors.blue500,
+            fontSize: tokens.fontSize.md,
+            fontWeight: 500,
+            cursor: 'pointer',
+          }}
+        >
+          판매 내역 보기 ›
+        </button>
+      </div>
 
-      {currentOrders.length === 0 ? (
+      {todayOrders.length === 0 ? (
         <EmptyState
           icon="📋"
-          title="주문이 없어요"
-          description={activeTab === 'paid' ? '새로운 예약이 들어오면 알려드릴게요' : '해당 상태의 주문이 없어요'}
+          title="오늘 주문이 없어요"
+          description="새로운 예약이 들어오면 알려드릴게요"
         />
       ) : (
         <div style={{ padding: tokens.spacing.lg }}>
-          {currentOrders.map(order => (
+          {todayOrders.map(order => (
             <Card key={order.id} style={{ marginBottom: tokens.spacing.md }} onClick={() => setSelectedOrder(order)}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: tokens.spacing.md }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.sm }}>
@@ -555,13 +590,32 @@ const OrdersScreen = ({ onNavigate }) => {
           <>
             <div style={{ marginBottom: tokens.spacing.xl }}>
               <div style={{ padding: tokens.spacing.lg, background: colors.gray50, borderRadius: tokens.radius.md, marginBottom: tokens.spacing.lg, transition: 'background 0.2s' }}>
+                {/* 주문 코드 */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: tokens.spacing.sm }}>
+                  <span style={{ color: colors.textTertiary }}>주문 코드</span>
+                  <span style={{ fontWeight: 600, color: colors.blue500 }}>{selectedOrder.code}</span>
+                </div>
+                {/* 주문번호 (orderUid) */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: tokens.spacing.sm }}>
                   <span style={{ color: colors.textTertiary }}>주문번호</span>
-                  <span style={{ fontWeight: 500, color: colors.text }}>{selectedOrder.orderUid}</span>
+                  <span style={{ fontWeight: 500, color: colors.text, fontSize: tokens.fontSize.sm }}>{selectedOrder.orderUid}</span>
                 </div>
+                {/* 고객 정보 + 매너지수 */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: tokens.spacing.sm }}>
                   <span style={{ color: colors.textTertiary }}>고객</span>
-                  <span style={{ fontWeight: 500, color: colors.text }}>{selectedOrder.name}</span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.sm }}>
+                    <span style={{ fontWeight: 500, color: colors.text }}>{selectedOrder.name}</span>
+                    <span style={{
+                      fontSize: tokens.fontSize.xs,
+                      fontWeight: 600,
+                      color: getMannerScoreColor(selectedOrder.mannerScore),
+                      background: colors.gray100,
+                      padding: '2px 6px',
+                      borderRadius: tokens.radius.sm,
+                    }}>
+                      매너 {selectedOrder.mannerScore}
+                    </span>
+                  </div>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: tokens.spacing.sm }}>
                   <span style={{ color: colors.textTertiary }}>수량</span>
@@ -578,18 +632,7 @@ const OrdersScreen = ({ onNavigate }) => {
               </div>
             </div>
 
-            {activeTab === 'paid' && (
-              <div style={{ display: 'flex', gap: tokens.spacing.md }}>
-                <Button variant="secondary" fullWidth onClick={() => { setCancelSheet(selectedOrder); setSelectedOrder(null); }}>취소</Button>
-                <Button fullWidth onClick={() => setSelectedOrder(null)}>주문 확정</Button>
-              </div>
-            )}
-            {activeTab === 'confirmed' && (
-              <Button fullWidth onClick={() => setSelectedOrder(null)}>픽업 완료</Button>
-            )}
-            {activeTab === 'completed' && (
-              <Button variant="secondary" fullWidth onClick={() => setSelectedOrder(null)}>닫기</Button>
-            )}
+            {renderActionButtons(selectedOrder)}
           </>
         )}
       </BottomSheet>
@@ -616,6 +659,74 @@ const OrdersScreen = ({ onNavigate }) => {
 };
 
 // ============================================
+// 판매 내역 화면 - 완료된 판매 목록
+// ============================================
+const SalesHistoryScreen = ({ onBack }) => {
+  const { colors } = useTheme();
+
+  const salesHistory = [
+    { date: '2024-12-07', orders: [
+      { id: 101, code: 'A010', name: '김**', luckyBagCount: 2, discountPrice: 7800, pickupTime: '14:32' },
+      { id: 102, code: 'A011', name: '이**', luckyBagCount: 1, discountPrice: 3900, pickupTime: '15:15' },
+    ]},
+    { date: '2024-12-06', orders: [
+      { id: 103, code: 'A008', name: '박**', luckyBagCount: 3, discountPrice: 11700, pickupTime: '13:22' },
+      { id: 104, code: 'A009', name: '최**', luckyBagCount: 1, discountPrice: 3900, pickupTime: '20:45' },
+    ]},
+    { date: '2024-12-05', orders: [
+      { id: 105, code: 'A005', name: '정**', luckyBagCount: 2, discountPrice: 7800, pickupTime: '14:10' },
+    ]},
+  ];
+
+  const formatDate = (dateStr) => {
+    const date = new Date(dateStr);
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    if (dateStr === today.toISOString().split('T')[0]) return '오늘';
+    if (dateStr === yesterday.toISOString().split('T')[0]) return '어제';
+    return date.toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', weekday: 'short' });
+  };
+
+  return (
+    <div>
+      <Header title="판매 내역" onBack={onBack} />
+      <div style={{ padding: tokens.spacing.lg }}>
+        {salesHistory.map((day, idx) => (
+          <div key={idx} style={{ marginBottom: tokens.spacing.xl }}>
+            <div style={{
+              fontSize: tokens.fontSize.sm,
+              fontWeight: 600,
+              color: colors.textTertiary,
+              marginBottom: tokens.spacing.md,
+            }}>
+              {formatDate(day.date)} · {day.orders.length}건
+            </div>
+            {day.orders.map(order => (
+              <Card key={order.id} style={{ marginBottom: tokens.spacing.sm, padding: tokens.spacing.lg }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.md }}>
+                    <span style={{ fontWeight: 600, color: colors.blue500 }}>{order.code}</span>
+                    <span style={{ color: colors.textTertiary }}>{order.name}</span>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ fontWeight: 600, color: colors.text }}>{order.discountPrice.toLocaleString()}원</div>
+                    <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary }}>
+                      럭키백 {order.luckyBagCount}개 · {order.pickupTime}
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// ============================================
 // 설정 화면 - JTBD: 가게/직원/정산 관리
 // ============================================
 const SettingsScreen = ({ onNavigate, shopData }) => {
@@ -633,6 +744,7 @@ const SettingsScreen = ({ onNavigate, shopData }) => {
       title: '가게 관리',
       items: [
         { icon: '🏪', title: '가게 정보', subtitle: '기본 정보, 사진', screen: 'shop-info' },
+        { icon: '👀', title: '내 가게 미리보기', subtitle: '소비자 화면에서 보이는 모습', screen: 'shop-preview' },
         { icon: '👥', title: '직원 관리', subtitle: '직원 초대 및 권한', screen: 'employees' },
       ]
     },
@@ -938,40 +1050,235 @@ const SettlementScreen = ({ onBack }) => {
   );
 };
 
-// 리뷰 관리
+// 리뷰 관리 (별점 없음, 답글 기능 있음 - 백엔드 구조 반영)
 const ReviewsScreen = ({ onBack }) => {
   const { colors } = useTheme();
+  const [replySheet, setReplySheet] = useState(null);
+  const [replyText, setReplyText] = useState('');
+
+  // 백엔드 PlaceReview 구조 반영: content, reviewImages, reviewReply
   const reviews = [
-    { id: 1, name: '김**', rating: 5, content: '빵이 정말 맛있어요! 다음에 또 올게요 🥐', date: '2024-12-05', hasPhoto: true },
-    { id: 2, name: '이**', rating: 4, content: '가성비 좋아요', date: '2024-12-03', hasPhoto: false },
+    {
+      id: 1,
+      userAccount: { name: '김**' },
+      content: '빵이 정말 맛있어요! 다음에 또 올게요. 양도 푸짐하고 종류도 다양해서 만족합니다.',
+      createdAt: '2024-12-05',
+      reviewImages: [{ id: 1, imageUrl: 'photo1.jpg' }],
+      reviewReply: null,
+    },
+    {
+      id: 2,
+      userAccount: { name: '이**' },
+      content: '가성비 좋아요. 마감 할인이라 저렴하게 잘 샀어요!',
+      createdAt: '2024-12-03',
+      reviewImages: [],
+      reviewReply: {
+        content: '감사합니다! 또 방문해 주세요 😊',
+        createdAt: '2024-12-03',
+      },
+    },
+    {
+      id: 3,
+      userAccount: { name: '박**' },
+      content: '픽업 시간에 맞춰 잘 받았어요. 신선하고 좋았습니다.',
+      createdAt: '2024-12-01',
+      reviewImages: [{ id: 2, imageUrl: 'photo2.jpg' }, { id: 3, imageUrl: 'photo3.jpg' }],
+      reviewReply: null,
+    },
   ];
+
+  const handleReplySubmit = () => {
+    // 실제로는 API 호출
+    console.log('Reply to review', replySheet?.id, replyText);
+    setReplySheet(null);
+    setReplyText('');
+  };
 
   return (
     <div>
       <Header title="리뷰 관리" onBack={onBack} />
       <div style={{ padding: tokens.spacing.lg }}>
-        {/* 평점 요약 */}
-        <Card style={{ marginBottom: tokens.spacing.lg, textAlign: 'center' }}>
-          <div style={{ fontSize: tokens.fontSize.xxxxl, fontWeight: 700, color: colors.text }}>4.8</div>
-          <div style={{ fontSize: tokens.fontSize.xl, color: colors.orange500, marginTop: tokens.spacing.xs }}>★★★★★</div>
-          <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary, marginTop: tokens.spacing.sm }}>리뷰 156개</div>
+        {/* 리뷰 요약 */}
+        <Card style={{ marginBottom: tokens.spacing.lg }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div>
+              <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary }}>전체 리뷰</div>
+              <div style={{ fontSize: tokens.fontSize.xxxl, fontWeight: 700, color: colors.text, marginTop: 4 }}>
+                {reviews.length}개
+              </div>
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary }}>답글 작성</div>
+              <div style={{ fontSize: tokens.fontSize.xxxl, fontWeight: 700, color: colors.blue500, marginTop: 4 }}>
+                {reviews.filter(r => r.reviewReply).length}개
+              </div>
+            </div>
+          </div>
         </Card>
 
-        {reviews.map(review => (
-          <Card key={review.id} style={{ marginBottom: tokens.spacing.md }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: tokens.spacing.sm }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.sm }}>
-                <span style={{ fontWeight: 600, color: colors.text }}>{review.name}</span>
-                <span style={{ color: colors.orange500 }}>{'★'.repeat(review.rating)}</span>
+        {reviews.length === 0 ? (
+          <EmptyState
+            icon="💬"
+            title="아직 리뷰가 없어요"
+            description="첫 리뷰를 기다리고 있어요"
+          />
+        ) : (
+          reviews.map(review => (
+            <Card key={review.id} style={{ marginBottom: tokens.spacing.md }}>
+              {/* 리뷰 헤더 */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: tokens.spacing.sm }}>
+                <span style={{ fontWeight: 600, color: colors.text }}>{review.userAccount.name}</span>
+                <span style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary }}>{review.createdAt}</span>
               </div>
-              <span style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary }}>{review.date}</span>
+
+              {/* 리뷰 내용 */}
+              <div style={{ fontSize: tokens.fontSize.md, color: colors.text, lineHeight: 1.6, marginBottom: tokens.spacing.md }}>
+                {review.content}
+              </div>
+
+              {/* 사진 표시 */}
+              {review.reviewImages.length > 0 && (
+                <div style={{ display: 'flex', gap: tokens.spacing.sm, marginBottom: tokens.spacing.md }}>
+                  {review.reviewImages.map((img, idx) => (
+                    <div key={img.id} style={{
+                      width: 60, height: 60,
+                      borderRadius: tokens.radius.sm,
+                      background: colors.gray200,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: 20,
+                    }}>📷</div>
+                  ))}
+                </div>
+              )}
+
+              {/* 사장님 답글 */}
+              {review.reviewReply ? (
+                <div style={{
+                  padding: tokens.spacing.md,
+                  background: colors.blue50,
+                  borderRadius: tokens.radius.md,
+                  borderLeft: `3px solid ${colors.blue500}`,
+                }}>
+                  <div style={{ fontSize: tokens.fontSize.sm, fontWeight: 600, color: colors.blue600, marginBottom: 4 }}>
+                    사장님 답글
+                  </div>
+                  <div style={{ fontSize: tokens.fontSize.md, color: colors.text, lineHeight: 1.5 }}>
+                    {review.reviewReply.content}
+                  </div>
+                </div>
+              ) : (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setReplySheet(review)}
+                  style={{ padding: 0 }}
+                >
+                  답글 작성하기
+                </Button>
+              )}
+            </Card>
+          ))
+        )}
+      </div>
+
+      {/* 답글 작성 바텀시트 */}
+      <BottomSheet isOpen={!!replySheet} onClose={() => { setReplySheet(null); setReplyText(''); }} title="답글 작성">
+        <div style={{ marginBottom: tokens.spacing.lg }}>
+          <div style={{
+            padding: tokens.spacing.md,
+            background: colors.gray50,
+            borderRadius: tokens.radius.md,
+            marginBottom: tokens.spacing.lg,
+          }}>
+            <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary, marginBottom: 4 }}>
+              {replySheet?.userAccount.name}님의 리뷰
             </div>
-            <div style={{ fontSize: tokens.fontSize.md, color: colors.text, lineHeight: 1.5 }}>{review.content}</div>
-            {review.hasPhoto && (
-              <Badge variant="default" style={{ marginTop: tokens.spacing.sm }}>📷 사진 리뷰</Badge>
-            )}
-          </Card>
-        ))}
+            <div style={{ fontSize: tokens.fontSize.md, color: colors.text, lineHeight: 1.5 }}>
+              {replySheet?.content}
+            </div>
+          </div>
+
+          <textarea
+            value={replyText}
+            onChange={(e) => setReplyText(e.target.value)}
+            placeholder="답글을 작성해 주세요"
+            style={{
+              width: '100%',
+              minHeight: 120,
+              padding: tokens.spacing.md,
+              border: `1px solid ${colors.border}`,
+              borderRadius: tokens.radius.md,
+              fontSize: tokens.fontSize.md,
+              resize: 'none',
+              outline: 'none',
+              background: colors.bgCard,
+              color: colors.text,
+            }}
+          />
+        </div>
+        <Button fullWidth onClick={handleReplySubmit} disabled={!replyText.trim()}>
+          답글 등록
+        </Button>
+      </BottomSheet>
+    </div>
+  );
+};
+
+// 내 가게 미리보기 (소비자 화면 WebView)
+const ShopPreviewScreen = ({ onBack, shopData }) => {
+  const { colors } = useTheme();
+  // 실제로는 shopData.placeId를 사용
+  const previewUrl = 'https://www.luckymeal.io/customer/place/1875';
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+      <Header
+        title="내 가게 미리보기"
+        onBack={onBack}
+        right={
+          <a
+            href={previewUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              color: colors.blue500,
+              fontSize: tokens.fontSize.sm,
+              textDecoration: 'none',
+            }}
+          >
+            새 탭에서 열기
+          </a>
+        }
+      />
+      <div style={{
+        flex: 1,
+        background: colors.gray100,
+        display: 'flex',
+        flexDirection: 'column',
+      }}>
+        {/* 안내 배너 */}
+        <div style={{
+          padding: tokens.spacing.md,
+          background: colors.blue50,
+          borderBottom: `1px solid ${colors.blue100}`,
+        }}>
+          <div style={{ fontSize: tokens.fontSize.sm, color: colors.blue600, textAlign: 'center' }}>
+            👀 소비자에게 보이는 내 가게 페이지예요
+          </div>
+        </div>
+
+        {/* iframe으로 실제 페이지 미리보기 */}
+        <iframe
+          src={previewUrl}
+          style={{
+            flex: 1,
+            width: '100%',
+            border: 'none',
+          }}
+          title="가게 미리보기"
+        />
       </div>
     </div>
   );
@@ -1092,12 +1399,16 @@ export default function App() {
         return <OrdersScreen onNavigate={navigate} />;
       case 'settings':
         return <SettingsScreen onNavigate={navigate} shopData={shopData} />;
+      case 'sales-history':
+        return <SalesHistoryScreen onBack={goBack} />;
       case 'luckybag-settings':
         return <LuckyBagSettingsScreen onBack={goBack} shopData={shopData} setShopData={setShopData} />;
       case 'pickup-settings':
         return <PickupSettingsScreen onBack={goBack} shopData={shopData} setShopData={setShopData} />;
       case 'shop-info':
         return <ShopInfoScreen onBack={goBack} shopData={shopData} />;
+      case 'shop-preview':
+        return <ShopPreviewScreen onBack={goBack} shopData={shopData} />;
       case 'employees':
         return <EmployeesScreen onBack={goBack} shopData={shopData} />;
       case 'settlement':
