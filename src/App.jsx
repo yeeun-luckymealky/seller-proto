@@ -1454,60 +1454,58 @@ const PickupSettingsScreen = ({ onBack, shopData, setShopData }) => {
       <BottomSheet isOpen={showHolidaySheet} onClose={() => setShowHolidaySheet(false)} title="특별 휴무일 추가">
         <div style={{ marginBottom: tokens.spacing.lg }}>
           <div style={{ fontSize: tokens.fontSize.sm, fontWeight: 500, color: colors.text, marginBottom: tokens.spacing.sm }}>시작일</div>
-          <div style={{ position: 'relative' }}>
-            <input
-              type="date"
-              value={holidayStartDate}
-              onChange={(e) => setHolidayStartDate(e.target.value)}
-              style={{
-                position: 'absolute',
-                opacity: 0,
-                width: '100%',
-                height: '100%',
-                cursor: 'pointer',
-              }}
-            />
-            <div style={{
+          <input
+            type="date"
+            value={holidayStartDate}
+            onChange={(e) => setHolidayStartDate(e.target.value)}
+            style={{
+              width: '100%',
               padding: tokens.spacing.md,
               background: colors.gray50,
+              border: 'none',
               borderRadius: tokens.radius.lg,
               fontSize: tokens.fontSize.md,
-              color: holidayStartDate ? colors.text : colors.gray400,
-              cursor: 'pointer',
-            }}>
-              {holidayStartDate ? formatDateDisplay(holidayStartDate) : '날짜를 선택하세요'}
+              color: colors.text,
+              outline: 'none',
+              WebkitAppearance: 'none',
+            }}
+          />
+          {holidayStartDate && (
+            <div style={{ marginTop: tokens.spacing.xs, fontSize: tokens.fontSize.sm, color: colors.blue500 }}>
+              {formatDateDisplay(holidayStartDate)}
             </div>
-          </div>
+          )}
         </div>
         <div style={{ marginBottom: tokens.spacing.lg }}>
-          <div style={{ fontSize: tokens.fontSize.sm, fontWeight: 500, color: colors.text, marginBottom: tokens.spacing.sm }}>종료일 <span style={{ fontWeight: 400, color: colors.gray400 }}>(2일 이상인 경우)</span></div>
-          <div style={{ position: 'relative' }}>
-            <input
-              type="date"
-              value={holidayEndDate}
-              onChange={(e) => setHolidayEndDate(e.target.value)}
-              style={{
-                position: 'absolute',
-                opacity: 0,
-                width: '100%',
-                height: '100%',
-                cursor: 'pointer',
-              }}
-            />
-            <div style={{
+          <div style={{ fontSize: tokens.fontSize.sm, fontWeight: 500, color: colors.text, marginBottom: tokens.spacing.sm }}>
+            종료일 <span style={{ fontWeight: 400, color: colors.gray400 }}>(2일 이상인 경우)</span>
+          </div>
+          <input
+            type="date"
+            value={holidayEndDate}
+            onChange={(e) => setHolidayEndDate(e.target.value)}
+            style={{
+              width: '100%',
               padding: tokens.spacing.md,
               background: colors.gray50,
+              border: 'none',
               borderRadius: tokens.radius.lg,
               fontSize: tokens.fontSize.md,
-              color: holidayEndDate ? colors.text : colors.gray400,
-              cursor: 'pointer',
-            }}>
-              {holidayEndDate ? formatDateDisplay(holidayEndDate) : '선택 안함'}
+              color: colors.text,
+              outline: 'none',
+              WebkitAppearance: 'none',
+            }}
+          />
+          {holidayEndDate && (
+            <div style={{ marginTop: tokens.spacing.xs, fontSize: tokens.fontSize.sm, color: colors.blue500 }}>
+              {formatDateDisplay(holidayEndDate)}
             </div>
-          </div>
+          )}
         </div>
         <div style={{ marginBottom: tokens.spacing.xl }}>
-          <div style={{ fontSize: tokens.fontSize.sm, fontWeight: 500, color: colors.text, marginBottom: tokens.spacing.sm }}>휴무 사유 <span style={{ fontWeight: 400, color: colors.gray400 }}>(선택)</span></div>
+          <div style={{ fontSize: tokens.fontSize.sm, fontWeight: 500, color: colors.text, marginBottom: tokens.spacing.sm }}>
+            휴무 사유 <span style={{ fontWeight: 400, color: colors.gray400 }}>(선택)</span>
+          </div>
           <input
             type="text"
             value={holidayReason}
