@@ -1,13 +1,40 @@
 import React, { useState, createContext, useContext, useEffect } from 'react';
 
 // ============================================
+// 분리된 모듈 임포트 (백엔드와 동일한 구조)
+// ============================================
+// 상수 (백엔드 const 파일과 동일한 이름)
+import {
+  ORDER_STATUS,
+  ORDER_CURRENT_STATUS,
+  PLACE_STATUS,
+  PLACE_CURRENT_STATUS,
+  LUCKY_MEAL_FEE_RATE,  // 기존 PLATFORM_FEE
+  PAYMENT_FEE_RATE,     // 기존 PAYMENT_FEE
+  CO2_PER_BAG,
+  DISCOUNT_RATE,
+  PLACE_ROLE_GRADE,
+  FOOD_CATEGORIES,
+  KOREAN_BANKS,
+} from './constants';
+
+// Mock 데이터 (백엔드 엔티티 구조 기반)
+import {
+  mockPlace,
+  mockLuckyBag,
+  mockOrders,
+  mockPlaceRoles,
+  calculateStats,
+} from './api/mockData';
+
+// ============================================
 // 테마 컨텍스트 (다크모드/라이트모드)
 // ============================================
 const ThemeContext = createContext();
 const useTheme = () => useContext(ThemeContext);
 
 const lightColors = {
-  bg: '#F9FAFB', bgCard: '#FFFFFF', bgElevated: '#FFFFFF',
+  bg: '#F2F4F6', bgCard: '#FFFFFF', bgElevated: '#FFFFFF',
   gray50: '#F9FAFB', gray100: '#F2F4F6', gray200: '#E5E8EB',
   gray300: '#D1D6DB', gray400: '#B0B8C1', gray500: '#8B95A1',
   gray600: '#6B7684', gray700: '#4E5968', gray800: '#333D4B', gray900: '#191F28',
@@ -37,43 +64,6 @@ const tokens = {
   radius: { sm: 8, md: 12, lg: 16, xl: 20, full: 9999 },
   fontSize: { xs: 11, sm: 12, md: 14, lg: 16, xl: 18, xxl: 20, xxxl: 24, xxxxl: 28 },
 };
-
-// 카테고리 목록 (백엔드 기반)
-const FOOD_CATEGORIES = [
-  { id: 1, name: '샐러드', emoji: '🥗' },
-  { id: 2, name: '피자', emoji: '🍕' },
-  { id: 3, name: '한식', emoji: '🍚' },
-  { id: 4, name: '디저트', emoji: '🍰' },
-  { id: 5, name: '빵', emoji: '🥐' },
-  { id: 6, name: '과일', emoji: '🍎' },
-  { id: 7, name: '식사빵', emoji: '🥖' },
-];
-
-// 한국 은행 목록
-const KOREAN_BANKS = [
-  { value: 'KB', label: 'KB국민은행' },
-  { value: 'SHINHAN', label: '신한은행' },
-  { value: 'WOORI', label: '우리은행' },
-  { value: 'HANA', label: '하나은행' },
-  { value: 'NH', label: 'NH농협은행' },
-  { value: 'IBK', label: 'IBK기업은행' },
-  { value: 'SC', label: 'SC제일은행' },
-  { value: 'CITI', label: '한국씨티은행' },
-  { value: 'KAKAO', label: '카카오뱅크' },
-  { value: 'TOSS', label: '토스뱅크' },
-  { value: 'KBANK', label: '케이뱅크' },
-  { value: 'DGB', label: 'DGB대구은행' },
-  { value: 'BNK_BUSAN', label: 'BNK부산은행' },
-  { value: 'BNK_KYUNGNAM', label: 'BNK경남은행' },
-  { value: 'GWANGJU', label: '광주은행' },
-  { value: 'JEONBUK', label: '전북은행' },
-  { value: 'JEJU', label: '제주은행' },
-  { value: 'SUHYUP', label: '수협은행' },
-  { value: 'SHINHYUP', label: '신협' },
-  { value: 'SAEMAUL', label: '새마을금고' },
-  { value: 'POST', label: '우체국' },
-  { value: 'CUSTOM', label: '직접 입력' },
-];
 
 // ============================================
 // 공통 컴포넌트
@@ -324,14 +314,11 @@ const Select = ({ value, onChange, options, placeholder }) => {
 };
 
 // ============================================
-// 상수
+// 상수는 ./constants에서 임포트됨 (백엔드와 동일한 이름)
+// ORDER_STATUS, PLACE_ROLE_GRADE, DISCOUNT_RATE
+// LUCKY_MEAL_FEE_RATE (=PLATFORM_FEE), PAYMENT_FEE_RATE (=PAYMENT_FEE)
+// CO2_PER_BAG, FOOD_CATEGORIES, KOREAN_BANKS
 // ============================================
-const ORDER_STATUS = { PAID: 'PAID', CONFIRMED: 'CONFIRMED', USER_CANCEL: 'USER_CANCEL', PLACE_CANCEL: 'PLACE_CANCEL' };
-const PLACE_ROLE_GRADE = { ADMIN: 0, MANAGER: 1, STAFF: 2 };
-const DISCOUNT_RATE = 0.5;
-const PLATFORM_FEE = 0.098;
-const PAYMENT_FEE = 0.03;
-const CO2_PER_BAG = 2.5;
 
 // ============================================
 // 홈 화면 - 사장님용
@@ -894,7 +881,7 @@ const LuckyBagSettingsScreen = ({ onBack, shopData, setShopData }) => {
   const [showCategorySheet, setShowCategorySheet] = useState(false);
 
   const salePrice = Math.round(shopData.originalPrice * (1 - DISCOUNT_RATE));
-  const netAmount = Math.round(salePrice * (1 - PLATFORM_FEE - PAYMENT_FEE));
+  const netAmount = Math.round(salePrice * (1 - LUCKY_MEAL_FEE_RATE - PAYMENT_FEE_RATE));
 
   const handlePriceSave = () => {
     const numPrice = parseInt(tempPriceStr.replace(/[^0-9]/g, ''), 10) || 1000;

@@ -1,0 +1,26 @@
+// 백엔드: src/modules/user/user.const.ts 와 동일
+export const ROLE_TYPE = {
+  USER: 'USER',
+  PLACE: 'PLACE',
+  ADMIN: 'ADMIN',
+  ADMIN_CS: 'ADMIN_CS',
+};
+
+export const PLACE_ROLE_GRADE = {
+  ADMIN: 0,
+  MANAGER: 1,
+  STAFF: 2,
+};
+
+export const PLACE_ROLE_PERMISSION = {
+  FULL_ACCESS: [PLACE_ROLE_GRADE.ADMIN],
+  MANAGER: [PLACE_ROLE_GRADE.ADMIN, PLACE_ROLE_GRADE.MANAGER],
+  STAFF: [PLACE_ROLE_GRADE.ADMIN, PLACE_ROLE_GRADE.MANAGER, PLACE_ROLE_GRADE.STAFF],
+};
+
+// 직원 등급 라벨
+export const PLACE_ROLE_GRADE_LABEL = {
+  [PLACE_ROLE_GRADE.ADMIN]: '관리자',
+  [PLACE_ROLE_GRADE.MANAGER]: '매니저',
+  [PLACE_ROLE_GRADE.STAFF]: '직원',
+};
