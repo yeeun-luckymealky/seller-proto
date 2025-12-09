@@ -570,16 +570,15 @@ const HomeScreen = ({ onNavigate, shopData, setShopData }) => {
               disabled={aiLoading}
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: 4,
-                padding: '6px 10px',
-                background: aiLoading ? colors.gray200 : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                color: aiLoading ? colors.gray500 : '#FFFFFF',
-                border: 'none', borderRadius: tokens.radius.md,
-                fontSize: tokens.fontSize.xs, fontWeight: 600,
+                padding: '6px 12px',
+                background: aiLoading ? colors.gray100 : colors.blue50,
+                color: aiLoading ? colors.gray400 : colors.blue500,
+                border: 'none', borderRadius: tokens.radius.full,
+                fontSize: tokens.fontSize.xs, fontWeight: 500,
                 cursor: aiLoading ? 'not-allowed' : 'pointer',
-                boxShadow: aiLoading ? 'none' : '0 2px 8px rgba(102, 126, 234, 0.3)',
               }}
             >
-              {aiLoading ? '분석 중...' : '✨ AI 추천'}
+              {aiLoading ? '분석 중...' : 'AI 추천'}
             </button>
           </div>
 
@@ -588,11 +587,10 @@ const HomeScreen = ({ onNavigate, shopData, setShopData }) => {
             <div style={{
               marginBottom: tokens.spacing.md,
               padding: tokens.spacing.md,
-              background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%)',
-              borderRadius: tokens.radius.md,
-              border: '1px solid rgba(102, 126, 234, 0.2)',
+              background: colors.blue50,
+              borderRadius: tokens.radius.lg,
             }}>
-              <div style={{ fontSize: tokens.fontSize.xs, fontWeight: 600, color: '#667eea', marginBottom: tokens.spacing.sm }}>
+              <div style={{ fontSize: tokens.fontSize.xs, fontWeight: 500, color: colors.blue500, marginBottom: tokens.spacing.sm }}>
                 AI 분석 결과
               </div>
               <div style={{ fontSize: tokens.fontSize.sm, color: colors.text, whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>
@@ -1030,16 +1028,16 @@ const LuckyBagSettingsScreen = ({ onBack, shopData, setShopData }) => {
               }}
               disabled={aiLoading}
               style={{
-                display: 'inline-flex', alignItems: 'center', gap: 6,
+                display: 'inline-flex', alignItems: 'center', gap: 4,
                 padding: '6px 12px',
-                background: aiLoading ? colors.gray200 : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                color: aiLoading ? colors.gray500 : '#FFFFFF',
-                border: 'none', borderRadius: tokens.radius.sm,
-                fontSize: tokens.fontSize.xs, fontWeight: 600,
+                background: aiLoading ? colors.gray100 : colors.blue50,
+                color: aiLoading ? colors.gray400 : colors.blue500,
+                border: 'none', borderRadius: tokens.radius.full,
+                fontSize: tokens.fontSize.xs, fontWeight: 500,
                 cursor: aiLoading ? 'not-allowed' : 'pointer',
               }}
             >
-              {aiLoading ? '생성 중...' : '✨ AI 추천'}
+              {aiLoading ? '생성 중...' : 'AI 추천'}
             </button>
           </div>
           <div style={{ fontSize: tokens.fontSize.xs, color: colors.textTertiary, marginBottom: tokens.spacing.md }}>내 가게 자랑 혹은 럭키백에 담길 상품들 예시를 써주세요!</div>
@@ -1136,16 +1134,16 @@ const LuckyBagSettingsScreen = ({ onBack, shopData, setShopData }) => {
               }}
               disabled={aiLoading}
               style={{
-                display: 'inline-flex', alignItems: 'center', gap: 6,
+                display: 'inline-flex', alignItems: 'center', gap: 4,
                 padding: '6px 12px',
-                background: aiLoading ? colors.gray200 : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                color: aiLoading ? colors.gray500 : '#FFFFFF',
-                border: 'none', borderRadius: tokens.radius.sm,
-                fontSize: tokens.fontSize.xs, fontWeight: 600,
+                background: aiLoading ? colors.gray100 : colors.blue50,
+                color: aiLoading ? colors.gray400 : colors.blue500,
+                border: 'none', borderRadius: tokens.radius.full,
+                fontSize: tokens.fontSize.xs, fontWeight: 500,
                 cursor: aiLoading ? 'not-allowed' : 'pointer',
               }}
             >
-              {aiLoading ? '생성 중...' : '✨ AI 추천'}
+              {aiLoading ? '생성 중...' : 'AI 추천'}
             </button>
           </div>
           <div style={{ fontSize: tokens.fontSize.xs, color: colors.textTertiary, marginBottom: tokens.spacing.sm }}>럭키백이 확정됐을 때 고객에게 보내는 메시지</div>
@@ -1183,16 +1181,16 @@ const LuckyBagSettingsScreen = ({ onBack, shopData, setShopData }) => {
               }}
               disabled={aiLoading}
               style={{
-                display: 'inline-flex', alignItems: 'center', gap: 6,
+                display: 'inline-flex', alignItems: 'center', gap: 4,
                 padding: '6px 12px',
-                background: aiLoading ? colors.gray200 : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                color: aiLoading ? colors.gray500 : '#FFFFFF',
-                border: 'none', borderRadius: tokens.radius.sm,
-                fontSize: tokens.fontSize.xs, fontWeight: 600,
+                background: aiLoading ? colors.gray100 : colors.blue50,
+                color: aiLoading ? colors.gray400 : colors.blue500,
+                border: 'none', borderRadius: tokens.radius.full,
+                fontSize: tokens.fontSize.xs, fontWeight: 500,
                 cursor: aiLoading ? 'not-allowed' : 'pointer',
               }}
             >
-              {aiLoading ? '생성 중...' : '✨ AI 추천'}
+              {aiLoading ? '생성 중...' : 'AI 추천'}
             </button>
           </div>
           <div style={{ fontSize: tokens.fontSize.xs, color: colors.textTertiary, marginBottom: tokens.spacing.sm }}>럭키백이 취소됐을 때 고객에게 보내는 메시지</div>
@@ -2308,16 +2306,15 @@ const ReviewsScreen = ({ onBack }) => {
                     disabled={aiLoading}
                     style={{
                       display: 'inline-flex', alignItems: 'center', gap: 4,
-                      padding: '6px 10px',
-                      background: aiLoading ? colors.gray200 : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                      color: aiLoading ? colors.gray500 : '#FFFFFF',
-                      border: 'none', borderRadius: tokens.radius.md,
-                      fontSize: tokens.fontSize.xs, fontWeight: 600,
+                      padding: '6px 12px',
+                      background: aiLoading ? colors.gray100 : colors.blue50,
+                      color: aiLoading ? colors.gray400 : colors.blue500,
+                      border: 'none', borderRadius: tokens.radius.full,
+                      fontSize: tokens.fontSize.xs, fontWeight: 500,
                       cursor: aiLoading ? 'not-allowed' : 'pointer',
-                      boxShadow: aiLoading ? 'none' : '0 2px 8px rgba(102, 126, 234, 0.3)',
                     }}
                   >
-                    {aiLoading ? '생성 중...' : '✨ AI 답변 추천'}
+                    {aiLoading ? '생성 중...' : 'AI 추천'}
                   </button>
                 </div>
                 <textarea value={replyText} onChange={(e) => setReplyText(e.target.value)} placeholder="답글을 작성해 주세요"

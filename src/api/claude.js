@@ -48,7 +48,8 @@ export const generateReviewReply = async (placeName, reviewContent, rating) => {
 - 가게의 철학이나 노력을 자연스럽게 녹여내기
 - 감사함과 앞으로의 다짐 표현
 - 이모티콘은 최소한만 사용 (1-2개)
-- 200자 내외로 작성`;
+- 200자 내외로 작성
+- 마크다운 서식(*, **, #, - 등) 절대 사용 금지. 일반 텍스트로만 작성`;
 
   const userMessage = `가게명: ${placeName}
 고객 리뷰: "${reviewContent}"
@@ -70,7 +71,8 @@ export const generateConfirmMessage = async (placeInfo) => {
 - 가게 특색과 분위기를 녹여내기
 - 고객이 방문할 때 기대감을 높이기
 - 픽업 시 주의사항 안내
-- 150-200자 내외`;
+- 150-200자 내외
+- 마크다운 서식(*, **, #, - 등) 절대 사용 금지. 일반 텍스트로만 작성`;
 
   const userMessage = `가게명: ${name}
 카테고리: ${category}
@@ -94,7 +96,8 @@ export const generateCancelMessage = async (placeInfo, cancelReason) => {
 - 고객의 실망감에 공감
 - 다음 방문을 기대하는 마무리
 - 가게 특색을 살짝 녹여내기
-- 150-200자 내외`;
+- 150-200자 내외
+- 마크다운 서식(*, **, #, - 등) 절대 사용 금지. 일반 텍스트로만 작성`;
 
   const userMessage = `가게명: ${name}
 카테고리: ${category}
@@ -117,7 +120,8 @@ export const generateLuckyBagDescription = async (placeInfo, menuItems) => {
 - 가게의 철학이나 자부심 표현
 - 고객에게 전하고 싶은 가치 담기
 - 150-250자 내외
-- 줄바꿈으로 가독성 높이기`;
+- 줄바꿈으로 가독성 높이기
+- 마크다운 서식(*, **, #, - 등) 절대 사용 금지. 일반 텍스트로만 작성`;
 
   const userMessage = `가게명: ${name}
 카테고리: ${category}
@@ -149,12 +153,12 @@ export const recommendSalesQuantity = async (statsData) => {
   const systemPrompt = `당신은 럭키백 판매 데이터를 분석하는 AI입니다.
 취소율과 판매 패턴을 분석하여 오늘의 최적 판매 수량을 추천해주세요.
 
-응답 형식:
-1. 추천 수량: [숫자]개
-2. 분석 근거: (2-3줄)
-3. 팁: (1줄)
+응답 형식 (마크다운 서식 없이 일반 텍스트로):
+추천 수량: [숫자]개
+분석 근거: (2-3줄)
+팁: (1줄)
 
-숫자와 근거를 명확하게 제시해주세요.`;
+숫자와 근거를 명확하게 제시해주세요. 마크다운 서식(*, **, #, - 등) 절대 사용 금지.`;
 
   const userMessage = `현재 설정 수량: ${currentQuantity}개
 이번주 총 주문: ${weeklyOrders}건
