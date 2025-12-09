@@ -947,7 +947,10 @@ const LuckyBagSettingsScreen = ({ onBack, shopData, setShopData }) => {
   const [editingPrice, setEditingPrice] = useState(false);
   const [tempPriceStr, setTempPriceStr] = useState(String(shopData.originalPrice));
   const [showCategorySheet, setShowCategorySheet] = useState(false);
-  const [aiLoading, setAiLoading] = useState(false);
+  // 각 AI 버튼별 독립적인 로딩 상태
+  const [aiLoadingDesc, setAiLoadingDesc] = useState(false);
+  const [aiLoadingConfirm, setAiLoadingConfirm] = useState(false);
+  const [aiLoadingCancel, setAiLoadingCancel] = useState(false);
 
   const salePrice = Math.round(shopData.originalPrice * (1 - DISCOUNT_RATE));
   const netAmount = Math.round(salePrice * (1 - LUCKY_MEAL_FEE_RATE - PAYMENT_FEE_RATE));
@@ -1012,8 +1015,8 @@ const LuckyBagSettingsScreen = ({ onBack, shopData, setShopData }) => {
             <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary }}>럭키백 설명 *</div>
             <button
               onClick={async () => {
-                if (aiLoading) return;
-                setAiLoading(true);
+                if (aiLoadingDesc) return;
+                setAiLoadingDesc(true);
                 try {
                   const result = await generateLuckyBagDescription(
                     { name: shopData.shopName, category: shopData.category, address: shopData.address },
@@ -1023,21 +1026,21 @@ const LuckyBagSettingsScreen = ({ onBack, shopData, setShopData }) => {
                 } catch (e) {
                   alert('AI 생성에 실패했습니다. 다시 시도해주세요.');
                 } finally {
-                  setAiLoading(false);
+                  setAiLoadingDesc(false);
                 }
               }}
-              disabled={aiLoading}
+              disabled={aiLoadingDesc}
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: 4,
                 padding: '6px 12px',
-                background: aiLoading ? colors.gray100 : colors.blue50,
-                color: aiLoading ? colors.gray400 : colors.blue500,
+                background: aiLoadingDesc ? colors.gray100 : colors.blue50,
+                color: aiLoadingDesc ? colors.gray400 : colors.blue500,
                 border: 'none', borderRadius: tokens.radius.full,
                 fontSize: tokens.fontSize.xs, fontWeight: 500,
-                cursor: aiLoading ? 'not-allowed' : 'pointer',
+                cursor: aiLoadingDesc ? 'not-allowed' : 'pointer',
               }}
             >
-              {aiLoading ? '생성 중...' : 'AI 추천'}
+              {aiLoadingDesc ? '생성 중...' : 'AI 추천'}
             </button>
           </div>
           <div style={{ fontSize: tokens.fontSize.xs, color: colors.textTertiary, marginBottom: tokens.spacing.md }}>내 가게 자랑 혹은 럭키백에 담길 상품들 예시를 써주세요!</div>
@@ -1116,8 +1119,8 @@ const LuckyBagSettingsScreen = ({ onBack, shopData, setShopData }) => {
             <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary }}>확정 메시지</div>
             <button
               onClick={async () => {
-                if (aiLoading) return;
-                setAiLoading(true);
+                if (aiLoadingConfirm) return;
+                setAiLoadingConfirm(true);
                 try {
                   const result = await generateConfirmMessage({
                     name: shopData.shopName,
@@ -1129,21 +1132,21 @@ const LuckyBagSettingsScreen = ({ onBack, shopData, setShopData }) => {
                 } catch (e) {
                   alert('AI 생성에 실패했습니다. 다시 시도해주세요.');
                 } finally {
-                  setAiLoading(false);
+                  setAiLoadingConfirm(false);
                 }
               }}
-              disabled={aiLoading}
+              disabled={aiLoadingConfirm}
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: 4,
                 padding: '6px 12px',
-                background: aiLoading ? colors.gray100 : colors.blue50,
-                color: aiLoading ? colors.gray400 : colors.blue500,
+                background: aiLoadingConfirm ? colors.gray100 : colors.blue50,
+                color: aiLoadingConfirm ? colors.gray400 : colors.blue500,
                 border: 'none', borderRadius: tokens.radius.full,
                 fontSize: tokens.fontSize.xs, fontWeight: 500,
-                cursor: aiLoading ? 'not-allowed' : 'pointer',
+                cursor: aiLoadingConfirm ? 'not-allowed' : 'pointer',
               }}
             >
-              {aiLoading ? '생성 중...' : 'AI 추천'}
+              {aiLoadingConfirm ? '생성 중...' : 'AI 추천'}
             </button>
           </div>
           <div style={{ fontSize: tokens.fontSize.xs, color: colors.textTertiary, marginBottom: tokens.spacing.sm }}>럭키백이 확정됐을 때 고객에게 보내는 메시지</div>
@@ -1165,8 +1168,8 @@ const LuckyBagSettingsScreen = ({ onBack, shopData, setShopData }) => {
             <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary }}>취소 메시지</div>
             <button
               onClick={async () => {
-                if (aiLoading) return;
-                setAiLoading(true);
+                if (aiLoadingCancel) return;
+                setAiLoadingCancel(true);
                 try {
                   const result = await generateCancelMessage(
                     { name: shopData.shopName, category: shopData.category },
@@ -1176,21 +1179,21 @@ const LuckyBagSettingsScreen = ({ onBack, shopData, setShopData }) => {
                 } catch (e) {
                   alert('AI 생성에 실패했습니다. 다시 시도해주세요.');
                 } finally {
-                  setAiLoading(false);
+                  setAiLoadingCancel(false);
                 }
               }}
-              disabled={aiLoading}
+              disabled={aiLoadingCancel}
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: 4,
                 padding: '6px 12px',
-                background: aiLoading ? colors.gray100 : colors.blue50,
-                color: aiLoading ? colors.gray400 : colors.blue500,
+                background: aiLoadingCancel ? colors.gray100 : colors.blue50,
+                color: aiLoadingCancel ? colors.gray400 : colors.blue500,
                 border: 'none', borderRadius: tokens.radius.full,
                 fontSize: tokens.fontSize.xs, fontWeight: 500,
-                cursor: aiLoading ? 'not-allowed' : 'pointer',
+                cursor: aiLoadingCancel ? 'not-allowed' : 'pointer',
               }}
             >
-              {aiLoading ? '생성 중...' : 'AI 추천'}
+              {aiLoadingCancel ? '생성 중...' : 'AI 추천'}
             </button>
           </div>
           <div style={{ fontSize: tokens.fontSize.xs, color: colors.textTertiary, marginBottom: tokens.spacing.sm }}>럭키백이 취소됐을 때 고객에게 보내는 메시지</div>
@@ -1330,10 +1333,18 @@ const PickupSettingsScreen = ({ onBack, shopData, setShopData }) => {
   const formatDateRange = (start, end) => {
     const s = new Date(start);
     const e = new Date(end);
+    const formatKorean = (d) => `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일`;
     if (start === end) {
-      return s.toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' });
+      return formatKorean(s);
     }
-    return `${s.toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' })} ~ ${e.toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' })}`;
+    return `${formatKorean(s)} ~ ${formatKorean(e)}`;
+  };
+
+  // 날짜 입력값을 한국식으로 표시
+  const formatDateDisplay = (dateStr) => {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일`;
   };
 
   return (
@@ -1439,22 +1450,80 @@ const PickupSettingsScreen = ({ onBack, shopData, setShopData }) => {
         </div>
       </BottomSheet>
 
-      {/* 휴무 추가 시트 */}
+      {/* 휴무 추가 시트 - 토스 스타일 */}
       <BottomSheet isOpen={showHolidaySheet} onClose={() => setShowHolidaySheet(false)} title="특별 휴무일 추가">
         <div style={{ marginBottom: tokens.spacing.lg }}>
-          <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary, marginBottom: tokens.spacing.sm }}>시작일</div>
-          <input type="date" value={holidayStartDate} onChange={(e) => setHolidayStartDate(e.target.value)}
-            style={{ width: '100%', padding: tokens.spacing.md, border: `1px solid ${colors.border}`, borderRadius: tokens.radius.md, fontSize: tokens.fontSize.md, background: colors.bgCard, color: colors.text }} />
+          <div style={{ fontSize: tokens.fontSize.sm, fontWeight: 500, color: colors.text, marginBottom: tokens.spacing.sm }}>시작일</div>
+          <div style={{ position: 'relative' }}>
+            <input
+              type="date"
+              value={holidayStartDate}
+              onChange={(e) => setHolidayStartDate(e.target.value)}
+              style={{
+                position: 'absolute',
+                opacity: 0,
+                width: '100%',
+                height: '100%',
+                cursor: 'pointer',
+              }}
+            />
+            <div style={{
+              padding: tokens.spacing.md,
+              background: colors.gray50,
+              borderRadius: tokens.radius.lg,
+              fontSize: tokens.fontSize.md,
+              color: holidayStartDate ? colors.text : colors.gray400,
+              cursor: 'pointer',
+            }}>
+              {holidayStartDate ? formatDateDisplay(holidayStartDate) : '날짜를 선택하세요'}
+            </div>
+          </div>
         </div>
         <div style={{ marginBottom: tokens.spacing.lg }}>
-          <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary, marginBottom: tokens.spacing.sm }}>종료일 (2일 이상인 경우)</div>
-          <input type="date" value={holidayEndDate} onChange={(e) => setHolidayEndDate(e.target.value)}
-            style={{ width: '100%', padding: tokens.spacing.md, border: `1px solid ${colors.border}`, borderRadius: tokens.radius.md, fontSize: tokens.fontSize.md, background: colors.bgCard, color: colors.text }} />
+          <div style={{ fontSize: tokens.fontSize.sm, fontWeight: 500, color: colors.text, marginBottom: tokens.spacing.sm }}>종료일 <span style={{ fontWeight: 400, color: colors.gray400 }}>(2일 이상인 경우)</span></div>
+          <div style={{ position: 'relative' }}>
+            <input
+              type="date"
+              value={holidayEndDate}
+              onChange={(e) => setHolidayEndDate(e.target.value)}
+              style={{
+                position: 'absolute',
+                opacity: 0,
+                width: '100%',
+                height: '100%',
+                cursor: 'pointer',
+              }}
+            />
+            <div style={{
+              padding: tokens.spacing.md,
+              background: colors.gray50,
+              borderRadius: tokens.radius.lg,
+              fontSize: tokens.fontSize.md,
+              color: holidayEndDate ? colors.text : colors.gray400,
+              cursor: 'pointer',
+            }}>
+              {holidayEndDate ? formatDateDisplay(holidayEndDate) : '선택 안함'}
+            </div>
+          </div>
         </div>
         <div style={{ marginBottom: tokens.spacing.xl }}>
-          <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary, marginBottom: tokens.spacing.sm }}>사유 (선택)</div>
-          <input type="text" value={holidayReason} onChange={(e) => setHolidayReason(e.target.value)} placeholder="예: 크리스마스, 재고 정리"
-            style={{ width: '100%', padding: tokens.spacing.md, border: `1px solid ${colors.border}`, borderRadius: tokens.radius.md, fontSize: tokens.fontSize.md, background: colors.bgCard, color: colors.text }} />
+          <div style={{ fontSize: tokens.fontSize.sm, fontWeight: 500, color: colors.text, marginBottom: tokens.spacing.sm }}>휴무 사유 <span style={{ fontWeight: 400, color: colors.gray400 }}>(선택)</span></div>
+          <input
+            type="text"
+            value={holidayReason}
+            onChange={(e) => setHolidayReason(e.target.value)}
+            placeholder="예: 크리스마스, 재고 정리"
+            style={{
+              width: '100%',
+              padding: tokens.spacing.md,
+              background: colors.gray50,
+              border: 'none',
+              borderRadius: tokens.radius.lg,
+              fontSize: tokens.fontSize.md,
+              color: colors.text,
+              outline: 'none',
+            }}
+          />
         </div>
         <Button fullWidth onClick={addHoliday} disabled={!holidayStartDate}>추가하기</Button>
       </BottomSheet>
