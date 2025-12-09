@@ -27,6 +27,15 @@ import {
   calculateStats,
 } from './api/mockData';
 
+// AI 기능 (Claude API)
+import {
+  generateReviewReply,
+  generateConfirmMessage,
+  generateCancelMessage,
+  generateLuckyBagDescription,
+  recommendSalesQuantity,
+} from './api/claude';
+
 // ============================================
 // 테마 컨텍스트 (다크모드/라이트모드)
 // ============================================
@@ -326,6 +335,8 @@ const Select = ({ value, onChange, options, placeholder }) => {
 const HomeScreen = ({ onNavigate, shopData, setShopData }) => {
   const { colors } = useTheme();
   const [showQuantitySheet, setShowQuantitySheet] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiRecommendation, setAiRecommendation] = useState(null);
 
   // 오늘 픽업 시간 (예: 19:00-20:00)
   const pickupStartTime = '19:00';
@@ -526,11 +537,70 @@ const HomeScreen = ({ onNavigate, shopData, setShopData }) => {
         </Card>
       </div>
 
-      <BottomSheet isOpen={showQuantitySheet} onClose={() => setShowQuantitySheet(false)} title="오늘 럭키백 수량">
+      <BottomSheet isOpen={showQuantitySheet} onClose={() => { setShowQuantitySheet(false); setAiRecommendation(null); }} title="오늘 럭키백 수량">
         <div style={{ marginBottom: tokens.spacing.lg }}>
-          <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary, marginBottom: tokens.spacing.md }}>
-            오늘 판매할 럭키백 수량을 설정해 주세요
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: tokens.spacing.md }}>
+            <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary }}>
+              오늘 판매할 럭키백 수량을 설정해 주세요
+            </div>
+            <button
+              onClick={async () => {
+                if (aiLoading) return;
+                setAiLoading(true);
+                setAiRecommendation(null);
+                try {
+                  // 이번주 통계 데이터 (데모용)
+                  const weekdays = ['일', '월', '화', '수', '목', '금', '토'];
+                  const today = new Date();
+                  const result = await recommendSalesQuantity({
+                    currentQuantity: shopData.dailySalesCount,
+                    weeklyOrders: 42,  // 이번주 총 주문
+                    weeklyCancellations: 3,  // 이번주 취소
+                    dayOfWeek: weekdays[today.getDay()] + '요일',
+                    weather: '맑음',
+                    previousWeekSales: shopData.dailySalesCount - 1,
+                  });
+                  setAiRecommendation(result);
+                } catch (e) {
+                  alert('AI 추천에 실패했습니다. 다시 시도해주세요.');
+                } finally {
+                  setAiLoading(false);
+                }
+              }}
+              disabled={aiLoading}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 4,
+                padding: '6px 10px',
+                background: aiLoading ? colors.gray200 : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                color: aiLoading ? colors.gray500 : '#FFFFFF',
+                border: 'none', borderRadius: tokens.radius.md,
+                fontSize: tokens.fontSize.xs, fontWeight: 600,
+                cursor: aiLoading ? 'not-allowed' : 'pointer',
+                boxShadow: aiLoading ? 'none' : '0 2px 8px rgba(102, 126, 234, 0.3)',
+              }}
+            >
+              {aiLoading ? '분석 중...' : '✨ AI 추천'}
+            </button>
           </div>
+
+          {/* AI 추천 결과 */}
+          {aiRecommendation && (
+            <div style={{
+              marginBottom: tokens.spacing.md,
+              padding: tokens.spacing.md,
+              background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%)',
+              borderRadius: tokens.radius.md,
+              border: '1px solid rgba(102, 126, 234, 0.2)',
+            }}>
+              <div style={{ fontSize: tokens.fontSize.xs, fontWeight: 600, color: '#667eea', marginBottom: tokens.spacing.sm }}>
+                AI 분석 결과
+              </div>
+              <div style={{ fontSize: tokens.fontSize.sm, color: colors.text, whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>
+                {aiRecommendation}
+              </div>
+            </div>
+          )}
+
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: tokens.spacing.xl, padding: tokens.spacing.xl, background: colors.gray50, borderRadius: tokens.radius.lg }}>
             <button onClick={() => setShopData({ ...shopData, dailySalesCount: Math.max(1, shopData.dailySalesCount - 1) })}
               style={{ width: 48, height: 48, borderRadius: 24, border: `1px solid ${colors.gray300}`, background: colors.bgCard, fontSize: 24, cursor: 'pointer', color: colors.text }}>−</button>
@@ -539,7 +609,7 @@ const HomeScreen = ({ onNavigate, shopData, setShopData }) => {
               style={{ width: 48, height: 48, borderRadius: 24, border: `1px solid ${colors.gray300}`, background: colors.bgCard, fontSize: 24, cursor: 'pointer', color: colors.text }}>+</button>
           </div>
         </div>
-        <Button fullWidth onClick={() => setShowQuantitySheet(false)}>저장하기</Button>
+        <Button fullWidth onClick={() => { setShowQuantitySheet(false); setAiRecommendation(null); }}>저장하기</Button>
       </BottomSheet>
     </div>
   );
@@ -879,6 +949,7 @@ const LuckyBagSettingsScreen = ({ onBack, shopData, setShopData }) => {
   const [editingPrice, setEditingPrice] = useState(false);
   const [tempPriceStr, setTempPriceStr] = useState(String(shopData.originalPrice));
   const [showCategorySheet, setShowCategorySheet] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
 
   const salePrice = Math.round(shopData.originalPrice * (1 - DISCOUNT_RATE));
   const netAmount = Math.round(salePrice * (1 - LUCKY_MEAL_FEE_RATE - PAYMENT_FEE_RATE));
@@ -939,7 +1010,38 @@ const LuckyBagSettingsScreen = ({ onBack, shopData, setShopData }) => {
 
         {/* 럭키백 설명 */}
         <Card style={{ marginBottom: tokens.spacing.lg }}>
-          <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary, marginBottom: tokens.spacing.sm }}>럭키백 설명 *</div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: tokens.spacing.sm }}>
+            <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary }}>럭키백 설명 *</div>
+            <button
+              onClick={async () => {
+                if (aiLoading) return;
+                setAiLoading(true);
+                try {
+                  const result = await generateLuckyBagDescription(
+                    { name: shopData.shopName, category: shopData.category, address: shopData.address },
+                    shopData.mainMenus?.filter(m => m) || []
+                  );
+                  updateField('luckyBagDescription', result);
+                } catch (e) {
+                  alert('AI 생성에 실패했습니다. 다시 시도해주세요.');
+                } finally {
+                  setAiLoading(false);
+                }
+              }}
+              disabled={aiLoading}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+                padding: '6px 12px',
+                background: aiLoading ? colors.gray200 : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                color: aiLoading ? colors.gray500 : '#FFFFFF',
+                border: 'none', borderRadius: tokens.radius.sm,
+                fontSize: tokens.fontSize.xs, fontWeight: 600,
+                cursor: aiLoading ? 'not-allowed' : 'pointer',
+              }}
+            >
+              {aiLoading ? '생성 중...' : '✨ AI 추천'}
+            </button>
+          </div>
           <div style={{ fontSize: tokens.fontSize.xs, color: colors.textTertiary, marginBottom: tokens.spacing.md }}>내 가게 자랑 혹은 럭키백에 담길 상품들 예시를 써주세요!</div>
           <textarea
             value={shopData.luckyBagDescription || ''}
@@ -1010,31 +1112,96 @@ const LuckyBagSettingsScreen = ({ onBack, shopData, setShopData }) => {
           />
         </Card>
 
-        {/* 확정/취소 메시지 */}
+        {/* 확정 메시지 */}
         <Card style={{ marginBottom: tokens.spacing.lg }}>
-          <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary, marginBottom: tokens.spacing.md }}>확정 메시지</div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: tokens.spacing.sm }}>
+            <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary }}>확정 메시지</div>
+            <button
+              onClick={async () => {
+                if (aiLoading) return;
+                setAiLoading(true);
+                try {
+                  const result = await generateConfirmMessage({
+                    name: shopData.shopName,
+                    category: shopData.category,
+                    address: shopData.address,
+                    description: shopData.luckyBagDescription,
+                  });
+                  updateField('confirmMessage', result);
+                } catch (e) {
+                  alert('AI 생성에 실패했습니다. 다시 시도해주세요.');
+                } finally {
+                  setAiLoading(false);
+                }
+              }}
+              disabled={aiLoading}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+                padding: '6px 12px',
+                background: aiLoading ? colors.gray200 : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                color: aiLoading ? colors.gray500 : '#FFFFFF',
+                border: 'none', borderRadius: tokens.radius.sm,
+                fontSize: tokens.fontSize.xs, fontWeight: 600,
+                cursor: aiLoading ? 'not-allowed' : 'pointer',
+              }}
+            >
+              {aiLoading ? '생성 중...' : '✨ AI 추천'}
+            </button>
+          </div>
           <div style={{ fontSize: tokens.fontSize.xs, color: colors.textTertiary, marginBottom: tokens.spacing.sm }}>럭키백이 확정됐을 때 고객에게 보내는 메시지</div>
           <textarea
             value={shopData.confirmMessage || ''}
             onChange={(e) => updateField('confirmMessage', e.target.value)}
             placeholder="예) 맛있는 럭키백 준비 중이에요! 픽업 시간에 방문해주세요."
             style={{
-              width: '100%', minHeight: 60, padding: tokens.spacing.md, border: `1px solid ${colors.border}`,
+              width: '100%', minHeight: 80, padding: tokens.spacing.md, border: `1px solid ${colors.border}`,
               borderRadius: tokens.radius.md, fontSize: tokens.fontSize.md, background: colors.bgCard,
               color: colors.text, resize: 'none', outline: 'none',
             }}
           />
         </Card>
 
+        {/* 취소 메시지 */}
         <Card>
-          <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary, marginBottom: tokens.spacing.md }}>취소 메시지</div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: tokens.spacing.sm }}>
+            <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary }}>취소 메시지</div>
+            <button
+              onClick={async () => {
+                if (aiLoading) return;
+                setAiLoading(true);
+                try {
+                  const result = await generateCancelMessage(
+                    { name: shopData.shopName, category: shopData.category },
+                    '재고 소진'
+                  );
+                  updateField('cancelMessage', result);
+                } catch (e) {
+                  alert('AI 생성에 실패했습니다. 다시 시도해주세요.');
+                } finally {
+                  setAiLoading(false);
+                }
+              }}
+              disabled={aiLoading}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+                padding: '6px 12px',
+                background: aiLoading ? colors.gray200 : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                color: aiLoading ? colors.gray500 : '#FFFFFF',
+                border: 'none', borderRadius: tokens.radius.sm,
+                fontSize: tokens.fontSize.xs, fontWeight: 600,
+                cursor: aiLoading ? 'not-allowed' : 'pointer',
+              }}
+            >
+              {aiLoading ? '생성 중...' : '✨ AI 추천'}
+            </button>
+          </div>
           <div style={{ fontSize: tokens.fontSize.xs, color: colors.textTertiary, marginBottom: tokens.spacing.sm }}>럭키백이 취소됐을 때 고객에게 보내는 메시지</div>
           <textarea
             value={shopData.cancelMessage || ''}
             onChange={(e) => updateField('cancelMessage', e.target.value)}
             placeholder="예) 죄송합니다. 오늘은 재료 소진으로 럭키백 준비가 어렵습니다."
             style={{
-              width: '100%', minHeight: 60, padding: tokens.spacing.md, border: `1px solid ${colors.border}`,
+              width: '100%', minHeight: 80, padding: tokens.spacing.md, border: `1px solid ${colors.border}`,
               borderRadius: tokens.radius.md, fontSize: tokens.fontSize.md, background: colors.bgCard,
               color: colors.text, resize: 'none', outline: 'none',
             }}
@@ -2086,10 +2253,11 @@ const ReviewsScreen = ({ onBack }) => {
   const { colors } = useTheme();
   const [replyingTo, setReplyingTo] = useState(null);
   const [replyText, setReplyText] = useState('');
+  const [aiLoading, setAiLoading] = useState(false);
 
   const reviews = [
-    { id: 1, name: '김**', content: '빵이 정말 맛있어요! 양도 푸짐해요.', date: '2024-12-05', hasReply: false },
-    { id: 2, name: '이**', content: '가성비 좋아요!', date: '2024-12-03', hasReply: true, reply: '감사합니다!' },
+    { id: 1, name: '김**', content: '빵이 정말 맛있어요! 양도 푸짐해요.', rating: 5, date: '2024-12-05', hasReply: false },
+    { id: 2, name: '이**', content: '가성비 좋아요!', rating: 4, date: '2024-12-03', hasReply: true, reply: '감사합니다!' },
   ];
 
   return (
@@ -2123,6 +2291,35 @@ const ReviewsScreen = ({ onBack }) => {
               </div>
             ) : replyingTo === review.id ? (
               <div>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: tokens.spacing.xs }}>
+                  <button
+                    onClick={async () => {
+                      if (aiLoading) return;
+                      setAiLoading(true);
+                      try {
+                        const result = await generateReviewReply('행복한 빵집', review.content, review.rating || 5);
+                        setReplyText(result);
+                      } catch (e) {
+                        alert('AI 생성에 실패했습니다. 다시 시도해주세요.');
+                      } finally {
+                        setAiLoading(false);
+                      }
+                    }}
+                    disabled={aiLoading}
+                    style={{
+                      display: 'inline-flex', alignItems: 'center', gap: 4,
+                      padding: '6px 10px',
+                      background: aiLoading ? colors.gray200 : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                      color: aiLoading ? colors.gray500 : '#FFFFFF',
+                      border: 'none', borderRadius: tokens.radius.md,
+                      fontSize: tokens.fontSize.xs, fontWeight: 600,
+                      cursor: aiLoading ? 'not-allowed' : 'pointer',
+                      boxShadow: aiLoading ? 'none' : '0 2px 8px rgba(102, 126, 234, 0.3)',
+                    }}
+                  >
+                    {aiLoading ? '생성 중...' : '✨ AI 답변 추천'}
+                  </button>
+                </div>
                 <textarea value={replyText} onChange={(e) => setReplyText(e.target.value)} placeholder="답글을 작성해 주세요"
                   style={{ width: '100%', minHeight: 80, padding: tokens.spacing.md, border: `1px solid ${colors.border}`, borderRadius: tokens.radius.md, fontSize: tokens.fontSize.md, resize: 'none', background: colors.bgCard, color: colors.text, marginBottom: tokens.spacing.sm }} />
                 <div style={{ display: 'flex', gap: tokens.spacing.sm }}>

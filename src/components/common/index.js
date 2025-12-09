@@ -7,3 +7,4 @@ export { default as Header } from './Header';
 export { default as BottomSheet } from './BottomSheet';
 export { default as Select } from './Select';
 export { default as EmptyState } from './EmptyState';
+export { default as AIGenerateButton } from './AIGenerateButton';
