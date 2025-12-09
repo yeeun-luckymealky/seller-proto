@@ -1252,6 +1252,10 @@ const PickupSettingsScreen = ({ onBack, shopData, setShopData }) => {
   const [holidayStartDate, setHolidayStartDate] = useState('');
   const [holidayEndDate, setHolidayEndDate] = useState('');
   const [holidayReason, setHolidayReason] = useState('');
+  const [showDatePicker, setShowDatePicker] = useState(null); // 'start' or 'end'
+  const [tempYear, setTempYear] = useState(new Date().getFullYear());
+  const [tempMonth, setTempMonth] = useState(new Date().getMonth() + 1);
+  const [tempDay, setTempDay] = useState(new Date().getDate());
 
   const weekdays = ['월', '화', '수', '목', '금', '토', '일'];
   const timeOptions = [];
@@ -1346,6 +1350,39 @@ const PickupSettingsScreen = ({ onBack, shopData, setShopData }) => {
     const d = new Date(dateStr);
     return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일`;
   };
+
+  // 날짜 선택 핸들러
+  const openDatePicker = (type) => {
+    const today = new Date();
+    if (type === 'start' && holidayStartDate) {
+      const d = new Date(holidayStartDate);
+      setTempYear(d.getFullYear());
+      setTempMonth(d.getMonth() + 1);
+      setTempDay(d.getDate());
+    } else if (type === 'end' && holidayEndDate) {
+      const d = new Date(holidayEndDate);
+      setTempYear(d.getFullYear());
+      setTempMonth(d.getMonth() + 1);
+      setTempDay(d.getDate());
+    } else {
+      setTempYear(today.getFullYear());
+      setTempMonth(today.getMonth() + 1);
+      setTempDay(today.getDate());
+    }
+    setShowDatePicker(type);
+  };
+
+  const confirmDatePicker = () => {
+    const dateStr = `${tempYear}-${String(tempMonth).padStart(2, '0')}-${String(tempDay).padStart(2, '0')}`;
+    if (showDatePicker === 'start') {
+      setHolidayStartDate(dateStr);
+    } else {
+      setHolidayEndDate(dateStr);
+    }
+    setShowDatePicker(null);
+  };
+
+  const getDaysInMonth = (year, month) => new Date(year, month, 0).getDate();
 
   return (
     <div>
@@ -1454,10 +1491,8 @@ const PickupSettingsScreen = ({ onBack, shopData, setShopData }) => {
       <BottomSheet isOpen={showHolidaySheet} onClose={() => setShowHolidaySheet(false)} title="특별 휴무일 추가">
         <div style={{ marginBottom: tokens.spacing.lg }}>
           <div style={{ fontSize: tokens.fontSize.sm, fontWeight: 500, color: colors.text, marginBottom: tokens.spacing.sm }}>시작일</div>
-          <input
-            type="date"
-            value={holidayStartDate}
-            onChange={(e) => setHolidayStartDate(e.target.value)}
+          <button
+            onClick={() => openDatePicker('start')}
             style={{
               width: '100%',
               padding: tokens.spacing.md,
@@ -1465,25 +1500,20 @@ const PickupSettingsScreen = ({ onBack, shopData, setShopData }) => {
               border: 'none',
               borderRadius: tokens.radius.lg,
               fontSize: tokens.fontSize.md,
-              color: colors.text,
-              outline: 'none',
-              WebkitAppearance: 'none',
+              color: holidayStartDate ? colors.text : colors.gray400,
+              textAlign: 'left',
+              cursor: 'pointer',
             }}
-          />
-          {holidayStartDate && (
-            <div style={{ marginTop: tokens.spacing.xs, fontSize: tokens.fontSize.sm, color: colors.blue500 }}>
-              {formatDateDisplay(holidayStartDate)}
-            </div>
-          )}
+          >
+            {holidayStartDate ? formatDateDisplay(holidayStartDate) : '날짜를 선택하세요'}
+          </button>
         </div>
         <div style={{ marginBottom: tokens.spacing.lg }}>
           <div style={{ fontSize: tokens.fontSize.sm, fontWeight: 500, color: colors.text, marginBottom: tokens.spacing.sm }}>
             종료일 <span style={{ fontWeight: 400, color: colors.gray400 }}>(2일 이상인 경우)</span>
           </div>
-          <input
-            type="date"
-            value={holidayEndDate}
-            onChange={(e) => setHolidayEndDate(e.target.value)}
+          <button
+            onClick={() => openDatePicker('end')}
             style={{
               width: '100%',
               padding: tokens.spacing.md,
@@ -1491,16 +1521,13 @@ const PickupSettingsScreen = ({ onBack, shopData, setShopData }) => {
               border: 'none',
               borderRadius: tokens.radius.lg,
               fontSize: tokens.fontSize.md,
-              color: colors.text,
-              outline: 'none',
-              WebkitAppearance: 'none',
+              color: holidayEndDate ? colors.text : colors.gray400,
+              textAlign: 'left',
+              cursor: 'pointer',
             }}
-          />
-          {holidayEndDate && (
-            <div style={{ marginTop: tokens.spacing.xs, fontSize: tokens.fontSize.sm, color: colors.blue500 }}>
-              {formatDateDisplay(holidayEndDate)}
-            </div>
-          )}
+          >
+            {holidayEndDate ? formatDateDisplay(holidayEndDate) : '선택 안함'}
+          </button>
         </div>
         <div style={{ marginBottom: tokens.spacing.xl }}>
           <div style={{ fontSize: tokens.fontSize.sm, fontWeight: 500, color: colors.text, marginBottom: tokens.spacing.sm }}>
@@ -1524,6 +1551,91 @@ const PickupSettingsScreen = ({ onBack, shopData, setShopData }) => {
           />
         </div>
         <Button fullWidth onClick={addHoliday} disabled={!holidayStartDate}>추가하기</Button>
+      </BottomSheet>
+
+      {/* 날짜 선택 시트 - 토스 스타일 */}
+      <BottomSheet isOpen={!!showDatePicker} onClose={() => setShowDatePicker(null)} title={showDatePicker === 'start' ? '시작일 선택' : '종료일 선택'}>
+        <div style={{ display: 'flex', gap: tokens.spacing.sm, marginBottom: tokens.spacing.xl }}>
+          {/* 년 */}
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: tokens.fontSize.xs, color: colors.textTertiary, marginBottom: tokens.spacing.xs, textAlign: 'center' }}>년</div>
+            <select
+              value={tempYear}
+              onChange={(e) => setTempYear(Number(e.target.value))}
+              style={{
+                width: '100%',
+                padding: tokens.spacing.md,
+                background: colors.gray50,
+                border: 'none',
+                borderRadius: tokens.radius.lg,
+                fontSize: tokens.fontSize.lg,
+                fontWeight: 600,
+                color: colors.text,
+                textAlign: 'center',
+                appearance: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              {[2024, 2025, 2026].map(y => <option key={y} value={y}>{y}</option>)}
+            </select>
+          </div>
+          {/* 월 */}
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: tokens.fontSize.xs, color: colors.textTertiary, marginBottom: tokens.spacing.xs, textAlign: 'center' }}>월</div>
+            <select
+              value={tempMonth}
+              onChange={(e) => {
+                setTempMonth(Number(e.target.value));
+                const maxDay = getDaysInMonth(tempYear, Number(e.target.value));
+                if (tempDay > maxDay) setTempDay(maxDay);
+              }}
+              style={{
+                width: '100%',
+                padding: tokens.spacing.md,
+                background: colors.gray50,
+                border: 'none',
+                borderRadius: tokens.radius.lg,
+                fontSize: tokens.fontSize.lg,
+                fontWeight: 600,
+                color: colors.text,
+                textAlign: 'center',
+                appearance: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              {Array.from({ length: 12 }, (_, i) => i + 1).map(m => <option key={m} value={m}>{m}</option>)}
+            </select>
+          </div>
+          {/* 일 */}
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: tokens.fontSize.xs, color: colors.textTertiary, marginBottom: tokens.spacing.xs, textAlign: 'center' }}>일</div>
+            <select
+              value={tempDay}
+              onChange={(e) => setTempDay(Number(e.target.value))}
+              style={{
+                width: '100%',
+                padding: tokens.spacing.md,
+                background: colors.gray50,
+                border: 'none',
+                borderRadius: tokens.radius.lg,
+                fontSize: tokens.fontSize.lg,
+                fontWeight: 600,
+                color: colors.text,
+                textAlign: 'center',
+                appearance: 'none',
+                cursor: 'pointer',
+              }}
+            >
+              {Array.from({ length: getDaysInMonth(tempYear, tempMonth) }, (_, i) => i + 1).map(d => <option key={d} value={d}>{d}</option>)}
+            </select>
+          </div>
+        </div>
+        <div style={{ textAlign: 'center', marginBottom: tokens.spacing.lg }}>
+          <span style={{ fontSize: tokens.fontSize.xl, fontWeight: 700, color: colors.green500 }}>
+            {tempYear}년 {tempMonth}월 {tempDay}일
+          </span>
+        </div>
+        <Button fullWidth onClick={confirmDatePicker}>선택 완료</Button>
       </BottomSheet>
 
       {/* 일괄 설정 시트 */}
