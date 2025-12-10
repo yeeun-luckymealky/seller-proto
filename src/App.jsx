@@ -185,6 +185,191 @@ const BottomSheet = ({ isOpen, onClose, title, children }) => {
   );
 };
 
+// 슬랙 스타일 가게 전환 모달
+const StoreSwitcherModal = ({ isOpen, onClose, stores, currentStoreId, onSelectStore }) => {
+  const { colors } = useTheme();
+  if (!isOpen) return null;
+
+  return (
+    <div style={{ position: 'fixed', top: 0, bottom: 0, left: 0, right: 0, zIndex: 1000, display: 'flex', justifyContent: 'center' }}>
+      <div onClick={onClose} style={{ position: 'absolute', inset: 0, background: colors.overlay }} />
+      <div style={{
+        position: 'absolute', top: 60, left: 16, right: 16, maxWidth: 448,
+        background: colors.bgElevated, borderRadius: 16,
+        boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+        overflow: 'hidden',
+      }}>
+        {/* 헤더 */}
+        <div style={{ padding: '16px 20px', borderBottom: `1px solid ${colors.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span style={{ fontSize: 16, fontWeight: 700, color: colors.text }}>가게 변경</span>
+          <button
+            onClick={() => window.open('https://www.luckymeal.io', '_blank')}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 6,
+              background: colors.gray100, border: 'none', borderRadius: 20,
+              padding: '8px 14px', cursor: 'pointer', fontSize: 13, color: colors.gray600, fontWeight: 500,
+            }}
+          >
+            소비자 앱 전환
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={colors.green500} strokeWidth="2.5">
+              <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+          </button>
+        </div>
+
+        {/* 가게 리스트 */}
+        <div style={{ maxHeight: 300, overflowY: 'auto' }}>
+          {stores.map(store => {
+            const isSelected = store.id === currentStoreId;
+            const getStatusBadge = (status) => {
+              if (status === 'active') return null;
+              if (status === 'reviewing') return { text: '심사중', color: '#F9A825', bg: '#FFF8E1' };
+              if (status === 'draft') return { text: '작성중', color: '#9E9E9E', bg: '#F5F5F5' };
+              return null;
+            };
+            const badge = getStatusBadge(store.status);
+
+            return (
+              <div
+                key={store.id}
+                onClick={() => {
+                  onSelectStore(store.id);
+                  onClose();
+                }}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 14,
+                  padding: '16px 20px', cursor: 'pointer',
+                  background: isSelected ? colors.blue50 : 'transparent',
+                  borderBottom: `1px solid ${colors.gray100}`,
+                }}
+              >
+                {/* 프로필 이미지 */}
+                <div style={{
+                  width: 44, height: 44, borderRadius: 12,
+                  background: store.color || colors.blue500,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 20, color: '#fff',
+                }}>
+                  {store.emoji || '🏪'}
+                </div>
+
+                {/* 가게 정보 */}
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    {badge && (
+                      <span style={{ fontSize: 11, fontWeight: 600, color: badge.color, background: badge.bg, padding: '2px 6px', borderRadius: 4 }}>
+                        {badge.text}
+                      </span>
+                    )}
+                    <span style={{ fontSize: 15, fontWeight: 600, color: colors.text }}>{store.name}</span>
+                  </div>
+                  {store.status === 'draft' && (
+                    <span style={{ fontSize: 13, color: colors.gray500 }}>이어서 작성하기</span>
+                  )}
+                </div>
+
+                {/* 선택 체크 */}
+                {isSelected && (
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={colors.blue500} strokeWidth="2.5">
+                    <path d="M5 12l5 5L20 7" />
+                  </svg>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* 가게 추가 버튼 */}
+        <div
+          onClick={() => alert('새 가게 등록 페이지로 이동합니다.')}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 14,
+            padding: '16px 20px', cursor: 'pointer',
+            borderTop: `1px solid ${colors.border}`,
+          }}
+        >
+          <div style={{
+            width: 44, height: 44, borderRadius: 12,
+            background: colors.gray100,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 20, color: colors.gray500,
+          }}>
+            +
+          </div>
+          <span style={{ fontSize: 15, fontWeight: 500, color: colors.gray600 }}>가게 추가하기</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// 가게 헤더 컴포넌트 (가게 전환 기능 포함)
+const StoreHeader = ({ store, stores, currentStoreId, onSelectStore, showConsumerAppButton = false }) => {
+  const { colors } = useTheme();
+  const [showSwitcher, setShowSwitcher] = useState(false);
+
+  return (
+    <>
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '16px 20px 8px',
+      }}>
+        {/* 가게 선택 버튼 */}
+        <button
+          onClick={() => setShowSwitcher(true)}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 10,
+            background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+          }}
+        >
+          {/* 프로필 이미지 */}
+          <div style={{
+            width: 40, height: 40, borderRadius: 10,
+            background: store?.color || colors.blue500,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 18, color: '#fff',
+          }}>
+            {store?.emoji || '🏪'}
+          </div>
+
+          {/* 가게 이름 + 드롭다운 */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <span style={{ fontSize: 18, fontWeight: 700, color: colors.text }}>{store?.name || '가게 이름'}</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={colors.gray500} strokeWidth="2">
+              <path d="M6 9l6 6 6-6" />
+            </svg>
+          </div>
+        </button>
+
+        {/* 소비자 앱 전환 버튼 (전체 탭에서만 표시) */}
+        {showConsumerAppButton && (
+          <button
+            onClick={() => window.open('https://www.luckymeal.io', '_blank')}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 6,
+              background: colors.gray100, border: 'none', borderRadius: 20,
+              padding: '8px 12px', cursor: 'pointer', fontSize: 12, color: colors.gray600, fontWeight: 500,
+            }}
+          >
+            소비자 앱 전환
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={colors.green500} strokeWidth="2.5">
+              <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+          </button>
+        )}
+      </div>
+
+      <StoreSwitcherModal
+        isOpen={showSwitcher}
+        onClose={() => setShowSwitcher(false)}
+        stores={stores}
+        currentStoreId={currentStoreId}
+        onSelectStore={onSelectStore}
+      />
+    </>
+  );
+};
+
 // 토스 스타일 아이콘 SVG 컴포넌트
 const IconHome = ({ active, color }) => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill={active ? color : 'none'} stroke={color} strokeWidth="2">
@@ -615,7 +800,7 @@ const HomeScreen = ({ onNavigate, shopData, setShopData }) => {
 // ============================================
 // 주문 관리 화면 - 카드 기반 비주얼 디자인
 // ============================================
-const OrdersScreen = ({ onNavigate, shopData, setShopData }) => {
+const OrdersScreen = ({ onNavigate, shopData, setShopData, stores, currentStoreId, currentStore, onSelectStore }) => {
   const { colors } = useTheme();
   const [expandedOrder, setExpandedOrder] = useState(null);
 
@@ -639,14 +824,19 @@ const OrdersScreen = ({ onNavigate, shopData, setShopData }) => {
 
   return (
     <div style={{ paddingBottom: 120, background: colors.bg, minHeight: '100vh' }}>
-      {/* 헤더 */}
-      <div style={{ padding: '28px 20px 20px' }}>
-        <h1 style={{ fontSize: 24, fontWeight: 700, color: colors.text, margin: 0 }}>
-          오늘의 주문
-        </h1>
-        <p style={{ fontSize: 14, color: colors.gray500, margin: '6px 0 0' }}>
-          {shopData.shopName} · {new Date().toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', weekday: 'short' })}
-        </p>
+      {/* 가게 헤더 (슬랙 스타일 전환) */}
+      <StoreHeader
+        store={currentStore}
+        stores={stores}
+        currentStoreId={currentStoreId}
+        onSelectStore={onSelectStore}
+      />
+
+      {/* 날짜 서브헤더 */}
+      <div style={{ padding: '8px 20px 16px' }}>
+        <span style={{ fontSize: 14, color: colors.gray500 }}>
+          {new Date().toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', weekday: 'short' })} · 오늘의 주문
+        </span>
       </div>
 
       {/* 요약 카드들 */}
@@ -934,14 +1124,13 @@ const SettingsIcon = ({ type, color, bgColor }) => {
   );
 };
 
-const SettingsScreen = ({ onNavigate, shopData }) => {
+const SettingsScreen = ({ onNavigate, shopData, stores, currentStoreId, currentStore, onSelectStore }) => {
   const { colors, isDark, toggleTheme } = useTheme();
 
   // 아이콘 컴포넌트
   const MenuIcon = ({ type }) => {
     const iconStyle = { width: 44, height: 44, borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 };
     const icons = {
-      'consumer': { bg: '#E3F2FD', icon: '📱' },
       'account': { bg: '#FFF3E0', icon: '👤' },
       'shop': { bg: '#E8F5E9', icon: '🏪' },
       'team': { bg: '#F3E5F5', icon: '👥' },
@@ -963,7 +1152,6 @@ const SettingsScreen = ({ onNavigate, shopData }) => {
     {
       title: '계정',
       items: [
-        { icon: 'consumer', title: '소비자 앱으로 이동', screen: 'consumer-app' },
         { icon: 'account', title: '계정 정보 변경', screen: 'account-settings' },
       ]
     },
@@ -1020,7 +1208,18 @@ const SettingsScreen = ({ onNavigate, shopData }) => {
   );
 
   return (
-    <div style={{ paddingBottom: 120, background: colors.bgCard, minHeight: '100vh' }}>
+    <div style={{ paddingBottom: 120, background: colors.bg, minHeight: '100vh' }}>
+      {/* 가게 헤더 (슬랙 스타일 전환 + 소비자 앱 전환 버튼) */}
+      <div style={{ background: colors.bgCard }}>
+        <StoreHeader
+          store={currentStore}
+          stores={stores}
+          currentStoreId={currentStoreId}
+          onSelectStore={onSelectStore}
+          showConsumerAppButton={true}
+        />
+      </div>
+
       {menuGroups.map((group, gIdx) => (
         <div key={gIdx}>
           {/* 섹션 헤더 */}
@@ -3032,6 +3231,15 @@ export default function App() {
     totalRevenue: 3305300,
   });
 
+  // 가게 목록 (슬랙 스타일 멀티 가게 지원)
+  const [stores, setStores] = useState([
+    { id: 1, name: '사덕빵집', emoji: '🥐', color: '#FF9800', status: 'reviewing' },
+    { id: 2, name: 'HeyAlfred', emoji: '🍕', color: '#4CAF50', status: 'draft' },
+    { id: 3, name: '행복한 베이커리', emoji: '🍞', color: '#2196F3', status: 'active' },
+  ]);
+  const [currentStoreId, setCurrentStoreId] = useState(3);
+  const currentStore = stores.find(s => s.id === currentStoreId);
+
   const navigate = (screen) => {
     if (['orders', 'settings'].includes(screen)) setActiveTab(screen);
     setCurrentScreen(screen);
@@ -3041,8 +3249,8 @@ export default function App() {
 
   const renderScreen = () => {
     switch (currentScreen) {
-      case 'orders': return <OrdersScreen onNavigate={navigate} shopData={shopData} setShopData={setShopData} />;
-      case 'settings': return <SettingsScreen onNavigate={navigate} shopData={shopData} />;
+      case 'orders': return <OrdersScreen onNavigate={navigate} shopData={shopData} setShopData={setShopData} stores={stores} currentStoreId={currentStoreId} currentStore={currentStore} onSelectStore={setCurrentStoreId} />;
+      case 'settings': return <SettingsScreen onNavigate={navigate} shopData={shopData} stores={stores} currentStoreId={currentStoreId} currentStore={currentStore} onSelectStore={setCurrentStoreId} />;
       case 'sales-history': return <SalesHistoryScreen onBack={goBack} />;
       case 'luckybag-settings': return <LuckyBagSettingsScreen onBack={goBack} shopData={shopData} setShopData={setShopData} />;
       case 'pickup-settings': return <PickupSettingsScreen onBack={goBack} shopData={shopData} setShopData={setShopData} />;
@@ -3057,7 +3265,7 @@ export default function App() {
       case 'account-settings': return <AccountSettingsScreen onBack={goBack} />;
       case 'feedback': return <FeedbackScreen onBack={goBack} />;
       case 'terms': return <TermsScreen onBack={goBack} />;
-      default: return <OrdersScreen onNavigate={navigate} shopData={shopData} setShopData={setShopData} />;
+      default: return <OrdersScreen onNavigate={navigate} shopData={shopData} setShopData={setShopData} stores={stores} currentStoreId={currentStoreId} currentStore={currentStore} onSelectStore={setCurrentStoreId} />;
     }
   };
 
