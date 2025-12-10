@@ -801,33 +801,94 @@ const HomeScreen = ({ onNavigate, shopData, setShopData }) => {
 };
 
 // ============================================
-// 주문 관리 화면 - 카드 기반 비주얼 디자인
+// 주문 관리 화면 - 타임슬롯 기반 디자인
 // ============================================
 const OrdersScreen = ({ onNavigate, shopData, setShopData, stores, currentStoreId, currentStore, onSelectStore }) => {
   const { colors } = useTheme();
-  const [expandedOrder, setExpandedOrder] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
-  const todayOrders = [
-    { id: 1, code: '맑은하늘', orderUid: 'ORD-2024120801', name: '김**', mannerScore: 85, luckyBagCount: 2, discountPrice: 7800, pickupStartTime: '14:00', pickupEndTime: '15:00', status: ORDER_STATUS.PAID, isPickupChecked: false },
-    { id: 2, code: '빵순이야', orderUid: 'ORD-2024120802', name: '이**', mannerScore: 92, luckyBagCount: 2, discountPrice: 7800, pickupStartTime: '14:00', pickupEndTime: '15:00', status: ORDER_STATUS.PAID, isPickupChecked: false },
-    { id: 3, code: '행복가득', orderUid: 'ORD-2024120803', name: '박**', mannerScore: 78, luckyBagCount: 1, discountPrice: 3900, pickupStartTime: '15:00', pickupEndTime: '16:00', status: ORDER_STATUS.USER_CANCEL, isPickupChecked: false },
+  // 주간 캘린더 데이터 생성
+  const getWeekDays = () => {
+    const days = [];
+    const today = new Date();
+    for (let i = -2; i <= 4; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+      days.push(date);
+    }
+    return days;
+  };
+  const weekDays = getWeekDays();
+  const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+
+  // 타임슬롯 데이터
+  const timeSlots = [
+    {
+      id: 1,
+      pickupStart: '18:30',
+      pickupEnd: '19:30',
+      reserveOpenTime: '09:30',
+      confirmTime: '17:30',
+      status: 'accepting', // 'before_open', 'accepting', 'closed'
+      remainingMinutes: 83,
+      price: 12000,
+      maxQuantity: 2,
+      currentOrders: 2,
+    },
+    {
+      id: 2,
+      pickupStart: '23:30',
+      pickupEnd: '00:30',
+      reserveOpenTime: '14:00',
+      confirmTime: '22:30',
+      status: 'before_open',
+      remainingMinutes: 83,
+      price: 12000,
+      maxQuantity: 2,
+      currentOrders: 0,
+    },
   ];
 
-  const totalLuckyBags = todayOrders.filter(o => o.status !== ORDER_STATUS.USER_CANCEL).reduce((sum, o) => sum + o.luckyBagCount, 0);
-  const confirmedCount = todayOrders.filter(o => o.status === ORDER_STATUS.CONFIRMED).length;
-  const pendingCount = todayOrders.filter(o => o.status === ORDER_STATUS.PAID).length;
+  // 주문 데이터
+  const orders = [
+    { id: 1, code: '행운의클로버', name: '윤다인', mannerScore: 12, luckyBagCount: 1, price: 12000, status: 'confirmed' },
+    { id: 2, code: '빨간청바지', name: '이유진', mannerScore: 12, luckyBagCount: 1, price: 12000, status: 'confirmed' },
+  ];
 
-  const getStatusConfig = (order) => {
-    if (order.status === ORDER_STATUS.USER_CANCEL) return { text: '취소됨', bg: '#F5F5F5', color: '#9E9E9E', icon: '❌' };
-    if (order.isPickupChecked) return { text: '픽업완료', bg: '#E3F2FD', color: '#1976D2', icon: '✅' };
-    if (order.status === ORDER_STATUS.CONFIRMED) return { text: '확정', bg: '#E8F5E9', color: '#388E3C', icon: '✓' };
-    if (order.status === ORDER_STATUS.PAID) return { text: '대기중', bg: '#FFF8E1', color: '#F9A825', icon: '⏳' };
-    return { text: '', bg: '#F5F5F5', color: '#757575', icon: '' };
+  // 타임라인 진행률 계산
+  const getTimelineProgress = (slot) => {
+    if (slot.status === 'before_open') return 0;
+    if (slot.status === 'closed') return 100;
+    // 접수중일 때 대략적인 진행률
+    return 35;
+  };
+
+  // 상태 배지 설정
+  const getStatusBadge = (status) => {
+    if (status === 'before_open') return { text: '오픈 전', bg: colors.gray100, color: colors.gray600 };
+    if (status === 'accepting') return { text: '접수중', bg: '#E8F5E9', color: '#2E7D32' };
+    if (status === 'closed') return { text: '접수 마감', bg: colors.gray100, color: colors.gray600 };
+    return { text: '', bg: '', color: '' };
+  };
+
+  // 남은 시간 포맷
+  const formatRemainingTime = (minutes) => {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    if (hours > 0) return `${hours}시간 ${mins}분 남음`;
+    return `${mins}분 남음`;
+  };
+
+  const isToday = (date) => {
+    const today = new Date();
+    return date.getDate() === today.getDate() &&
+           date.getMonth() === today.getMonth() &&
+           date.getFullYear() === today.getFullYear();
   };
 
   return (
     <div style={{ paddingBottom: 120, background: colors.bg, minHeight: '100vh' }}>
-      {/* 가게 헤더 (슬랙 스타일 전환) */}
+      {/* 가게 헤더 */}
       <StoreHeader
         store={currentStore}
         stores={stores}
@@ -835,152 +896,275 @@ const OrdersScreen = ({ onNavigate, shopData, setShopData, stores, currentStoreI
         onSelectStore={onSelectStore}
       />
 
-      {/* 날짜 서브헤더 */}
-      <div style={{ padding: '8px 20px 16px' }}>
-        <span style={{ fontSize: 14, color: colors.gray500 }}>
-          {new Date().toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', weekday: 'short' })} · 오늘의 주문
-        </span>
-      </div>
-
-      {/* 요약 카드들 */}
-      <div style={{ display: 'flex', gap: 12, padding: '0 20px 20px', overflowX: 'auto' }}>
-        {/* 럭키백 현황 */}
-        <div style={{
-          flex: '0 0 auto', width: 140, padding: 20, borderRadius: 20,
-          background: 'linear-gradient(135deg, #4CAF50 0%, #81C784 100%)',
-          color: '#fff',
-        }}>
-          <div style={{ fontSize: 32, marginBottom: 8 }}>🍀</div>
-          <div style={{ fontSize: 28, fontWeight: 700 }}>{totalLuckyBags}개</div>
-          <div style={{ fontSize: 13, opacity: 0.9, marginTop: 4 }}>오늘 럭키백</div>
-        </div>
-
-        {/* 대기중 */}
-        <div style={{
-          flex: '0 0 auto', width: 140, padding: 20, borderRadius: 20,
-          background: 'linear-gradient(135deg, #FF9800 0%, #FFB74D 100%)',
-          color: '#fff',
-        }}>
-          <div style={{ fontSize: 32, marginBottom: 8 }}>⏳</div>
-          <div style={{ fontSize: 28, fontWeight: 700 }}>{pendingCount}건</div>
-          <div style={{ fontSize: 13, opacity: 0.9, marginTop: 4 }}>확정 대기</div>
-        </div>
-
-        {/* 확정됨 */}
-        <div style={{
-          flex: '0 0 auto', width: 140, padding: 20, borderRadius: 20,
-          background: 'linear-gradient(135deg, #2196F3 0%, #64B5F6 100%)',
-          color: '#fff',
-        }}>
-          <div style={{ fontSize: 32, marginBottom: 8 }}>✓</div>
-          <div style={{ fontSize: 28, fontWeight: 700 }}>{confirmedCount}건</div>
-          <div style={{ fontSize: 13, opacity: 0.9, marginTop: 4 }}>확정 완료</div>
-        </div>
-      </div>
-
-      {/* 주문 목록 섹션 */}
-      <div style={{ padding: '8px 20px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span style={{ fontSize: 18, fontWeight: 700, color: colors.text }}>주문 목록</span>
-        <span style={{ fontSize: 13, color: colors.gray500 }}>총 {todayOrders.length}건</span>
-      </div>
-
-      {/* 주문 카드들 */}
-      <div style={{ padding: '0 20px' }}>
-        {todayOrders.map(order => {
-          const config = getStatusConfig(order);
-          const isCanceled = order.status === ORDER_STATUS.USER_CANCEL;
-          const isExpanded = expandedOrder === order.id;
-
+      {/* 주간 캘린더 */}
+      <div style={{ display: 'flex', padding: '8px 16px 16px', gap: 4, overflowX: 'auto' }}>
+        {weekDays.map((date, idx) => {
+          const isSelected = date.toDateString() === selectedDate.toDateString();
+          const isTodayDate = isToday(date);
           return (
-            <div key={order.id} style={{
-              marginBottom: 16,
-              borderRadius: 20,
-              background: colors.bgCard,
-              boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-              overflow: 'hidden',
-              opacity: isCanceled ? 0.6 : 1,
-            }}>
-              <div
-                onClick={() => setExpandedOrder(isExpanded ? null : order.id)}
-                style={{ padding: 20, cursor: 'pointer' }}
-              >
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 16 }}>
-                  {/* 아이콘 */}
-                  <div style={{
-                    width: 56, height: 56, borderRadius: 16,
-                    background: config.bg,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 24,
-                  }}>
-                    {config.icon}
-                  </div>
-
-                  {/* 정보 */}
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                      <span style={{ fontSize: 17, fontWeight: 700, color: colors.text }}>{order.code}</span>
-                      <span style={{
-                        fontSize: 11, fontWeight: 600, color: config.color,
-                        background: config.bg, padding: '3px 8px', borderRadius: 10,
-                      }}>{config.text}</span>
-                    </div>
-                    <div style={{ fontSize: 14, color: colors.gray600, marginBottom: 4 }}>
-                      럭키백 {order.luckyBagCount}개 · {order.discountPrice.toLocaleString()}원
-                    </div>
-                    <div style={{ fontSize: 13, color: colors.gray400 }}>
-                      픽업 {order.pickupStartTime} - {order.pickupEndTime}
-                    </div>
-                  </div>
-
-                  {/* 화살표 */}
-                  <svg
-                    width="20" height="20" viewBox="0 0 24 24" fill="none"
-                    stroke={colors.gray400} strokeWidth="2"
-                    style={{ transform: isExpanded ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.2s' }}
-                  >
-                    <path d="M6 9l6 6 6-6" />
-                  </svg>
-                </div>
-              </div>
-
-              {/* 확장 영역 */}
-              {isExpanded && (
-                <div style={{ padding: '0 20px 20px', borderTop: `1px solid ${colors.gray100}` }}>
-                  <div style={{ padding: '16px 0' }}>
-                    {[
-                      { label: '주문번호', value: order.orderUid },
-                      { label: '고객명', value: `${order.name} (매너 ${order.mannerScore})` },
-                      { label: '결제금액', value: `${order.discountPrice.toLocaleString()}원` },
-                    ].map((row, i) => (
-                      <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0' }}>
-                        <span style={{ fontSize: 14, color: colors.gray500 }}>{row.label}</span>
-                        <span style={{ fontSize: 14, color: colors.text, fontWeight: 500 }}>{row.value}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  {!isCanceled && order.status === ORDER_STATUS.PAID && (
-                    <div style={{ display: 'flex', gap: 10 }}>
-                      <Button variant="secondary" fullWidth>주문 취소</Button>
-                      <Button fullWidth>주문 확정</Button>
-                    </div>
-                  )}
-                  {!isCanceled && order.status === ORDER_STATUS.CONFIRMED && !order.isPickupChecked && (
-                    <Button fullWidth variant="success">픽업 완료</Button>
-                  )}
-                </div>
-              )}
-            </div>
+            <button
+              key={idx}
+              onClick={() => setSelectedDate(date)}
+              style={{
+                flex: '0 0 auto',
+                width: 44,
+                padding: '8px 0',
+                background: isSelected ? colors.gray800 : 'transparent',
+                border: 'none',
+                borderRadius: 12,
+                cursor: 'pointer',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 4,
+              }}
+            >
+              <span style={{ fontSize: 12, color: isSelected ? '#fff' : colors.gray500 }}>
+                {dayNames[date.getDay()]}
+              </span>
+              <span style={{
+                fontSize: 16,
+                fontWeight: isTodayDate ? 700 : 500,
+                color: isSelected ? '#fff' : (isTodayDate ? colors.text : colors.gray600),
+              }}>
+                {date.getDate()}
+              </span>
+            </button>
           );
         })}
       </div>
 
+      {/* 현재 타임슬롯 */}
+      {timeSlots.slice(0, 1).map(slot => {
+        const badge = getStatusBadge(slot.status);
+        const progress = getTimelineProgress(slot);
+
+        return (
+          <div key={slot.id} style={{
+            margin: '0 16px 16px',
+            padding: 20,
+            background: colors.bgCard,
+            borderRadius: 16,
+          }}>
+            {/* 헤더 */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+              <div>
+                <div style={{ fontSize: 15, fontWeight: 600, color: colors.text, marginBottom: 8 }}>오늘</div>
+                <div style={{ fontSize: 24, fontWeight: 700, color: '#2E7D32', marginBottom: 4 }}>
+                  {slot.pickupStart}-{slot.pickupEnd} <span style={{ fontSize: 16, fontWeight: 400, color: colors.gray600 }}>에</span>
+                </div>
+                <div style={{ fontSize: 15, color: colors.gray600 }}>
+                  <span style={{ fontWeight: 600, color: colors.text }}>{slot.price.toLocaleString()}원 이상</span> 어치 럭키백
+                </div>
+                <div style={{ fontSize: 15, color: colors.gray600 }}>
+                  <span style={{ fontWeight: 600, color: colors.text }}>최대 {slot.maxQuantity}개</span>를 찾으러와요
+                </div>
+              </div>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{
+                  display: 'inline-block',
+                  padding: '6px 12px',
+                  background: badge.bg,
+                  color: badge.color,
+                  borderRadius: 20,
+                  fontSize: 13,
+                  fontWeight: 600,
+                  marginBottom: 8,
+                }}>
+                  {badge.text} ▾
+                </div>
+                <div style={{ fontSize: 13, color: '#F9A825', fontWeight: 500 }}>
+                  {formatRemainingTime(slot.remainingMinutes)}
+                </div>
+              </div>
+            </div>
+
+            {/* 타임라인 */}
+            <div style={{ position: 'relative', paddingTop: 8 }}>
+              {/* 프로그레스 바 */}
+              <div style={{
+                height: 3,
+                background: colors.gray200,
+                borderRadius: 2,
+                marginBottom: 8,
+              }}>
+                <div style={{
+                  width: `${progress}%`,
+                  height: '100%',
+                  background: colors.gray800,
+                  borderRadius: 2,
+                }} />
+              </div>
+
+              {/* 타임라인 라벨 */}
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                {[
+                  { time: slot.reserveOpenTime, label: '예약 오픈' },
+                  { time: slot.confirmTime + ' 예정', label: '확정' },
+                  { time: slot.pickupStart, label: '픽업 시작' },
+                  { time: slot.pickupEnd, label: '픽업 마감' },
+                ].map((item, idx) => (
+                  <div key={idx} style={{ textAlign: idx === 0 ? 'left' : idx === 3 ? 'right' : 'center' }}>
+                    <div style={{ fontSize: 11, color: colors.gray500 }}>{item.time}</div>
+                    <div style={{ fontSize: 11, color: colors.gray500 }}>{item.label}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+      })}
+
+      {/* 주문 목록 헤더 */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '12px 20px',
+        borderBottom: `1px solid ${colors.gray100}`,
+      }}>
+        <button style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 4,
+          background: 'none',
+          border: 'none',
+          cursor: 'pointer',
+          fontSize: 14,
+          color: colors.gray600,
+        }}>
+          최근 주문순 ▾
+        </button>
+        <span style={{ fontSize: 13, color: colors.gray500 }}>
+          최대 {timeSlots[0]?.maxQuantity}개
+        </span>
+      </div>
+
+      {/* 주문 목록 */}
+      <div style={{ background: colors.bgCard }}>
+        {orders.map(order => (
+          <div key={order.id} style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '16px 20px',
+            borderBottom: `1px solid ${colors.gray100}`,
+          }}>
+            <div>
+              <div style={{ fontSize: 15, color: colors.text, marginBottom: 4 }}>
+                <span style={{ fontWeight: 600 }}>{order.luckyBagCount}개</span> · {order.price.toLocaleString()}원
+              </div>
+              <div style={{ fontSize: 14, color: colors.gray500 }}>
+                {order.code} ({order.name}) {order.mannerScore}점
+              </div>
+            </div>
+            <button style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 4,
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              fontSize: 14,
+              color: colors.gray600,
+            }}>
+              예약완료 <span style={{ fontSize: 18 }}>›</span>
+            </button>
+          </div>
+        ))}
+      </div>
+
+      {/* 다음 타임 (더블 타임인 경우) */}
+      {timeSlots.length > 1 && (
+        <>
+          <div style={{ padding: '24px 20px 12px' }}>
+            <span style={{ fontSize: 13, color: colors.gray500 }}>다음 타임</span>
+          </div>
+          <div style={{
+            margin: '0 16px 16px',
+            padding: 20,
+            background: colors.bgCard,
+            borderRadius: 16,
+          }}>
+            {timeSlots.slice(1).map(slot => {
+              const badge = getStatusBadge(slot.status);
+              return (
+                <div key={slot.id}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <div>
+                      <div style={{ fontSize: 20, fontWeight: 700, color: colors.text, marginBottom: 4 }}>
+                        {slot.pickupStart}-{slot.pickupEnd}
+                      </div>
+                      <div style={{ fontSize: 14, color: colors.gray600 }}>
+                        {slot.price.toLocaleString()}원 어치 · {slot.maxQuantity}개
+                      </div>
+                    </div>
+                    <div style={{ textAlign: 'right' }}>
+                      <div style={{
+                        display: 'inline-block',
+                        padding: '6px 12px',
+                        background: badge.bg,
+                        color: badge.color,
+                        borderRadius: 20,
+                        fontSize: 13,
+                        fontWeight: 600,
+                        marginBottom: 8,
+                      }}>
+                        {badge.text} ▾
+                      </div>
+                      <div style={{ fontSize: 13, color: '#F9A825', fontWeight: 500 }}>
+                        {formatRemainingTime(slot.remainingMinutes)}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
+
+      {/* 하단 액션 버튼 */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        gap: 12,
+        padding: '16px 20px',
+      }}>
+        <button style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6,
+          padding: '12px 20px',
+          background: colors.bgCard,
+          border: `1px solid ${colors.gray200}`,
+          borderRadius: 24,
+          cursor: 'pointer',
+          fontSize: 14,
+          color: colors.gray700,
+        }}>
+          <span style={{ fontSize: 16 }}>🚫</span> 휴무처리
+        </button>
+        <button style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6,
+          padding: '12px 20px',
+          background: colors.bgCard,
+          border: `1px solid ${colors.gray200}`,
+          borderRadius: 24,
+          cursor: 'pointer',
+          fontSize: 14,
+          color: colors.gray700,
+        }}>
+          <span style={{ fontSize: 16 }}>+</span> 추가 판매
+        </button>
+      </div>
+
       {/* 빈 상태 안내 */}
-      {todayOrders.length === 0 && (
-        <div style={{ textAlign: 'center', padding: '60px 20px', color: colors.gray500 }}>
-          <div style={{ fontSize: 48, marginBottom: 16 }}>📭</div>
-          <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 8 }}>오늘 주문이 없어요</div>
-          <div style={{ fontSize: 14 }}>새로운 예약이 들어오면 알려드릴게요</div>
+      {orders.length === 0 && (
+        <div style={{ textAlign: 'center', padding: '40px 20px', color: colors.gray500 }}>
+          <div style={{ fontSize: 14 }}>아직 주문이 없어요</div>
         </div>
       )}
     </div>
