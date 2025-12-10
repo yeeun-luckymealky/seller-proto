@@ -806,6 +806,13 @@ const HomeScreen = ({ onNavigate, shopData, setShopData }) => {
 const OrdersScreen = ({ onNavigate, shopData, setShopData, stores, currentStoreId, currentStore, onSelectStore }) => {
   const { colors } = useTheme();
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [showStatusSheet, setShowStatusSheet] = useState(false);
+  const [showSortSheet, setShowSortSheet] = useState(false);
+  const [showOrderSheet, setShowOrderSheet] = useState(null); // 선택된 주문
+  const [showHolidayConfirm, setShowHolidayConfirm] = useState(false);
+  const [showAddSaleSheet, setShowAddSaleSheet] = useState(false);
+  const [selectedSlotId, setSelectedSlotId] = useState(null);
+  const [sortOrder, setSortOrder] = useState('recent'); // 'recent', 'oldest'
 
   // 주간 캘린더 데이터 생성
   const getWeekDays = () => {
@@ -961,18 +968,22 @@ const OrdersScreen = ({ onNavigate, shopData, setShopData, stores, currentStoreI
                 </div>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <div style={{
-                  display: 'inline-block',
-                  padding: '6px 12px',
-                  background: badge.bg,
-                  color: badge.color,
-                  borderRadius: 20,
-                  fontSize: 13,
-                  fontWeight: 600,
-                  marginBottom: 8,
-                }}>
+                <button
+                  onClick={() => { setSelectedSlotId(slot.id); setShowStatusSheet(true); }}
+                  style={{
+                    display: 'inline-block',
+                    padding: '6px 12px',
+                    background: badge.bg,
+                    color: badge.color,
+                    borderRadius: 20,
+                    fontSize: 13,
+                    fontWeight: 600,
+                    marginBottom: 8,
+                    border: 'none',
+                    cursor: 'pointer',
+                  }}>
                   {badge.text} ▾
-                </div>
+                </button>
                 <div style={{ fontSize: 13, color: '#F9A825', fontWeight: 500 }}>
                   {formatRemainingTime(slot.remainingMinutes)}
                 </div>
@@ -1023,17 +1034,19 @@ const OrdersScreen = ({ onNavigate, shopData, setShopData, stores, currentStoreI
         padding: '12px 20px',
         borderBottom: `1px solid ${colors.gray100}`,
       }}>
-        <button style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 4,
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-          fontSize: 14,
-          color: colors.gray600,
-        }}>
-          최근 주문순 ▾
+        <button
+          onClick={() => setShowSortSheet(true)}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 4,
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            fontSize: 14,
+            color: colors.gray600,
+          }}>
+          {sortOrder === 'recent' ? '최근 주문순' : '오래된 순'} ▾
         </button>
         <span style={{ fontSize: 13, color: colors.gray500 }}>
           최대 {timeSlots[0]?.maxQuantity}개
@@ -1058,17 +1071,19 @@ const OrdersScreen = ({ onNavigate, shopData, setShopData, stores, currentStoreI
                 {order.code} ({order.name}) {order.mannerScore}점
               </div>
             </div>
-            <button style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 4,
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              fontSize: 14,
-              color: colors.gray600,
-            }}>
-              예약완료 <span style={{ fontSize: 18 }}>›</span>
+            <button
+              onClick={() => setShowOrderSheet(order)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 4,
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: 14,
+                color: colors.gray600,
+              }}>
+              {order.status === 'confirmed' ? '예약완료' : order.status === 'picked_up' ? '픽업완료' : '예약완료'} <span style={{ fontSize: 18 }}>›</span>
             </button>
           </div>
         ))}
@@ -1100,18 +1115,22 @@ const OrdersScreen = ({ onNavigate, shopData, setShopData, stores, currentStoreI
                       </div>
                     </div>
                     <div style={{ textAlign: 'right' }}>
-                      <div style={{
-                        display: 'inline-block',
-                        padding: '6px 12px',
-                        background: badge.bg,
-                        color: badge.color,
-                        borderRadius: 20,
-                        fontSize: 13,
-                        fontWeight: 600,
-                        marginBottom: 8,
-                      }}>
+                      <button
+                        onClick={() => { setSelectedSlotId(slot.id); setShowStatusSheet(true); }}
+                        style={{
+                          display: 'inline-block',
+                          padding: '6px 12px',
+                          background: badge.bg,
+                          color: badge.color,
+                          borderRadius: 20,
+                          fontSize: 13,
+                          fontWeight: 600,
+                          marginBottom: 8,
+                          border: 'none',
+                          cursor: 'pointer',
+                        }}>
                         {badge.text} ▾
-                      </div>
+                      </button>
                       <div style={{ fontSize: 13, color: '#F9A825', fontWeight: 500 }}>
                         {formatRemainingTime(slot.remainingMinutes)}
                       </div>
@@ -1131,32 +1150,36 @@ const OrdersScreen = ({ onNavigate, shopData, setShopData, stores, currentStoreI
         gap: 12,
         padding: '16px 20px',
       }}>
-        <button style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 6,
-          padding: '12px 20px',
-          background: colors.bgCard,
-          border: `1px solid ${colors.gray200}`,
-          borderRadius: 24,
-          cursor: 'pointer',
-          fontSize: 14,
-          color: colors.gray700,
-        }}>
+        <button
+          onClick={() => setShowHolidayConfirm(true)}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+            padding: '12px 20px',
+            background: colors.bgCard,
+            border: `1px solid ${colors.gray200}`,
+            borderRadius: 24,
+            cursor: 'pointer',
+            fontSize: 14,
+            color: colors.gray700,
+          }}>
           <span style={{ fontSize: 16 }}>🚫</span> 휴무처리
         </button>
-        <button style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 6,
-          padding: '12px 20px',
-          background: colors.bgCard,
-          border: `1px solid ${colors.gray200}`,
-          borderRadius: 24,
-          cursor: 'pointer',
-          fontSize: 14,
-          color: colors.gray700,
-        }}>
+        <button
+          onClick={() => setShowAddSaleSheet(true)}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+            padding: '12px 20px',
+            background: colors.bgCard,
+            border: `1px solid ${colors.gray200}`,
+            borderRadius: 24,
+            cursor: 'pointer',
+            fontSize: 14,
+            color: colors.gray700,
+          }}>
           <span style={{ fontSize: 16 }}>+</span> 추가 판매
         </button>
       </div>
@@ -1166,6 +1189,139 @@ const OrdersScreen = ({ onNavigate, shopData, setShopData, stores, currentStoreI
         <div style={{ textAlign: 'center', padding: '40px 20px', color: colors.gray500 }}>
           <div style={{ fontSize: 14 }}>아직 주문이 없어요</div>
         </div>
+      )}
+
+      {/* 상태 변경 바텀시트 */}
+      {showStatusSheet && (
+        <BottomSheet title="타임슬롯 상태 변경" onClose={() => setShowStatusSheet(false)}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {[
+              { value: 'before_open', label: '오픈 전', desc: '아직 예약을 받지 않아요' },
+              { value: 'accepting', label: '접수중', desc: '예약을 받고 있어요' },
+              { value: 'closed', label: '접수 마감', desc: '더 이상 예약을 받지 않아요' },
+            ].map(status => (
+              <button
+                key={status.value}
+                onClick={() => {
+                  // TODO: 실제 상태 변경 로직
+                  alert(`상태가 "${status.label}"(으)로 변경되었어요`);
+                  setShowStatusSheet(false);
+                }}
+                style={{
+                  padding: 16,
+                  background: colors.bgCard,
+                  border: `1px solid ${colors.gray200}`,
+                  borderRadius: 12,
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}>
+                <div style={{ fontSize: 15, fontWeight: 600, color: colors.text, marginBottom: 4 }}>{status.label}</div>
+                <div style={{ fontSize: 13, color: colors.gray500 }}>{status.desc}</div>
+              </button>
+            ))}
+          </div>
+        </BottomSheet>
+      )}
+
+      {/* 정렬 바텀시트 */}
+      {showSortSheet && (
+        <BottomSheet title="주문 정렬" onClose={() => setShowSortSheet(false)}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {[
+              { value: 'recent', label: '최근 주문순' },
+              { value: 'oldest', label: '오래된 순' },
+            ].map(sort => (
+              <button
+                key={sort.value}
+                onClick={() => {
+                  setSortOrder(sort.value);
+                  setShowSortSheet(false);
+                }}
+                style={{
+                  padding: 16,
+                  background: sortOrder === sort.value ? colors.gray100 : colors.bgCard,
+                  border: `1px solid ${sortOrder === sort.value ? colors.gray400 : colors.gray200}`,
+                  borderRadius: 12,
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                  fontSize: 15,
+                  fontWeight: sortOrder === sort.value ? 600 : 400,
+                  color: colors.text,
+                }}>
+                {sort.label}
+              </button>
+            ))}
+          </div>
+        </BottomSheet>
+      )}
+
+      {/* 주문 상세 바텀시트 */}
+      {showOrderSheet && (
+        <BottomSheet title="주문 상세" onClose={() => setShowOrderSheet(null)}>
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ fontSize: 18, fontWeight: 600, color: colors.text, marginBottom: 8 }}>
+              {showOrderSheet.code}
+            </div>
+            <div style={{ fontSize: 14, color: colors.gray600, marginBottom: 4 }}>
+              고객: {showOrderSheet.name} · 매너점수 {showOrderSheet.mannerScore}점
+            </div>
+            <div style={{ fontSize: 14, color: colors.gray600 }}>
+              럭키백 {showOrderSheet.luckyBagCount}개 · {showOrderSheet.price?.toLocaleString()}원
+            </div>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <Button fullWidth onClick={() => { alert('픽업 완료 처리되었어요'); setShowOrderSheet(null); }}>
+              픽업 완료
+            </Button>
+            <Button variant="secondary" fullWidth onClick={() => { alert('주문이 취소되었어요'); setShowOrderSheet(null); }}>
+              주문 취소
+            </Button>
+          </div>
+        </BottomSheet>
+      )}
+
+      {/* 휴무 확인 바텀시트 */}
+      {showHolidayConfirm && (
+        <BottomSheet title="휴무 처리" onClose={() => setShowHolidayConfirm(false)}>
+          <div style={{ marginBottom: 20, fontSize: 14, color: colors.gray600, lineHeight: 1.6 }}>
+            오늘 하루 럭키백 판매를 쉬시겠어요?<br />
+            예약된 주문이 있다면 자동으로 취소되고 고객에게 알림이 가요.
+          </div>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <Button variant="secondary" fullWidth onClick={() => setShowHolidayConfirm(false)}>
+              취소
+            </Button>
+            <Button fullWidth onClick={() => { alert('오늘 휴무 처리되었어요'); setShowHolidayConfirm(false); }}>
+              휴무 처리
+            </Button>
+          </div>
+        </BottomSheet>
+      )}
+
+      {/* 추가 판매 바텀시트 */}
+      {showAddSaleSheet && (
+        <BottomSheet title="추가 판매" onClose={() => setShowAddSaleSheet(false)}>
+          <div style={{ marginBottom: 20, fontSize: 14, color: colors.gray600, lineHeight: 1.6 }}>
+            오늘 판매할 럭키백 수량을 추가할 수 있어요.<br />
+            추가된 수량만큼 더 많은 고객이 예약할 수 있어요.
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 20, marginBottom: 20 }}>
+            <button
+              onClick={() => {}}
+              style={{ width: 44, height: 44, borderRadius: 22, border: `1px solid ${colors.gray300}`, background: colors.bgCard, fontSize: 20, cursor: 'pointer' }}>
+              -
+            </button>
+            <span style={{ fontSize: 24, fontWeight: 600, color: colors.text }}>1</span>
+            <button
+              onClick={() => {}}
+              style={{ width: 44, height: 44, borderRadius: 22, border: `1px solid ${colors.gray300}`, background: colors.bgCard, fontSize: 20, cursor: 'pointer' }}>
+              +
+            </button>
+          </div>
+          <Button fullWidth onClick={() => { alert('1개 추가되었어요'); setShowAddSaleSheet(false); }}>
+            추가하기
+          </Button>
+        </BottomSheet>
       )}
     </div>
   );
