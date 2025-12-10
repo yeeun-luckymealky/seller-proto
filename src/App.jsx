@@ -613,31 +613,20 @@ const HomeScreen = ({ onNavigate, shopData, setShopData }) => {
 };
 
 // ============================================
-// 주문 관리 화면 (홈 기능 통합)
+// 주문 관리 화면 (홈 기능 통합) - 토스 스타일
 // ============================================
 const OrdersScreen = ({ onNavigate, shopData, setShopData }) => {
   const { colors } = useTheme();
   const [expandedOrder, setExpandedOrder] = useState(null);
-  const [sortBy, setSortBy] = useState('manner'); // manner, time
-  const [showQuantitySheet, setShowQuantitySheet] = useState(false);
+  const [sortBy, setSortBy] = useState('manner');
 
-  // 오늘 픽업 시간
-  const pickupStartTime = '19:00';
-  const pickupEndTime = '20:00';
-
-  // 타임라인 계산
-  const getTimelineSteps = () => {
-    const [startHour, startMin] = pickupStartTime.split(':').map(Number);
-    return [
-      { id: 0, label: '예약 오픈' },
-      { id: 1, label: '확정!' },
-      { id: 2, label: '픽업 시작' },
-      { id: 3, label: '픽업 마감' },
-    ];
-  };
-
-  const timelineSteps = getTimelineSteps();
-  const currentStep = 1; // 현재 확정 단계
+  const timelineSteps = [
+    { id: 0, label: '예약 오픈' },
+    { id: 1, label: '확정!' },
+    { id: 2, label: '픽업 시작' },
+    { id: 3, label: '픽업 마감' },
+  ];
+  const currentStep = 1;
 
   const todayOrders = [
     { id: 1, code: '맑은하늘', orderUid: 'ORD-2024120801', name: '김**', mannerScore: 85, luckyBagCount: 2, discountPrice: 3900, pickupStartTime: '14:00', pickupEndTime: '15:00', status: ORDER_STATUS.PAID, isPickupChecked: false },
@@ -645,7 +634,6 @@ const OrdersScreen = ({ onNavigate, shopData, setShopData }) => {
     { id: 3, code: '행복가득', orderUid: 'ORD-2024120803', name: '박**', mannerScore: 78, luckyBagCount: 1, discountPrice: 3900, pickupStartTime: '15:00', pickupEndTime: '16:00', status: ORDER_STATUS.USER_CANCEL, isPickupChecked: false },
   ];
 
-  // 정렬
   const sortedOrders = [...todayOrders].sort((a, b) => {
     if (sortBy === 'manner') return b.mannerScore - a.mannerScore;
     return a.pickupStartTime.localeCompare(b.pickupStartTime);
@@ -654,86 +642,69 @@ const OrdersScreen = ({ onNavigate, shopData, setShopData }) => {
   const totalLuckyBags = todayOrders.reduce((sum, o) => sum + o.luckyBagCount, 0);
   const totalValue = shopData.originalPrice * totalLuckyBags;
 
-  const getStatusBadge = (order) => {
-    if (order.status === ORDER_STATUS.USER_CANCEL) return <span style={{ fontSize: tokens.fontSize.xs, color: colors.gray500 }}>고객취소</span>;
-    if (order.isPickupChecked) return <Badge variant="success">픽업완료</Badge>;
-    if (order.status === ORDER_STATUS.CONFIRMED) return <Badge variant="primary">확정</Badge>;
-    if (order.status === ORDER_STATUS.PAID) return <Badge variant="warning">예약</Badge>;
+  const getStatusLabel = (order) => {
+    if (order.status === ORDER_STATUS.USER_CANCEL) return { text: '고객취소', color: colors.gray500 };
+    if (order.status === ORDER_STATUS.PLACE_CANCEL) return { text: '가게취소', color: colors.gray500 };
+    if (order.isPickupChecked) return { text: '픽업완료', color: colors.blue500 };
+    if (order.status === ORDER_STATUS.CONFIRMED) return { text: '확정', color: colors.blue500 };
+    if (order.status === ORDER_STATUS.PAID) return { text: '예약', color: colors.green600 };
     return null;
   };
 
-  const getMannerColor = (score) => {
-    if (score >= 90) return colors.green500;
-    if (score >= 70) return colors.blue500;
-    return colors.orange500;
-  };
-
   return (
-    <div style={{ paddingBottom: 100 }}>
-      {/* 사장님 인사 */}
-      <div style={{ padding: `${tokens.spacing.xl}px ${tokens.spacing.lg}px ${tokens.spacing.md}px` }}>
-        <div style={{ fontSize: tokens.fontSize.xxl, fontWeight: 700, color: colors.text }}>
+    <div style={{ paddingBottom: 120, background: colors.bg, minHeight: '100vh' }}>
+      {/* 헤더 */}
+      <div style={{ padding: '32px 24px 24px' }}>
+        <h1 style={{ fontSize: 26, fontWeight: 700, color: colors.text, margin: 0, letterSpacing: '-0.3px' }}>
           {shopData.shopName} 사장님 안녕하세요:)
-        </div>
+        </h1>
       </div>
 
       {/* 오늘의 럭키백 카드 */}
       <div style={{
-        margin: `${tokens.spacing.sm}px ${tokens.spacing.lg}px ${tokens.spacing.lg}px`,
-        padding: tokens.spacing.xl,
-        border: `2px dashed ${colors.gray300}`,
-        borderRadius: tokens.radius.lg,
+        margin: '0 20px 28px',
+        padding: '28px 24px',
         background: colors.bgCard,
+        borderRadius: 24,
+        border: `1.5px dashed ${colors.gray300}`,
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.sm, marginBottom: tokens.spacing.lg }}>
-          <span style={{ fontSize: tokens.fontSize.lg, color: colors.text }}>오늘의</span>
-          <span style={{ fontSize: 20 }}>🍀</span>
-          <span style={{ fontSize: tokens.fontSize.lg, fontWeight: 600, color: colors.text }}>럭키백</span>
-          <span style={{ fontSize: 20 }}>🍀</span>
-          <span style={{ fontSize: tokens.fontSize.lg, color: colors.text }}>은</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 28, fontSize: 17, color: colors.text }}>
+          <span>오늘의</span>
+          <span>🍀</span>
+          <span style={{ fontWeight: 600 }}>럭키백</span>
+          <span>🍀</span>
+          <span>은</span>
         </div>
 
         {/* 타임라인 */}
-        <div style={{ display: 'flex', alignItems: 'center', marginBottom: tokens.spacing.xl }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', marginBottom: 32, padding: '0 4px' }}>
           {timelineSteps.map((step, idx) => {
             const isCompleted = idx < currentStep;
             const isCurrent = idx === currentStep;
             const isLast = idx === timelineSteps.length - 1;
-
             return (
               <div key={step.id} style={{ flex: 1, position: 'relative' }}>
-                {/* 연결선 */}
                 {!isLast && (
                   <div style={{
                     position: 'absolute', top: 10, left: '50%', right: '-50%',
-                    height: 3, background: isCompleted ? colors.green500 : colors.gray200,
-                    zIndex: 0,
+                    height: 2, background: isCompleted ? colors.green500 : colors.gray200,
                   }} />
                 )}
-
-                {/* 점 */}
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative', zIndex: 1 }}>
-                  <div style={{ width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <div style={{
-                      width: isCurrent ? 24 : 16, height: isCurrent ? 24 : 16,
-                      borderRadius: '50%',
-                      background: isCompleted || isCurrent ? colors.green500 : colors.bgCard,
-                      border: `2px solid ${isCompleted || isCurrent ? colors.green500 : colors.gray300}`,
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    }}>
-                      {(isCompleted || isCurrent) && (
-                        <div style={{ width: isCurrent ? 8 : 6, height: isCurrent ? 8 : 6, borderRadius: '50%', background: '#FFFFFF' }} />
-                      )}
-                    </div>
-                  </div>
-
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}>
                   <div style={{
-                    marginTop: 8, textAlign: 'center',
-                    color: isCurrent ? colors.green600 : isCompleted ? colors.text : colors.textTertiary,
-                    fontWeight: isCurrent ? 600 : 400, fontSize: tokens.fontSize.xs,
+                    width: isCurrent ? 22 : 12, height: isCurrent ? 22 : 12, borderRadius: '50%',
+                    background: isCompleted || isCurrent ? colors.green500 : colors.bgCard,
+                    border: `2px solid ${isCompleted || isCurrent ? colors.green500 : colors.gray300}`,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
                   }}>
-                    {step.label}
+                    {(isCompleted || isCurrent) && (
+                      <div style={{ width: isCurrent ? 7 : 4, height: isCurrent ? 7 : 4, borderRadius: '50%', background: '#fff' }} />
+                    )}
                   </div>
+                  <span style={{
+                    marginTop: 10, fontSize: 12, fontWeight: isCurrent ? 600 : 400,
+                    color: isCurrent ? colors.green600 : isCompleted ? colors.text : colors.gray400,
+                  }}>{step.label}</span>
                 </div>
               </div>
             );
@@ -741,142 +712,110 @@ const OrdersScreen = ({ onNavigate, shopData, setShopData }) => {
         </div>
 
         {/* 럭키백 정보 */}
-        <div style={{ fontSize: tokens.fontSize.xxl, fontWeight: 700, color: colors.text, lineHeight: 1.5 }}>
-          <span style={{ textDecoration: 'underline', textUnderlineOffset: 4 }}>{totalValue.toLocaleString()}원</span> 어치의 음식으로
-        </div>
-        <div style={{ fontSize: tokens.fontSize.xxl, fontWeight: 700, color: colors.text, lineHeight: 1.5 }}>
-          총 <span style={{ textDecoration: 'underline', textUnderlineOffset: 4 }}>{totalLuckyBags}개</span>의 럭키백을 담아주세요:)
+        <div style={{ lineHeight: 1.7 }}>
+          <p style={{ fontSize: 22, fontWeight: 700, color: colors.text, margin: '0 0 2px' }}>
+            <span style={{ textDecoration: 'underline', textUnderlineOffset: 5, textDecorationThickness: 2 }}>
+              {totalValue.toLocaleString()}원
+            </span> 어치의 음식으로
+          </p>
+          <p style={{ fontSize: 22, fontWeight: 700, color: colors.text, margin: 0 }}>
+            총 <span style={{ textDecoration: 'underline', textUnderlineOffset: 5, textDecorationThickness: 2 }}>
+              {totalLuckyBags}개
+            </span>의 럭키백을 담아주세요:)
+          </p>
         </div>
       </div>
 
       {/* 정렬 버튼 */}
-      <div style={{ padding: `0 ${tokens.spacing.lg}px ${tokens.spacing.md}px` }}>
+      <div style={{ padding: '0 20px 20px' }}>
         <button
           onClick={() => setSortBy(sortBy === 'manner' ? 'time' : 'manner')}
           style={{
-            display: 'inline-flex', alignItems: 'center', gap: tokens.spacing.sm,
-            padding: `${tokens.spacing.sm}px ${tokens.spacing.md}px`,
-            background: colors.green500, color: '#FFFFFF',
-            border: 'none', borderRadius: tokens.radius.full,
-            fontSize: tokens.fontSize.sm, fontWeight: 500, cursor: 'pointer',
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            padding: '10px 18px', background: colors.green500, color: '#fff',
+            border: 'none', borderRadius: 24, fontSize: 14, fontWeight: 600, cursor: 'pointer',
           }}
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
             <line x1="4" y1="6" x2="20" y2="6" />
             <line x1="4" y1="12" x2="16" y2="12" />
-            <line x1="4" y1="18" x2="12" y2="18" />
+            <line x1="4" y1="18" x2="10" y2="18" />
           </svg>
           {sortBy === 'manner' ? '매너지수 높은 순' : '픽업시간 순'}
         </button>
       </div>
 
       {/* 주문 목록 */}
-      {sortedOrders.length === 0 ? (
-        <EmptyState icon="📋" title="오늘 주문이 없어요" description="새로운 예약이 들어오면 알려드릴게요" />
-      ) : (
-        <div style={{ padding: `0 ${tokens.spacing.lg}px` }}>
-          {sortedOrders.map(order => {
-            const isCanceled = order.status === ORDER_STATUS.USER_CANCEL || order.status === ORDER_STATUS.PLACE_CANCEL;
-            return (
-              <Card
-                key={order.id}
-                style={{
-                  marginBottom: tokens.spacing.md,
-                  padding: 0,
-                  overflow: 'hidden',
-                  background: isCanceled ? colors.gray100 : colors.green50,
-                  border: isCanceled ? 'none' : `1px solid ${colors.green100}`,
-                }}
-              >
-                <div style={{ padding: tokens.spacing.xl }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: tokens.spacing.md }}>
-                    <span style={{
-                      fontSize: tokens.fontSize.xl,
-                      fontWeight: 700,
-                      color: isCanceled ? colors.gray500 : colors.green500
-                    }}>
-                      {order.code}
-                    </span>
-                    {getStatusBadge(order)}
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <div style={{
-                      fontSize: tokens.fontSize.md,
-                      color: isCanceled ? colors.gray500 : colors.text
-                    }}>
-                      럭키백 총 {order.luckyBagCount}개 예약
-                    </div>
-                    <button
-                      onClick={() => setExpandedOrder(expandedOrder === order.id ? null : order.id)}
-                      style={{
-                        display: 'flex', alignItems: 'center', gap: tokens.spacing.xs,
-                        padding: `${tokens.spacing.sm}px ${tokens.spacing.md}px`,
-                        background: colors.bgCard, color: colors.text,
-                        border: `1px solid ${colors.border}`, borderRadius: tokens.radius.full,
-                        fontSize: tokens.fontSize.sm, cursor: 'pointer',
-                      }}
-                    >
-                      상세보기
-                      <span style={{ transform: expandedOrder === order.id ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s' }}>▼</span>
-                    </button>
-                  </div>
+      <div style={{ padding: '0 20px' }}>
+        {sortedOrders.map(order => {
+          const isCanceled = order.status === ORDER_STATUS.USER_CANCEL || order.status === ORDER_STATUS.PLACE_CANCEL;
+          const statusInfo = getStatusLabel(order);
+          const isExpanded = expandedOrder === order.id;
+
+          return (
+            <div key={order.id} style={{
+              marginBottom: 14, background: isCanceled ? colors.gray100 : '#E8F5E9',
+              borderRadius: 20, overflow: 'hidden',
+            }}>
+              <div style={{ padding: '22px 22px 20px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+                  <span style={{ fontSize: 20, fontWeight: 700, color: isCanceled ? colors.gray500 : colors.green600 }}>
+                    {order.code}
+                  </span>
+                  {statusInfo && (
+                    <span style={{ fontSize: 13, color: statusInfo.color, fontWeight: 500 }}>{statusInfo.text}</span>
+                  )}
                 </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: 15, color: isCanceled ? colors.gray500 : colors.text }}>
+                    럭키백 총 {order.luckyBagCount}개 예약
+                  </span>
+                  <button
+                    onClick={() => setExpandedOrder(isExpanded ? null : order.id)}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: 6, padding: '9px 16px',
+                      background: colors.bgCard, color: colors.text,
+                      border: `1px solid ${colors.gray200}`, borderRadius: 24,
+                      fontSize: 13, fontWeight: 500, cursor: 'pointer',
+                    }}
+                  >
+                    상세보기
+                    <span style={{ fontSize: 9, transform: isExpanded ? 'rotate(180deg)' : 'rotate(0)', transition: 'transform 0.2s' }}>▼</span>
+                  </button>
+                </div>
+              </div>
 
-                {expandedOrder === order.id && (
-                  <div style={{ padding: `0 ${tokens.spacing.xl}px ${tokens.spacing.xl}px`, borderTop: `1px solid ${colors.border}`, background: colors.bgCard }}>
-                    <div style={{ padding: `${tokens.spacing.lg}px 0` }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: tokens.spacing.sm }}>
-                        <span style={{ color: colors.textTertiary }}>주문번호</span>
-                        <span style={{ color: colors.text, fontSize: tokens.fontSize.sm }}>{order.orderUid}</span>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: tokens.spacing.sm }}>
-                        <span style={{ color: colors.textTertiary }}>고객</span>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.sm }}>
-                          <span style={{ color: colors.text }}>{order.name}</span>
-                          <span style={{ fontSize: tokens.fontSize.xs, fontWeight: 600, color: getMannerColor(order.mannerScore), background: colors.gray100, padding: '2px 6px', borderRadius: 4 }}>
-                            매너 {order.mannerScore}
-                          </span>
-                        </div>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: tokens.spacing.sm }}>
-                        <span style={{ color: colors.textTertiary }}>픽업 시간</span>
-                        <span style={{ color: colors.text }}>{order.pickupStartTime} - {order.pickupEndTime}</span>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <span style={{ color: colors.textTertiary }}>결제 금액</span>
-                        <span style={{ color: colors.text, fontWeight: 600 }}>{order.discountPrice.toLocaleString()}원</span>
-                      </div>
+              {isExpanded && (
+                <div style={{ padding: '20px 22px 22px', background: colors.bgCard, borderTop: `1px solid ${colors.gray200}` }}>
+                  {[
+                    { label: '주문번호', value: order.orderUid },
+                    { label: '고객', value: order.name },
+                    { label: '픽업 시간', value: `${order.pickupStartTime} - ${order.pickupEndTime}` },
+                    { label: '결제 금액', value: `${order.discountPrice.toLocaleString()}원`, bold: true },
+                  ].map((row, i) => (
+                    <div key={i} style={{
+                      display: 'flex', justifyContent: 'space-between', padding: '10px 0',
+                      borderBottom: i < 3 ? `1px solid ${colors.gray100}` : 'none'
+                    }}>
+                      <span style={{ fontSize: 14, color: colors.gray500 }}>{row.label}</span>
+                      <span style={{ fontSize: 14, color: colors.text, fontWeight: row.bold ? 600 : 400 }}>{row.value}</span>
                     </div>
-                    {!isCanceled && (
-                      order.isPickupChecked ? null : order.status === ORDER_STATUS.CONFIRMED ? (
-                        <Button fullWidth variant="success">픽업 완료</Button>
-                      ) : (
-                        <div style={{ display: 'flex', gap: tokens.spacing.md }}>
-                          <Button variant="secondary" fullWidth>취소</Button>
-                          <Button fullWidth>주문 확정</Button>
-                        </div>
-                      )
-                    )}
-                  </div>
-                )}
-              </Card>
-            );
-          })}
-        </div>
-      )}
-
-      {/* 수량 변경 바텀시트 */}
-      <BottomSheet isOpen={showQuantitySheet} onClose={() => setShowQuantitySheet(false)} title="오늘 판매 수량 변경">
-        <div style={{ marginBottom: tokens.spacing.lg }}>
-          <div style={{ fontSize: tokens.fontSize.sm, color: colors.textTertiary, marginBottom: tokens.spacing.sm }}>판매 수량</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.md }}>
-            <button onClick={() => setShopData({ ...shopData, dailySalesCount: Math.max(1, shopData.dailySalesCount - 1) })} style={{ width: 40, height: 40, border: `1px solid ${colors.border}`, borderRadius: tokens.radius.md, background: colors.bgCard, cursor: 'pointer', fontSize: 20 }}>-</button>
-            <span style={{ fontSize: tokens.fontSize.xxl, fontWeight: 700, color: colors.text, minWidth: 60, textAlign: 'center' }}>{shopData.dailySalesCount}</span>
-            <button onClick={() => setShopData({ ...shopData, dailySalesCount: shopData.dailySalesCount + 1 })} style={{ width: 40, height: 40, border: `1px solid ${colors.border}`, borderRadius: tokens.radius.md, background: colors.bgCard, cursor: 'pointer', fontSize: 20 }}>+</button>
-          </div>
-        </div>
-        <Button fullWidth onClick={() => setShowQuantitySheet(false)}>변경 완료</Button>
-      </BottomSheet>
+                  ))}
+                  {!isCanceled && order.status === ORDER_STATUS.PAID && (
+                    <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
+                      <Button variant="secondary" fullWidth>취소</Button>
+                      <Button fullWidth>주문 확정</Button>
+                    </div>
+                  )}
+                  {!isCanceled && order.status === ORDER_STATUS.CONFIRMED && !order.isPickupChecked && (
+                    <div style={{ marginTop: 16 }}><Button fullWidth variant="primary">픽업 완료</Button></div>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };
@@ -1067,28 +1006,26 @@ const SettingsScreen = ({ onNavigate, shopData }) => {
   ];
 
   return (
-    <div style={{ paddingBottom: 100 }}>
+    <div style={{ paddingBottom: 120, background: colors.bg, minHeight: '100vh' }}>
       {/* 계정 섹션 (회색 배경) */}
       <div style={{
-        margin: tokens.spacing.lg,
-        padding: tokens.spacing.xl,
+        margin: '20px 20px 16px',
+        padding: '28px 24px',
         background: colors.gray100,
-        borderRadius: tokens.radius.lg,
+        borderRadius: 20,
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-          <div style={{ fontSize: tokens.fontSize.xl, fontWeight: 700, color: colors.text }}>
-            계정
-          </div>
+          <span style={{ fontSize: 22, fontWeight: 700, color: colors.text }}>계정</span>
           <div style={{ textAlign: 'right' }}>
             <div
               onClick={() => window.open('https://www.luckymeal.io', '_blank')}
-              style={{ fontSize: tokens.fontSize.md, color: colors.text, marginBottom: tokens.spacing.sm, cursor: 'pointer' }}
+              style={{ fontSize: 15, color: colors.text, marginBottom: 10, cursor: 'pointer' }}
             >
               소비자로 이동 버튼
             </div>
             <div
               onClick={() => onNavigate('account-settings')}
-              style={{ fontSize: tokens.fontSize.md, color: colors.text, cursor: 'pointer' }}
+              style={{ fontSize: 15, color: colors.text, cursor: 'pointer' }}
             >
               계정 정보 변경
             </div>
@@ -1097,23 +1034,21 @@ const SettingsScreen = ({ onNavigate, shopData }) => {
       </div>
 
       {/* 나머지 메뉴 섹션들 */}
-      <div style={{ margin: `0 ${tokens.spacing.lg}px`, background: colors.bgCard, borderRadius: tokens.radius.lg, overflow: 'hidden' }}>
+      <div style={{ margin: '0 20px', background: colors.bgCard, borderRadius: 20, overflow: 'hidden' }}>
         {menuGroups.slice(1).map((group, idx) => (
           <div key={idx}>
-            <div style={{ padding: tokens.spacing.xl }}>
+            <div style={{ padding: '28px 24px' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div style={{ fontSize: tokens.fontSize.xl, fontWeight: 700, color: colors.text }}>
-                  {group.title}
-                </div>
+                <span style={{ fontSize: 22, fontWeight: 700, color: colors.text }}>{group.title}</span>
                 <div style={{ textAlign: 'right' }}>
                   {group.items.map((item, i) => (
                     <div
                       key={i}
                       onClick={() => onNavigate(item.screen)}
                       style={{
-                        fontSize: tokens.fontSize.md,
+                        fontSize: 15,
                         color: colors.text,
-                        marginBottom: i < group.items.length - 1 ? tokens.spacing.sm : 0,
+                        marginBottom: i < group.items.length - 1 ? 10 : 0,
                         cursor: 'pointer',
                       }}
                     >
@@ -1124,21 +1059,21 @@ const SettingsScreen = ({ onNavigate, shopData }) => {
               </div>
             </div>
             {idx < menuGroups.length - 2 && (
-              <div style={{ borderBottom: `1px solid ${colors.border}`, margin: `0 ${tokens.spacing.lg}px` }} />
+              <div style={{ borderBottom: `1px solid ${colors.gray200}`, margin: '0 24px' }} />
             )}
           </div>
         ))}
       </div>
 
-      {/* 다크모드 토글 (하단) */}
-      <div style={{ padding: tokens.spacing.lg, marginTop: tokens.spacing.md }}>
+      {/* 다크모드 토글 */}
+      <div style={{ padding: '20px 20px 0' }}>
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: tokens.spacing.lg, background: colors.bgCard, borderRadius: tokens.radius.lg,
+          padding: '20px 24px', background: colors.bgCard, borderRadius: 20,
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: tokens.spacing.sm }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <span style={{ fontSize: 18 }}>{isDark ? '🌙' : '☀️'}</span>
-            <span style={{ fontSize: tokens.fontSize.md, color: colors.text }}>다크 모드</span>
+            <span style={{ fontSize: 15, color: colors.text }}>다크 모드</span>
           </div>
           <Toggle checked={isDark} onChange={toggleTheme} />
         </div>
