@@ -193,12 +193,14 @@ const StoreSwitcherModal = ({ isOpen, onClose, stores, currentStoreId, onSelectS
   return (
     <div style={{ position: 'fixed', top: 0, bottom: 0, left: 0, right: 0, zIndex: 1000, display: 'flex', justifyContent: 'center' }}>
       <div onClick={onClose} style={{ position: 'absolute', inset: 0, background: colors.overlay }} />
-      <div style={{
-        position: 'absolute', top: 60, left: 16, right: 16, maxWidth: 448,
-        background: colors.bgElevated, borderRadius: 16,
-        boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
-        overflow: 'hidden',
-      }}>
+      {/* 480px 컨테이너 내에서 모달 위치 */}
+      <div style={{ position: 'relative', width: '100%', maxWidth: 480 }}>
+        <div style={{
+          position: 'absolute', top: 60, left: 16, right: 16,
+          background: colors.bgElevated, borderRadius: 16,
+          boxShadow: '0 8px 32px rgba(0,0,0,0.2)',
+          overflow: 'hidden',
+        }}>
         {/* 헤더 */}
         <div style={{ padding: '16px 20px', borderBottom: `1px solid ${colors.border}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontSize: 16, fontWeight: 700, color: colors.text }}>가게 변경</span>
@@ -297,6 +299,7 @@ const StoreSwitcherModal = ({ isOpen, onClose, stores, currentStoreId, onSelectS
             +
           </div>
           <span style={{ fontSize: 15, fontWeight: 500, color: colors.gray600 }}>가게 추가하기</span>
+        </div>
         </div>
       </div>
     </div>
