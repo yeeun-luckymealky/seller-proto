@@ -813,20 +813,40 @@ const OrdersScreen = ({ onNavigate, shopData, setShopData, stores, currentStoreI
   const [showAddSaleSheet, setShowAddSaleSheet] = useState(false);
   const [selectedSlotId, setSelectedSlotId] = useState(null);
   const [sortOrder, setSortOrder] = useState('recent'); // 'recent', 'oldest'
+  const [calendarExpanded, setCalendarExpanded] = useState(true);
+  const [viewMonth, setViewMonth] = useState(new Date());
 
-  // 주간 캘린더 데이터 생성
-  const getWeekDays = () => {
+  // 월간 캘린더 데이터 생성
+  const getMonthDays = (date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
     const days = [];
-    const today = new Date();
-    for (let i = -2; i <= 4; i++) {
-      const date = new Date(today);
-      date.setDate(today.getDate() + i);
-      days.push(date);
+
+    // 첫 주의 시작 (월요일 기준)
+    const startOffset = (firstDay.getDay() + 6) % 7; // 월요일 = 0
+    for (let i = startOffset - 1; i >= 0; i--) {
+      const d = new Date(year, month, -i);
+      days.push({ date: d, isCurrentMonth: false });
     }
+
+    // 현재 월
+    for (let i = 1; i <= lastDay.getDate(); i++) {
+      days.push({ date: new Date(year, month, i), isCurrentMonth: true });
+    }
+
+    // 다음 월 (6주 채우기)
+    const remaining = 42 - days.length;
+    for (let i = 1; i <= remaining; i++) {
+      days.push({ date: new Date(year, month + 1, i), isCurrentMonth: false });
+    }
+
     return days;
   };
-  const weekDays = getWeekDays();
-  const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+
+  const monthDays = getMonthDays(viewMonth);
+  const dayNames = ['월', '화', '수', '목', '금', '토', '일'];
 
   // 타임슬롯 데이터
   const timeSlots = [
@@ -895,50 +915,112 @@ const OrdersScreen = ({ onNavigate, shopData, setShopData, stores, currentStoreI
 
   return (
     <div style={{ paddingBottom: 120, background: colors.bg, minHeight: '100vh' }}>
-      {/* 가게 헤더 */}
-      <StoreHeader
-        store={currentStore}
-        stores={stores}
-        currentStoreId={currentStoreId}
-        onSelectStore={onSelectStore}
-      />
+      {/* 상단 헤더 */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '16px 20px 8px',
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ fontSize: 17, fontWeight: 600, color: colors.text }}>
+            {currentStore?.name || '가게 이름'}
+          </span>
+          <button
+            onClick={() => {}}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 4,
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              padding: 0,
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" strokeWidth="2">
+              <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" />
+            </svg>
+            <span style={{ fontSize: 13, color: '#4CAF50', fontWeight: 500 }}>198명</span>
+          </button>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={colors.gray400} strokeWidth="2">
+            <path d="M6 9l6 6 6-6" />
+          </svg>
+        </div>
+        <button
+          onClick={() => onNavigate('settings')}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={colors.gray600} strokeWidth="2">
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+        </button>
+      </div>
 
-      {/* 주간 캘린더 */}
-      <div style={{ display: 'flex', padding: '8px 16px 16px', gap: 4, overflowX: 'auto' }}>
-        {weekDays.map((date, idx) => {
-          const isSelected = date.toDateString() === selectedDate.toDateString();
-          const isTodayDate = isToday(date);
-          return (
-            <button
-              key={idx}
-              onClick={() => setSelectedDate(date)}
+      {/* 월간 캘린더 */}
+      <div style={{ padding: '8px 16px 16px' }}>
+        {/* 요일 헤더 */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', marginBottom: 8 }}>
+          {dayNames.map((day, idx) => (
+            <div
+              key={day}
               style={{
-                flex: '0 0 auto',
-                width: 44,
+                textAlign: 'center',
+                fontSize: 13,
+                fontWeight: 500,
+                color: idx === 5 ? '#2196F3' : idx === 6 ? '#F44336' : colors.gray500,
                 padding: '8px 0',
-                background: isSelected ? colors.gray800 : 'transparent',
-                border: 'none',
-                borderRadius: 12,
-                cursor: 'pointer',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                gap: 4,
               }}
             >
-              <span style={{ fontSize: 12, color: isSelected ? '#fff' : colors.gray500 }}>
-                {dayNames[date.getDay()]}
-              </span>
-              <span style={{
-                fontSize: 16,
-                fontWeight: isTodayDate ? 700 : 500,
-                color: isSelected ? '#fff' : (isTodayDate ? colors.text : colors.gray600),
-              }}>
-                {date.getDate()}
-              </span>
-            </button>
-          );
-        })}
+              {day}
+            </div>
+          ))}
+        </div>
+
+        {/* 날짜 그리드 */}
+        {calendarExpanded && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 2 }}>
+            {monthDays.map((item, idx) => {
+              const isSelected = item.date.toDateString() === selectedDate.toDateString();
+              const isTodayDate = isToday(item.date);
+              const dayOfWeek = (idx % 7);
+              const isSaturday = dayOfWeek === 5;
+              const isSunday = dayOfWeek === 6;
+
+              return (
+                <button
+                  key={idx}
+                  onClick={() => setSelectedDate(item.date)}
+                  style={{
+                    aspectRatio: '1',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: isSelected ? colors.gray700 : 'transparent',
+                    border: 'none',
+                    borderRadius: '50%',
+                    cursor: 'pointer',
+                    fontSize: 15,
+                    fontWeight: isTodayDate ? 700 : 400,
+                    color: isSelected
+                      ? '#fff'
+                      : !item.isCurrentMonth
+                        ? colors.gray300
+                        : isSunday
+                          ? '#F44336'
+                          : isSaturday
+                            ? '#2196F3'
+                            : colors.text,
+                  }}
+                >
+                  {item.date.getDate()}
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* 현재 타임슬롯 */}
