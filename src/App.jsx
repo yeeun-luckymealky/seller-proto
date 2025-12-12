@@ -3613,52 +3613,68 @@ const TermsScreen = ({ onBack }) => {
 // ============================================
 const consumerMockStores = [
   {
-    id: 1, name: '굽네 플레이타운', category: '복합문화공간', distance: '370m',
+    id: 1, name: '어반써티연남', category: '베이커리', distance: '370m',
     image: 'https://picsum.photos/300/200?random=10', rating: 4.5, reviewCount: 128,
-    luckyBagPrice: 3900, originalPrice: 7800, pickupTime: '19:00-20:00',
-    address: '서울특별시 마포구 합정동 373-3', lat: 37.5495, lng: 126.9138,
-    description: '오늘의 치킨 럭키백! 다양한 치킨 메뉴를 할인된 가격에 만나보세요.',
+    luckyBagPrice: 5500, originalPrice: 11000, pickupTime: '21:50-22:00',
+    address: '서울특별시 마포구 연남동 373-3', lat: 37.5495, lng: 126.9138,
+    description: '오늘의 빵 럭키백! 갓 구운 다양한 빵을 할인된 가격에 만나보세요.',
     remaining: 4,
   },
   {
-    id: 2, name: '일심장어 홍대본점', category: '장어, 먹장어요리', distance: '1.1km',
+    id: 2, name: '카페공명', category: '카페, 디저트', distance: '1.1km',
     image: 'https://picsum.photos/300/200?random=11', rating: 4.8, reviewCount: 256,
-    luckyBagPrice: 5900, originalPrice: 11800, pickupTime: '20:00-21:00',
+    luckyBagPrice: 4900, originalPrice: 9800, pickupTime: '20:00-21:00',
     address: '서울특별시 마포구 서교동 123-45', lat: 37.5512, lng: 126.9189,
-    description: '신선한 장어요리를 럭키백으로! 오늘 남은 장어 메뉴를 특별 가격에 제공해요.',
+    description: '커피와 디저트 럭키백! 시그니처 음료와 케이크를 특별 가격에.',
     remaining: 3,
   },
   {
-    id: 3, name: '라이즈오토그래프컬렉션', category: '호텔', distance: '500m',
+    id: 3, name: '빨간토마토피자', category: '피자', distance: '500m',
     image: 'https://picsum.photos/300/200?random=12', rating: 4.3, reviewCount: 89,
-    luckyBagPrice: 4500, originalPrice: 9000, pickupTime: '18:00-19:00',
+    luckyBagPrice: 6500, originalPrice: 13000, pickupTime: '18:00-19:00',
     address: '서울특별시 마포구 서교동 456-78', lat: 37.5478, lng: 126.9156,
-    description: '호텔 베이커리 럭키백! 프리미엄 빵과 케이크를 담았어요.',
+    description: '피자 럭키백! 오늘 남은 피자를 반값에 가져가세요.',
     remaining: 5,
   },
   {
-    id: 4, name: '홍대 육지', category: '육류, 고기요리', distance: '197m',
+    id: 4, name: '저스티나', category: '이탈리안', distance: '197m',
     image: 'https://picsum.photos/300/200?random=13', rating: 4.6, reviewCount: 342,
-    luckyBagPrice: 6900, originalPrice: 13800, pickupTime: '21:00-22:00',
+    luckyBagPrice: 7900, originalPrice: 15800, pickupTime: '21:00-22:00',
     address: '서울특별시 마포구 서교동 789-12', lat: 37.5501, lng: 126.9201,
-    description: '프리미엄 고기 럭키백! 오늘의 특선 육류를 할인가에 만나보세요.',
+    description: '이탈리안 럭키백! 파스타와 리조또를 할인가에 만나보세요.',
     remaining: 2,
   },
   {
-    id: 5, name: '빽다방 합정역사거리점', category: '카페', distance: '230m',
+    id: 5, name: '녹턴', category: '베이커리, 카페', distance: '230m',
     image: 'https://picsum.photos/300/200?random=14', rating: 4.2, reviewCount: 567,
-    luckyBagPrice: 2000, originalPrice: 4000, pickupTime: '17:00-18:00',
-    address: '서울특별시 마포구 합정동 373-3 1층 코너', lat: 37.5489, lng: 126.9145,
-    description: '음료 + 디저트 럭키백! 커피와 함께 맛있는 디저트를 즐겨보세요.',
+    luckyBagPrice: 4000, originalPrice: 8000, pickupTime: '17:00-18:00',
+    address: '서울특별시 마포구 합정동 373-3 1층', lat: 37.5489, lng: 126.9145,
+    description: '베이커리 럭키백! 오늘 구운 빵과 디저트를 즐겨보세요.',
     remaining: 3,
   },
   {
-    id: 6, name: '깨비콕스타일', category: '분식', distance: '450m',
+    id: 6, name: '네스토베이커리', category: '베이커리', distance: '450m',
     image: 'https://picsum.photos/300/200?random=15', rating: 4.4, reviewCount: 203,
-    luckyBagPrice: 3500, originalPrice: 7000, pickupTime: '19:30-20:30',
+    luckyBagPrice: 5000, originalPrice: 10000, pickupTime: '19:30-20:30',
     address: '서울특별시 마포구 서교동 111-22', lat: 37.5505, lng: 126.9178,
-    description: '분식 럭키백! 떡볶이, 순대, 튀김 등 인기 분식을 담았어요.',
+    description: '수제 빵 럭키백! 정성껏 만든 빵을 반값에 담아가세요.',
     remaining: 4,
+  },
+  {
+    id: 7, name: '소행당', category: '베이커리, 디저트', distance: '320m',
+    image: 'https://picsum.photos/300/200?random=16', rating: 4.7, reviewCount: 412,
+    luckyBagPrice: 4500, originalPrice: 9000, pickupTime: '20:30-21:00',
+    address: '서울특별시 마포구 연남동 222-33', lat: 37.5498, lng: 126.9165,
+    description: '디저트 럭키백! 케이크와 쿠키를 특별 가격에.',
+    remaining: 3,
+  },
+  {
+    id: 8, name: '바이닐인사이드', category: '카페, 브런치', distance: '580m',
+    image: 'https://picsum.photos/300/200?random=17', rating: 4.5, reviewCount: 189,
+    luckyBagPrice: 5500, originalPrice: 11000, pickupTime: '18:30-19:30',
+    address: '서울특별시 마포구 연남동 444-55', lat: 37.5510, lng: 126.9195,
+    description: '브런치 럭키백! 샌드위치와 음료를 할인가에 만나보세요.',
+    remaining: 2,
   },
 ];
 
@@ -4075,7 +4091,7 @@ const StoreDetailScreen = ({ store, onBack, onNavigate }) => {
           onClick={() => onNavigate('checkout', { store, quantity, totalPrice: store.luckyBagPrice * quantity })}
           style={{ background: '#00D4AA', padding: '18px', fontSize: 16, borderRadius: 14 }}
         >
-          럭키백 픽업 예약하기 ({store.remaining}개 남음)
+          럭키백 픽업 예약({store.remaining}개 남음)
         </Button>
       </div>
     </div>
@@ -4359,9 +4375,16 @@ const CheckoutScreen = ({ store, quantity: initialQuantity, totalPrice: initialP
           display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16,
         }}>
           <span style={{ fontSize: 15, color: colors.textTertiary }}>총 결제금액</span>
-          <span style={{ fontSize: 22, fontWeight: 700, color: colors.text }}>
-            {finalPrice.toLocaleString()}원
-          </span>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+            {couponDiscount > 0 && (
+              <span style={{ fontSize: 13, color: '#00D4AA' }}>
+                -{couponDiscount.toLocaleString()}원 할인
+              </span>
+            )}
+            <span style={{ fontSize: 22, fontWeight: 700, color: colors.text }}>
+              {finalPrice.toLocaleString()}원
+            </span>
+          </div>
         </div>
         <button
           onClick={() => agreedToTerms && onNavigate('payment-complete', { store, quantity: qty, totalPrice: finalPrice })}
@@ -4760,28 +4783,28 @@ const ConsumerOrdersScreen = ({ onNavigate }) => {
   const pastOrders = [
     {
       id: 1,
-      storeName: '정밀제빵',
+      storeName: '네스토베이커리',
       storeImage: 'https://picsum.photos/60/60?random=20',
       pickupDate: '25. 12. 11 (목) 20:00 ~ 20:50',
-      totalPrice: 6000,
+      totalPrice: 5000,
       quantity: 1,
       hasReview: true,
     },
     {
       id: 2,
-      storeName: '바이닐 인사이드',
+      storeName: '바이닐인사이드',
       storeImage: 'https://picsum.photos/60/60?random=21',
       pickupDate: '25. 12. 5 (금) 21:00 ~ 21:50',
-      totalPrice: 3500,
+      totalPrice: 5500,
       quantity: 1,
       hasReview: true,
     },
     {
       id: 3,
-      storeName: '올유캔잇',
+      storeName: '소행당',
       storeImage: 'https://picsum.photos/60/60?random=22',
       pickupDate: '25. 11. 30 (일) 21:10 ~ 21:40',
-      totalPrice: 7500,
+      totalPrice: 4500,
       quantity: 1,
       hasReview: true,
     },
