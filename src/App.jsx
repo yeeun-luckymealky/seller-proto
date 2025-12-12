@@ -4427,9 +4427,9 @@ const CheckoutScreen = ({ store, quantity: initialQuantity, totalPrice: initialP
             }}
           />
 
-          {/* 바텀시트 */}
+          {/* 바텀시트 (흰색, 투명도 0) */}
           <div style={{
-            backgroundColor: colors.card, borderRadius: '24px 24px 0 0',
+            backgroundColor: '#FFFFFF', borderRadius: '24px 24px 0 0',
             padding: '8px 20px 40px', maxWidth: 480, width: '100%', margin: '0 auto',
           }}>
             {/* 핸들 */}
