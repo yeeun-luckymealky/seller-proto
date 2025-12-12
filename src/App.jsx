@@ -4191,6 +4191,34 @@ const CheckoutScreen = ({ store, quantity: initialQuantity, totalPrice: initialP
   const [selectedPayment, setSelectedPayment] = useState('kakao');
   const [showCouponSheet, setShowCouponSheet] = useState(false);
   const [selectedCoupon, setSelectedCoupon] = useState(null);
+  const [showPaymentMethods, setShowPaymentMethods] = useState(false);
+
+  // 결제 수단 데이터
+  const paymentMethods = {
+    simple: [
+      { id: 'kakao', name: '카카오페이', color: '#FFE15D', textColor: '#3C1E1E', icon: 'pay' },
+      { id: 'toss', name: '토스페이', color: '#FFFFFF', textColor: '#0064FF', icon: 'toss' },
+    ],
+    cards: [
+      { id: 'shinhan', name: '신한', logo: 'SOL Pay', color: '#0046FF' },
+      { id: 'hana', name: '하나Pay', logo: '하나', color: '#009490' },
+      { id: 'samsung', name: '삼성', logo: 'Samsung Card', color: '#1428A0' },
+      { id: 'lotte', name: '롯데', logo: 'LOCA', color: '#ED1C24' },
+      { id: 'tossbank', name: '토스뱅크', logo: 'bank', color: '#0064FF' },
+      { id: 'hyundai', name: '현대', logo: 'Hyundai Card', color: '#000000' },
+      { id: 'kb', name: 'KB국민(KB pay)', logo: 'KB', color: '#FFBC00' },
+      { id: 'bc', name: '비씨(페이북)', logo: 'BC', color: '#F04651' },
+      { id: 'nh', name: '농협(NH페이)', logo: 'NH', color: '#F5A623' },
+    ],
+  };
+
+  const getPaymentDisplay = () => {
+    const simple = paymentMethods.simple.find(p => p.id === selectedPayment);
+    if (simple) return { name: simple.name, color: simple.color, isSimple: true };
+    const card = paymentMethods.cards.find(p => p.id === selectedPayment);
+    if (card) return { name: card.name, color: card.color, isSimple: false };
+    return { name: '카카오페이', color: '#FFE15D', isSimple: true };
+  };
 
   const coupons = [
     { id: 1, name: '첫 주문 500원 할인', discount: 500, available: true, expires: '12.31까지' },
@@ -4315,17 +4343,31 @@ const CheckoutScreen = ({ store, quantity: initialQuantity, totalPrice: initialP
         </div>
 
         {/* 결제 수단 */}
-        <div style={{
-          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          padding: '18px 0', borderBottom: `1px solid ${colors.border}`,
-        }}>
+        <div
+          onClick={() => setShowPaymentMethods(true)}
+          style={{
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            padding: '18px 0', borderBottom: `1px solid ${colors.border}`, cursor: 'pointer',
+          }}
+        >
           <span style={{ fontSize: 16, color: colors.text, fontWeight: 500 }}>결제 수단</span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{
-              width: 24, height: 24, background: '#FFE15D', borderRadius: 6,
-              display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700,
-            }}>K</div>
-            <span style={{ color: colors.text, fontSize: 15 }}>카카오페이</span>
+            {(() => {
+              const payment = getPaymentDisplay();
+              return (
+                <>
+                  <div style={{
+                    width: 24, height: 24, background: payment.color, borderRadius: 6,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 10, fontWeight: 700, color: payment.isSimple ? '#3C1E1E' : 'white',
+                    border: payment.color === '#FFFFFF' ? '1px solid #E5E5E5' : 'none',
+                  }}>
+                    {selectedPayment === 'kakao' ? 'K' : selectedPayment === 'toss' ? 'T' : payment.name.charAt(0)}
+                  </div>
+                  <span style={{ color: colors.text, fontSize: 15 }}>{payment.name}</span>
+                </>
+              );
+            })()}
             <span style={{ color: colors.gray300, fontSize: 18 }}>›</span>
           </div>
         </div>
@@ -4511,6 +4553,198 @@ const CheckoutScreen = ({ store, quantity: initialQuantity, totalPrice: initialP
             >
               {selectedCoupon ? '쿠폰 적용하기' : '쿠폰을 선택해주세요'}
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* 결제 수단 선택 화면 */}
+      {showPaymentMethods && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1001,
+          background: '#F7F8FA',
+        }}>
+          {/* 헤더 */}
+          <div style={{
+            padding: '16px 20px', background: '#FFFFFF',
+            display: 'flex', alignItems: 'center', gap: 16,
+            borderBottom: '1px solid #EEEEEE',
+          }}>
+            <button
+              onClick={() => setShowPaymentMethods(false)}
+              style={{
+                background: 'none', border: 'none', fontSize: 24, cursor: 'pointer',
+                padding: 0, color: '#333333', display: 'flex', alignItems: 'center',
+              }}
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+              </svg>
+            </button>
+            <span style={{ fontSize: 18, fontWeight: 600, color: '#333333' }}>신용/체크카드</span>
+          </div>
+
+          {/* 진행 바 */}
+          <div style={{ height: 3, background: '#0064FF' }} />
+
+          {/* 본문 */}
+          <div style={{ padding: 20, overflowY: 'auto', height: 'calc(100vh - 60px)' }}>
+            {/* 간편결제 섹션 */}
+            <div style={{ marginBottom: 32 }}>
+              <div style={{ fontSize: 14, color: '#888888', marginBottom: 12 }}>간편결제</div>
+              <div style={{ display: 'flex', gap: 12 }}>
+                {paymentMethods.simple.map(method => (
+                  <button
+                    key={method.id}
+                    onClick={() => {
+                      setSelectedPayment(method.id);
+                      setShowPaymentMethods(false);
+                    }}
+                    style={{
+                      flex: 1, padding: '20px 16px', borderRadius: 12,
+                      border: selectedPayment === method.id ? '2px solid #FFE15D' : '1px solid #E5E5E5',
+                      background: selectedPayment === method.id ? '#FFFEF5' : '#FFFFFF',
+                      cursor: 'pointer', display: 'flex', flexDirection: 'column',
+                      alignItems: 'center', gap: 8,
+                    }}
+                  >
+                    <div style={{
+                      padding: '6px 12px', borderRadius: 4,
+                      background: method.id === 'kakao' ? '#FFE15D' : '#FFFFFF',
+                      border: method.id === 'toss' ? '1px solid #E5E5E5' : 'none',
+                      display: 'flex', alignItems: 'center', gap: 4,
+                    }}>
+                      {method.id === 'kakao' ? (
+                        <span style={{ fontSize: 12, fontWeight: 700, color: '#3C1E1E' }}>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2 }}>
+                            <span style={{ fontSize: 14 }}>●</span>pay
+                          </span>
+                        </span>
+                      ) : (
+                        <span style={{ fontSize: 12, fontWeight: 700, color: '#0064FF' }}>
+                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2 }}>
+                            <span style={{ color: '#0064FF' }}>●</span>toss pay
+                          </span>
+                        </span>
+                      )}
+                    </div>
+                    <span style={{ fontSize: 14, color: '#333333' }}>{method.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* 신용·체크카드 섹션 */}
+            <div>
+              <div style={{ fontSize: 14, color: '#888888', marginBottom: 12 }}>신용·체크카드</div>
+              <div style={{
+                display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12,
+              }}>
+                {paymentMethods.cards.map(card => (
+                  <button
+                    key={card.id}
+                    onClick={() => {
+                      setSelectedPayment(card.id);
+                      setShowPaymentMethods(false);
+                    }}
+                    style={{
+                      padding: '20px 8px', borderRadius: 12,
+                      border: selectedPayment === card.id ? '2px solid #0064FF' : '1px solid #E5E5E5',
+                      background: selectedPayment === card.id ? '#F0F7FF' : '#FFFFFF',
+                      cursor: 'pointer', display: 'flex', flexDirection: 'column',
+                      alignItems: 'center', gap: 10,
+                    }}
+                  >
+                    {/* 카드 로고 */}
+                    <div style={{
+                      height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      {card.id === 'shinhan' && (
+                        <div style={{
+                          background: '#0046FF', borderRadius: 6, padding: '4px 8px',
+                          display: 'flex', alignItems: 'center', gap: 2,
+                        }}>
+                          <span style={{ color: 'white', fontSize: 8, fontWeight: 700 }}>신한</span>
+                          <span style={{ color: '#FF0000', fontSize: 10, fontWeight: 700 }}>SOL</span>
+                          <span style={{ color: 'white', fontSize: 8 }}>Pay</span>
+                        </div>
+                      )}
+                      {card.id === 'hana' && (
+                        <div style={{
+                          background: '#009490', borderRadius: 6, padding: '4px 8px',
+                          display: 'flex', alignItems: 'center', gap: 2,
+                        }}>
+                          <span style={{ color: 'white', fontSize: 10, fontWeight: 700 }}>하나</span>
+                          <span style={{ color: '#FF6B35', fontSize: 10, fontWeight: 700 }}>pay</span>
+                        </div>
+                      )}
+                      {card.id === 'samsung' && (
+                        <span style={{ color: '#1428A0', fontSize: 11, fontWeight: 700, letterSpacing: -0.5 }}>Samsung Card</span>
+                      )}
+                      {card.id === 'lotte' && (
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                          <span style={{ fontSize: 10, fontWeight: 700, color: '#ED1C24', letterSpacing: 1 }}>LOCA</span>
+                        </div>
+                      )}
+                      {card.id === 'tossbank' && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                          <span style={{ color: '#0064FF', fontSize: 14 }}>●</span>
+                          <span style={{ color: '#333333', fontSize: 12, fontWeight: 600 }}>bank</span>
+                        </div>
+                      )}
+                      {card.id === 'hyundai' && (
+                        <div style={{
+                          border: '1px solid #333333', borderRadius: 4, padding: '2px 6px',
+                        }}>
+                          <span style={{ fontSize: 9, fontWeight: 600, color: '#333333' }}>Hyundai Card</span>
+                        </div>
+                      )}
+                      {card.id === 'kb' && (
+                        <span style={{ color: '#FFBC00', fontSize: 20, fontWeight: 700 }}>KB</span>
+                      )}
+                      {card.id === 'bc' && (
+                        <div style={{
+                          background: '#F04651', borderRadius: '50%', width: 28, height: 28,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        }}>
+                          <span style={{ color: 'white', fontSize: 11, fontWeight: 700 }}>BC</span>
+                        </div>
+                      )}
+                      {card.id === 'nh' && (
+                        <div style={{
+                          background: '#F5A623', borderRadius: 6, width: 28, height: 28,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        }}>
+                          <span style={{ color: 'white', fontSize: 10, fontWeight: 700 }}>NH</span>
+                        </div>
+                      )}
+                    </div>
+                    <span style={{ fontSize: 13, color: '#333333', textAlign: 'center' }}>{card.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* 더 보기 버튼 */}
+            <button style={{
+              width: '100%', padding: 16, marginTop: 20,
+              background: 'transparent', border: 'none',
+              color: '#888888', fontSize: 14, cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
+            }}>
+              더 보기
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
+              </svg>
+            </button>
+
+            {/* toss payments 로고 */}
+            <div style={{
+              display: 'flex', justifyContent: 'center', alignItems: 'center',
+              gap: 6, marginTop: 40, marginBottom: 40,
+            }}>
+              <span style={{ color: '#0064FF', fontSize: 16 }}>●</span>
+              <span style={{ color: '#AAAAAA', fontSize: 14, fontWeight: 500 }}>toss payments</span>
+            </div>
           </div>
         </div>
       )}
