@@ -3668,14 +3668,14 @@ const consumerMockStores = [
 const ConsumerBottomNav = ({ activeTab, onChange }) => {
   const { colors } = useTheme();
   const tabs = [
-    { id: 'discover', label: '발견', icon: (
+    { id: 'discover', label: '홈', icon: (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="currentColor"/>
+        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" fill="currentColor"/>
       </svg>
     )},
     { id: 'orders', label: '주문현황', icon: (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-        <path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" fill="currentColor"/>
+        <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" fill="currentColor"/>
       </svg>
     )},
     { id: 'mypage', label: '내 럭키밀', icon: (
@@ -4173,9 +4173,18 @@ const CheckoutScreen = ({ store, quantity: initialQuantity, totalPrice: initialP
   const [qty, setQty] = useState(initialQuantity);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState('kakao');
+  const [showCouponSheet, setShowCouponSheet] = useState(false);
+  const [selectedCoupon, setSelectedCoupon] = useState(null);
+
+  const coupons = [
+    { id: 1, name: '첫 주문 500원 할인', discount: 500, available: true, expires: '12.31까지' },
+    { id: 2, name: '리뷰 작성 감사 쿠폰', discount: 500, available: true, expires: '12.25까지' },
+    { id: 3, name: '불편을 드려 죄송합니다', discount: 0, available: true, expires: '1.04까지' },
+  ];
 
   const unitPrice = store.luckyBagPrice;
-  const finalPrice = unitPrice * qty;
+  const couponDiscount = selectedCoupon ? selectedCoupon.discount : 0;
+  const finalPrice = (unitPrice * qty) - couponDiscount;
 
   return (
     <div style={{ minHeight: '100vh', background: colors.bg, display: 'flex', flexDirection: 'column' }}>
@@ -4263,19 +4272,28 @@ const CheckoutScreen = ({ store, quantity: initialQuantity, totalPrice: initialP
         </div>
 
         {/* 쿠폰 */}
-        <div style={{
-          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          padding: '18px 0', borderBottom: `1px solid ${colors.border}`,
-        }}>
+        <div
+          onClick={() => setShowCouponSheet(true)}
+          style={{
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            padding: '18px 0', borderBottom: `1px solid ${colors.border}`, cursor: 'pointer',
+          }}
+        >
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <span style={{ fontSize: 16, color: colors.text, fontWeight: 500 }}>쿠폰</span>
             <span style={{
               background: colors.blue50, color: colors.blue500,
               padding: '3px 10px', borderRadius: 12, fontSize: 12, fontWeight: 700,
-            }}>2개 보유</span>
+            }}>{coupons.filter(c => c.available).length}개 보유</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span style={{ color: colors.textTertiary, fontSize: 15 }}>선택하기</span>
+            {selectedCoupon ? (
+              <span style={{ color: '#00D4AA', fontSize: 15, fontWeight: 600 }}>
+                -{selectedCoupon.discount.toLocaleString()}원
+              </span>
+            ) : (
+              <span style={{ color: colors.textTertiary, fontSize: 15 }}>선택하기</span>
+            )}
             <span style={{ color: colors.gray300, fontSize: 18 }}>›</span>
           </div>
         </div>
@@ -4371,6 +4389,108 @@ const CheckoutScreen = ({ store, quantity: initialQuantity, totalPrice: initialP
           결제 실패 테스트
         </div>
       </div>
+
+      {/* 쿠폰 선택 바텀시트 */}
+      {showCouponSheet && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1000,
+          display: 'flex', flexDirection: 'column',
+        }}>
+          {/* 딤 배경 */}
+          <div
+            onClick={() => setShowCouponSheet(false)}
+            style={{
+              flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', cursor: 'pointer',
+            }}
+          />
+
+          {/* 바텀시트 */}
+          <div style={{
+            backgroundColor: colors.card, borderRadius: '24px 24px 0 0',
+            padding: '8px 20px 40px', maxWidth: 480, width: '100%', margin: '0 auto',
+          }}>
+            {/* 핸들 */}
+            <div style={{
+              width: 40, height: 4, backgroundColor: colors.gray200,
+              borderRadius: 2, margin: '8px auto 24px',
+            }} />
+
+            {/* 헤더 */}
+            <div style={{
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+              marginBottom: 20,
+            }}>
+              <h3 style={{ fontSize: 20, fontWeight: 700, color: colors.text, margin: 0 }}>쿠폰 선택</h3>
+              <span style={{ fontSize: 14, color: colors.textTertiary }}>
+                사용 가능 {coupons.filter(c => c.available).length}개
+              </span>
+            </div>
+
+            {/* 쿠폰 리스트 */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {coupons.map(coupon => (
+                <button
+                  key={coupon.id}
+                  onClick={() => coupon.available && setSelectedCoupon(
+                    selectedCoupon?.id === coupon.id ? null : coupon
+                  )}
+                  disabled={!coupon.available}
+                  style={{
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                    padding: 18, borderRadius: 16,
+                    border: selectedCoupon?.id === coupon.id
+                      ? '2px solid #00D4AA'
+                      : `1px solid ${colors.gray200}`,
+                    backgroundColor: coupon.available
+                      ? (selectedCoupon?.id === coupon.id ? 'rgba(0,212,170,0.1)' : colors.card)
+                      : colors.gray100,
+                    cursor: coupon.available ? 'pointer' : 'not-allowed',
+                    opacity: coupon.available ? 1 : 0.6,
+                    textAlign: 'left', transition: 'all 0.2s ease',
+                  }}
+                >
+                  <div>
+                    <div style={{
+                      fontSize: 16, fontWeight: 600,
+                      color: coupon.available ? colors.text : colors.textTertiary,
+                      marginBottom: 4,
+                    }}>
+                      {coupon.name}
+                    </div>
+                    <div style={{
+                      fontSize: 13, color: coupon.available ? colors.textTertiary : colors.gray300,
+                    }}>
+                      {coupon.expires}
+                    </div>
+                  </div>
+                  {coupon.discount > 0 && (
+                    <div style={{
+                      fontSize: 18, fontWeight: 700,
+                      color: coupon.available ? '#00D4AA' : colors.textTertiary,
+                    }}>
+                      -{coupon.discount.toLocaleString()}원
+                    </div>
+                  )}
+                </button>
+              ))}
+            </div>
+
+            {/* 적용 버튼 */}
+            <button
+              onClick={() => setShowCouponSheet(false)}
+              style={{
+                width: '100%', padding: 18, borderRadius: 14, border: 'none',
+                backgroundColor: selectedCoupon ? '#00D4AA' : colors.gray200,
+                color: selectedCoupon ? 'white' : colors.textTertiary,
+                fontSize: 17, fontWeight: 600,
+                cursor: 'pointer', marginTop: 24, transition: 'all 0.2s ease',
+              }}
+            >
+              {selectedCoupon ? '쿠폰 적용하기' : '쿠폰을 선택해주세요'}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -4631,53 +4751,162 @@ const PaymentFailScreen = ({ store, onBack, onNavigate }) => {
 // ============================================
 const ConsumerOrdersScreen = ({ onNavigate }) => {
   const { colors } = useTheme();
-  const [orders] = useState([
+  const [activeTab, setActiveTab] = useState('active'); // 'active' | 'cancelled'
+
+  // 현재 예약 (없음)
+  const activeOrders = [];
+
+  // 이전 럭키백 주문 내역
+  const pastOrders = [
     {
-      id: 1, store: consumerMockStores[4], orderCode: '푸른바다',
-      status: 'confirmed', quantity: 1, totalPrice: 2000,
-      pickupTime: '17:00-18:00', orderedAt: '2024-12-12 14:30',
+      id: 1,
+      storeName: '정밀제빵',
+      storeImage: 'https://picsum.photos/60/60?random=20',
+      pickupDate: '25. 12. 11 (목) 20:00 ~ 20:50',
+      totalPrice: 6000,
+      quantity: 1,
+      hasReview: true,
     },
-  ]);
+    {
+      id: 2,
+      storeName: '바이닐 인사이드',
+      storeImage: 'https://picsum.photos/60/60?random=21',
+      pickupDate: '25. 12. 5 (금) 21:00 ~ 21:50',
+      totalPrice: 3500,
+      quantity: 1,
+      hasReview: true,
+    },
+    {
+      id: 3,
+      storeName: '올유캔잇',
+      storeImage: 'https://picsum.photos/60/60?random=22',
+      pickupDate: '25. 11. 30 (일) 21:10 ~ 21:40',
+      totalPrice: 7500,
+      quantity: 1,
+      hasReview: true,
+    },
+  ];
 
   return (
     <div style={{ minHeight: '100vh', background: colors.bg }}>
-      <Header title="예약 내역" />
-      <div style={{ padding: 20 }}>
-        {orders.length === 0 ? (
-          <div style={{ textAlign: 'center', paddingTop: 100 }}>
-            <div style={{ fontSize: 48, marginBottom: 16 }}>📋</div>
-            <div style={{ fontSize: 16, fontWeight: 600, color: colors.text, marginBottom: 8 }}>
-              예약 내역이 없어요
-            </div>
-            <div style={{ fontSize: 14, color: colors.textSecondary }}>
-              주변 럭키백을 찾아보세요!
-            </div>
-          </div>
-        ) : (
-          orders.map(order => (
-            <Card key={order.id} style={{ marginBottom: 16 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-                <div>
-                  <div style={{ fontWeight: 600, color: colors.text, marginBottom: 4 }}>{order.store.name}</div>
-                  <div style={{ fontSize: 13, color: colors.textTertiary }}>{order.orderedAt}</div>
-                </div>
-                <Badge variant="success">확정됨</Badge>
-              </div>
-              <div style={{
-                padding: 12, background: colors.gray50, borderRadius: 8, marginBottom: 12,
-                textAlign: 'center',
-              }}>
-                <div style={{ fontSize: 12, color: colors.textTertiary, marginBottom: 4 }}>주문 코드</div>
-                <div style={{ fontSize: 24, fontWeight: 700, color: colors.text }}>{order.orderCode}</div>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
-                <span style={{ color: colors.textSecondary }}>픽업 시간: {order.pickupTime}</span>
-                <span style={{ fontWeight: 600, color: colors.text }}>{order.totalPrice.toLocaleString()}원</span>
-              </div>
-            </Card>
-          ))
-        )}
+      {/* 탭 네비게이션 */}
+      <div style={{
+        display: 'flex', background: colors.card,
+        borderBottom: `1px solid ${colors.border}`,
+      }}>
+        <button
+          onClick={() => setActiveTab('active')}
+          style={{
+            flex: 1, padding: '16px', border: 'none', background: 'none',
+            fontSize: 15, fontWeight: activeTab === 'active' ? 600 : 400,
+            color: activeTab === 'active' ? colors.text : colors.textTertiary,
+            borderBottom: activeTab === 'active' ? '2px solid #00D4AA' : '2px solid transparent',
+            cursor: 'pointer', transition: 'all 0.2s',
+          }}
+        >
+          예약 및 확정
+        </button>
+        <button
+          onClick={() => setActiveTab('cancelled')}
+          style={{
+            flex: 1, padding: '16px', border: 'none', background: 'none',
+            fontSize: 15, fontWeight: activeTab === 'cancelled' ? 600 : 400,
+            color: activeTab === 'cancelled' ? colors.text : colors.textTertiary,
+            borderBottom: activeTab === 'cancelled' ? '2px solid #00D4AA' : '2px solid transparent',
+            cursor: 'pointer', transition: 'all 0.2s',
+          }}
+        >
+          취소된 주문
+        </button>
       </div>
+
+      {activeTab === 'active' ? (
+        <>
+          {/* 예약 없음 상태 */}
+          {activeOrders.length === 0 && (
+            <div style={{
+              background: colors.card, margin: 16, borderRadius: 16,
+              padding: '48px 20px', textAlign: 'center',
+            }}>
+              <div style={{ fontSize: 18, fontWeight: 600, color: colors.text, marginBottom: 8 }}>
+                아직 예약된 주문이 없어요
+              </div>
+              <div style={{ fontSize: 14, color: colors.textSecondary, marginBottom: 20 }}>
+                가까운 가게에서 반값으로 예약해보세요 🍀
+              </div>
+              <div
+                onClick={() => onNavigate('discover')}
+                style={{
+                  fontSize: 15, fontWeight: 600, color: '#00D4AA', cursor: 'pointer',
+                }}
+              >
+                가게 찾아보기
+              </div>
+            </div>
+          )}
+
+          {/* 이전 럭키백 섹션 */}
+          <div style={{ padding: 16 }}>
+            <div style={{ fontSize: 18, fontWeight: 700, color: colors.text, marginBottom: 16 }}>
+              이전 럭키백
+            </div>
+
+            {pastOrders.map(order => (
+              <div key={order.id} style={{
+                background: colors.card, borderRadius: 12, padding: 16, marginBottom: 12,
+              }}>
+                <div style={{ display: 'flex', gap: 12, marginBottom: 12 }}>
+                  <img
+                    src={order.storeImage}
+                    alt={order.storeName}
+                    style={{ width: 48, height: 48, borderRadius: 8, objectFit: 'cover' }}
+                  />
+                  <div style={{ flex: 1 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                      <div>
+                        <div style={{ fontSize: 15, fontWeight: 600, color: colors.text, marginBottom: 4 }}>
+                          {order.storeName}
+                        </div>
+                        <div style={{ fontSize: 13, color: colors.textTertiary }}>
+                          {order.pickupDate}
+                        </div>
+                      </div>
+                      <div style={{
+                        fontSize: 13, color: colors.textSecondary, cursor: 'pointer',
+                        display: 'flex', alignItems: 'center', gap: 4,
+                      }}>
+                        주문 상세
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill={colors.textSecondary}>
+                          <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+                        </svg>
+                      </div>
+                    </div>
+                    <div style={{ fontSize: 14, color: colors.text, marginTop: 8 }}>
+                      <span style={{ fontWeight: 600 }}>총 {order.totalPrice.toLocaleString()}원</span>
+                      <span style={{ color: colors.textTertiary, marginLeft: 8 }}>{order.quantity}개</span>
+                    </div>
+                  </div>
+                </div>
+
+                <button style={{
+                  width: '100%', padding: '14px', borderRadius: 10, border: 'none',
+                  background: order.hasReview ? colors.gray100 : '#00D4AA',
+                  color: order.hasReview ? colors.textTertiary : 'white',
+                  fontSize: 14, fontWeight: 600, cursor: order.hasReview ? 'default' : 'pointer',
+                }}>
+                  {order.hasReview ? '리뷰 완료' : '리뷰 작성하기'}
+                </button>
+              </div>
+            ))}
+          </div>
+        </>
+      ) : (
+        <div style={{ padding: 20, textAlign: 'center', paddingTop: 80 }}>
+          <div style={{ fontSize: 16, color: colors.textSecondary }}>
+            취소된 주문이 없어요
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -4685,81 +4914,181 @@ const ConsumerOrdersScreen = ({ onNavigate }) => {
 // ============================================
 // 소비자 앱 - 내 럭키밀 화면
 // ============================================
-const ConsumerMypageScreen = ({ onNavigate }) => {
+const ConsumerMypageScreen = ({ onNavigate, onSwitchRole }) => {
   const { colors } = useTheme();
+  const referralCode = 'c70af23fa';
+  const mannerScore = 104;
+
+  const copyReferralCode = () => {
+    navigator.clipboard.writeText(referralCode);
+    alert('추천코드가 복사되었어요!');
+  };
 
   return (
     <div style={{ minHeight: '100vh', background: colors.bg }}>
-      <Header title="내 럭키밀" />
-      <div style={{ padding: 20 }}>
+      {/* 헤더 */}
+      <div style={{
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        padding: '16px 20px', background: colors.card,
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <span style={{ fontSize: 20, fontWeight: 700, color: colors.text }}>내 럭키밀</span>
+          <button
+            onClick={onSwitchRole}
+            style={{
+              padding: '6px 12px', borderRadius: 20, border: `1px solid ${colors.border}`,
+              background: colors.card, fontSize: 12, color: colors.textSecondary,
+              cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
+            }}
+          >
+            사장님 전환하기
+          </button>
+        </div>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill={colors.textSecondary} style={{ cursor: 'pointer' }}>
+          <path d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+        </svg>
+      </div>
+
+      <div style={{ padding: 16 }}>
         {/* 프로필 섹션 */}
-        <Card style={{ marginBottom: 16 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <div style={{
-              width: 60, height: 60, borderRadius: 30,
-              background: colors.gray200, display: 'flex',
-              alignItems: 'center', justifyContent: 'center',
-            }}>
-              <svg width="30" height="30" viewBox="0 0 24 24" fill={colors.gray400}>
-                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
+          <img
+            src="https://picsum.photos/70/70?random=avatar"
+            alt="프로필"
+            style={{ width: 70, height: 70, borderRadius: 35, objectFit: 'cover' }}
+          />
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 20, fontWeight: 700, color: colors.text, marginBottom: 4 }}>이사덕</div>
+            <div style={{ fontSize: 14, color: colors.textSecondary, marginBottom: 8 }}>
+              내 매너지수 <span style={{ fontWeight: 600, color: colors.text }}>{mannerScore}점</span>
+            </div>
+            {/* 매너지수 프로그레스바 */}
+            <div style={{ position: 'relative' }}>
+              <div style={{
+                height: 6, background: colors.gray200, borderRadius: 3,
+              }}>
+                <div style={{
+                  width: `${Math.min(mannerScore, 150) / 150 * 100}%`,
+                  height: '100%', background: '#00D4AA', borderRadius: 3,
+                }} />
+              </div>
+              <div style={{
+                position: 'absolute', right: 0, top: -16,
+                fontSize: 11, color: colors.textTertiary,
+              }}>
+                ▲ 평균
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 추천코드 */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16,
+        }}>
+          <span style={{ fontSize: 14, color: colors.textSecondary }}>내 추천코드</span>
+          <span style={{ fontSize: 14, fontWeight: 600, color: colors.text }}>{referralCode}</span>
+          <button
+            onClick={copyReferralCode}
+            style={{
+              padding: '6px 14px', borderRadius: 20, border: 'none',
+              background: '#00D4AA', color: 'white', fontSize: 13, fontWeight: 600,
+              cursor: 'pointer',
+            }}
+          >
+            코드 복사
+          </button>
+        </div>
+
+        {/* 환경 기여 통계 카드 */}
+        <div style={{
+          background: '#00D4AA', borderRadius: 16, padding: 20, marginBottom: 16,
+          display: 'flex', justifyContent: 'space-around',
+        }}>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ marginBottom: 8 }}>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="white">
+                <text x="4" y="18" fontSize="14" fontWeight="bold" fill="white">CO₂</text>
               </svg>
             </div>
-            <div>
-              <div style={{ fontSize: 18, fontWeight: 600, color: colors.text }}>럭키밀 회원</div>
-              <div style={{ fontSize: 13, color: colors.textSecondary }}>환경을 생각하는 당신, 멋져요!</div>
-            </div>
+            <div style={{ fontSize: 24, fontWeight: 700, color: 'white' }}>30kg</div>
+            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.8)' }}>아낀 Co2</div>
           </div>
-        </Card>
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ marginBottom: 8 }}>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="white">
+                <circle cx="12" cy="12" r="10" fill="rgba(255,255,255,0.3)"/>
+                <text x="8" y="16" fontSize="12" fontWeight="bold" fill="white">$</text>
+              </svg>
+            </div>
+            <div style={{ fontSize: 24, fontWeight: 700, color: 'white' }}>48,000원</div>
+            <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.8)' }}>아낀 금액</div>
+          </div>
+        </div>
 
-        {/* 환경 기여 통계 */}
-        <Card style={{ marginBottom: 16, background: colors.green50 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-            <span style={{ fontSize: 28 }}>🌱</span>
-            <div>
-              <div style={{ fontSize: 14, fontWeight: 600, color: colors.green600 }}>나의 환경 기여</div>
-              <div style={{ fontSize: 12, color: colors.green500 }}>럭키밀과 함께한 지 30일째</div>
-            </div>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-around', textAlign: 'center' }}>
-            <div>
-              <div style={{ fontSize: 24, fontWeight: 700, color: colors.green600 }}>5</div>
-              <div style={{ fontSize: 12, color: colors.green500 }}>구매한 럭키백</div>
-            </div>
-            <div>
-              <div style={{ fontSize: 24, fontWeight: 700, color: colors.green600 }}>2.5kg</div>
-              <div style={{ fontSize: 12, color: colors.green500 }}>줄인 CO2</div>
-            </div>
-            <div>
-              <div style={{ fontSize: 24, fontWeight: 700, color: colors.green600 }}>12,500원</div>
-              <div style={{ fontSize: 12, color: colors.green500 }}>절약한 금액</div>
-            </div>
-          </div>
-        </Card>
+        {/* 친구 초대 배너 */}
+        <div style={{
+          background: colors.card, borderRadius: 12, padding: 16, marginBottom: 20,
+          display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer',
+        }}>
+          <span style={{ fontSize: 28 }}>🎁</span>
+          <span style={{ fontSize: 15, fontWeight: 500, color: colors.text }}>친구 초대하고 쿠폰 받기</span>
+        </div>
 
-        {/* 메뉴 리스트 */}
-        <Card>
-          {[
-            { icon: '❤️', label: '찜한 가게', count: 3 },
-            { icon: '🎫', label: '쿠폰함', count: 0 },
-            { icon: '💰', label: '포인트', value: '0원' },
-            { icon: '⚙️', label: '설정', arrow: true },
-            { icon: '❓', label: '고객센터', arrow: true },
-          ].map((item, idx) => (
-            <div key={idx} style={{
-              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-              padding: '16px 0',
-              borderBottom: idx < 4 ? `1px solid ${colors.border}` : 'none',
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <span style={{ fontSize: 20 }}>{item.icon}</span>
-                <span style={{ fontSize: 15, color: colors.text }}>{item.label}</span>
+        {/* 자주 쓰는 기능 */}
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ fontSize: 16, fontWeight: 700, color: colors.text, marginBottom: 12 }}>자주 쓰는 기능</div>
+          <div style={{
+            background: colors.card, borderRadius: 12, padding: '16px 20px',
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            cursor: 'pointer',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span style={{ fontSize: 24 }}>🎫</span>
+              <span style={{ fontSize: 15, color: colors.text }}>쿠폰함</span>
+            </div>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill={colors.textTertiary}>
+              <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+            </svg>
+          </div>
+        </div>
+
+        {/* 내 리뷰 관리 */}
+        <div>
+          <div style={{ fontSize: 16, fontWeight: 700, color: colors.text, marginBottom: 12 }}>내 리뷰 관리</div>
+          <div style={{
+            background: colors.card, borderRadius: 12, padding: 20, marginBottom: 12,
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-around', textAlign: 'center' }}>
+              <div>
+                <div style={{ fontSize: 24, fontWeight: 700, color: colors.text }}>8</div>
+                <div style={{ fontSize: 13, color: colors.textSecondary }}>픽업 완료</div>
               </div>
-              <span style={{ fontSize: 14, color: colors.textSecondary }}>
-                {item.count !== undefined ? item.count : item.value || '>'}
-              </span>
+              <div>
+                <div style={{ fontSize: 24, fontWeight: 700, color: colors.text }}>8</div>
+                <div style={{ fontSize: 13, color: colors.textSecondary }}>리뷰 작성</div>
+              </div>
+              <div>
+                <div style={{ fontSize: 24, fontWeight: 700, color: colors.text }}>7</div>
+                <div style={{ fontSize: 13, color: colors.textSecondary }}>포토 리뷰</div>
+              </div>
             </div>
-          ))}
-        </Card>
+          </div>
+
+          {/* 포토 리뷰 그리드 */}
+          <div style={{ display: 'flex', gap: 8 }}>
+            <img
+              src="https://picsum.photos/150/150?random=30"
+              alt="리뷰 사진"
+              style={{ flex: 1, aspectRatio: '1', borderRadius: 8, objectFit: 'cover' }}
+            />
+            <img
+              src="https://picsum.photos/150/150?random=31"
+              alt="리뷰 사진"
+              style={{ flex: 1, aspectRatio: '1', borderRadius: 8, objectFit: 'cover' }}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -4859,6 +5188,8 @@ export default function App() {
       setConsumerScreen('checkout');
     } else if (screen === 'payment-complete') {
       setConsumerScreen('payment-complete');
+    } else if (screen === 'payment-fail') {
+      setConsumerScreen('payment-fail');
     } else if (screen === 'consumer-home') {
       setConsumerActiveTab('discover');
       setConsumerScreen('consumer-home');
@@ -4908,7 +5239,7 @@ export default function App() {
       case 'consumer-orders':
         return <ConsumerOrdersScreen onNavigate={consumerNavigate} />;
       case 'consumer-mypage':
-        return <ConsumerMypageScreen onNavigate={consumerNavigate} />;
+        return <ConsumerMypageScreen onNavigate={consumerNavigate} onSwitchRole={() => setRole('seller')} />;
       case 'store-detail':
         return <StoreDetailScreen store={selectedStore} onBack={consumerGoBack} onNavigate={consumerNavigate} />;
       case 'order-confirm':
@@ -4951,10 +5282,11 @@ export default function App() {
     <ThemeContext.Provider value={{ colors, isDark, toggleTheme }}>
       <div style={{
         maxWidth: 480, margin: '0 auto', minHeight: '100vh', background: colors.bg,
-        fontFamily: '"Sweet", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        fontFamily: '"OngleipKonkon", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
         transition: 'background 0.3s', position: 'relative',
       }}>
-        <RoleSwitcher />
+        {/* 사장님 모드에서만 플로팅 전환 버튼 표시 */}
+        {role === 'seller' && <RoleSwitcher />}
 
         {role === 'seller' ? (
           <>
