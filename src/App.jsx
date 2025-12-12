@@ -3609,12 +3609,993 @@ const TermsScreen = ({ onBack }) => {
 };
 
 // ============================================
+// 소비자 앱 - Mock 데이터
+// ============================================
+const consumerMockStores = [
+  {
+    id: 1, name: '굽네 플레이타운', category: '복합문화공간', distance: '370m',
+    image: 'https://picsum.photos/300/200?random=10', rating: 4.5, reviewCount: 128,
+    luckyBagPrice: 3900, originalPrice: 7800, pickupTime: '19:00-20:00',
+    address: '서울특별시 마포구 합정동 373-3', lat: 37.5495, lng: 126.9138,
+    description: '오늘의 치킨 럭키백! 다양한 치킨 메뉴를 할인된 가격에 만나보세요.',
+  },
+  {
+    id: 2, name: '일심장어 홍대본점', category: '장어, 먹장어요리', distance: '1.1km',
+    image: 'https://picsum.photos/300/200?random=11', rating: 4.8, reviewCount: 256,
+    luckyBagPrice: 5900, originalPrice: 11800, pickupTime: '20:00-21:00',
+    address: '서울특별시 마포구 서교동 123-45', lat: 37.5512, lng: 126.9189,
+    description: '신선한 장어요리를 럭키백으로! 오늘 남은 장어 메뉴를 특별 가격에 제공해요.',
+  },
+  {
+    id: 3, name: '라이즈오토그래프컬렉션', category: '호텔', distance: '500m',
+    image: 'https://picsum.photos/300/200?random=12', rating: 4.3, reviewCount: 89,
+    luckyBagPrice: 4500, originalPrice: 9000, pickupTime: '18:00-19:00',
+    address: '서울특별시 마포구 서교동 456-78', lat: 37.5478, lng: 126.9156,
+    description: '호텔 베이커리 럭키백! 프리미엄 빵과 케이크를 담았어요.',
+  },
+  {
+    id: 4, name: '홍대 육지', category: '육류, 고기요리', distance: '197m',
+    image: 'https://picsum.photos/300/200?random=13', rating: 4.6, reviewCount: 342,
+    luckyBagPrice: 6900, originalPrice: 13800, pickupTime: '21:00-22:00',
+    address: '서울특별시 마포구 서교동 789-12', lat: 37.5501, lng: 126.9201,
+    description: '프리미엄 고기 럭키백! 오늘의 특선 육류를 할인가에 만나보세요.',
+  },
+  {
+    id: 5, name: '빽다방 합정역사거리점', category: '카페', distance: '230m',
+    image: 'https://picsum.photos/300/200?random=14', rating: 4.2, reviewCount: 567,
+    luckyBagPrice: 2000, originalPrice: 4000, pickupTime: '17:00-18:00',
+    address: '서울특별시 마포구 합정동 373-3 1층 코너', lat: 37.5489, lng: 126.9145,
+    description: '음료 + 디저트 럭키백! 커피와 함께 맛있는 디저트를 즐겨보세요.',
+  },
+  {
+    id: 6, name: '깨비콕스타일', category: '분식', distance: '450m',
+    image: 'https://picsum.photos/300/200?random=15', rating: 4.4, reviewCount: 203,
+    luckyBagPrice: 3500, originalPrice: 7000, pickupTime: '19:30-20:30',
+    address: '서울특별시 마포구 서교동 111-22', lat: 37.5505, lng: 126.9178,
+    description: '분식 럭키백! 떡볶이, 순대, 튀김 등 인기 분식을 담았어요.',
+  },
+];
+
+// ============================================
+// 소비자 앱 - 하단 네비게이션
+// ============================================
+const ConsumerBottomNav = ({ activeTab, onChange }) => {
+  const { colors } = useTheme();
+  const tabs = [
+    { id: 'discover', label: '발견', icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="currentColor"/>
+      </svg>
+    )},
+    { id: 'orders', label: '예약', icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" fill="currentColor"/>
+      </svg>
+    )},
+    { id: 'transit', label: '대중교통', icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M12 2c-4 0-8 .5-8 4v9.5C4 17.43 5.57 19 7.5 19L6 20.5v.5h12v-.5L16.5 19c1.93 0 3.5-1.57 3.5-3.5V6c0-3.5-4-4-8-4zM7.5 17c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm3.5-6H6V6h5v5zm2 0V6h5v5h-5zm3.5 6c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" fill="currentColor"/>
+      </svg>
+    )},
+    { id: 'navi', label: '내비게이션', icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71L12 2z" fill="currentColor"/>
+      </svg>
+    )},
+    { id: 'saved', label: '저장', icon: (
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" fill="currentColor"/>
+      </svg>
+    )},
+  ];
+  return (
+    <div style={{
+      position: 'fixed', bottom: 16, left: '50%', transform: 'translateX(-50%)',
+      width: 'calc(100% - 32px)', maxWidth: 448, background: colors.bgCard,
+      borderRadius: 50, padding: '8px 4px', display: 'flex', justifyContent: 'space-around',
+      boxShadow: `0 4px 20px ${colors.shadow}`, zIndex: 100,
+    }}>
+      {tabs.map(tab => (
+        <button key={tab.id} onClick={() => onChange(tab.id)} style={{
+          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2,
+          background: 'none', border: 'none', padding: '8px 12px', cursor: 'pointer',
+          color: activeTab === tab.id ? colors.text : colors.gray400,
+          transition: 'color 0.2s',
+        }}>
+          {tab.icon}
+          <span style={{ fontSize: 10, fontWeight: activeTab === tab.id ? 600 : 400 }}>{tab.label}</span>
+        </button>
+      ))}
+    </div>
+  );
+};
+
+// ============================================
+// 소비자 앱 - 메인 화면 (지도 + 바텀시트)
+// ============================================
+const ConsumerHomeScreen = ({ onNavigate, stores }) => {
+  const { colors } = useTheme();
+  const [bottomSheetExpanded, setBottomSheetExpanded] = useState(false);
+  const [selectedTab, setSelectedTab] = useState('nearby');
+
+  // 간단한 그리드 지도 생성
+  const renderGridMap = () => (
+    <div style={{
+      width: '100%', height: bottomSheetExpanded ? 200 : 400,
+      background: `linear-gradient(135deg, ${colors.gray100} 0%, ${colors.gray200} 100%)`,
+      position: 'relative', overflow: 'hidden', transition: 'height 0.3s ease',
+    }}>
+      {/* 그리드 라인 */}
+      <svg width="100%" height="100%" style={{ position: 'absolute', top: 0, left: 0 }}>
+        {[...Array(20)].map((_, i) => (
+          <React.Fragment key={i}>
+            <line x1={i * 30} y1="0" x2={i * 30} y2="100%" stroke={colors.gray300} strokeWidth="0.5" />
+            <line x1="0" y1={i * 30} x2="100%" y2={i * 30} stroke={colors.gray300} strokeWidth="0.5" />
+          </React.Fragment>
+        ))}
+        {/* 도로 표시 */}
+        <line x1="0" y1="150" x2="100%" y2="150" stroke="#90CAF9" strokeWidth="8" />
+        <line x1="200" y1="0" x2="200" y2="100%" stroke="#A5D6A7" strokeWidth="6" />
+      </svg>
+
+      {/* 가게 마커들 */}
+      {stores.map((store, idx) => (
+        <div key={store.id} onClick={() => onNavigate('store-detail', store)} style={{
+          position: 'absolute',
+          left: `${20 + (idx % 3) * 30}%`,
+          top: `${15 + Math.floor(idx / 3) * 25}%`,
+          cursor: 'pointer',
+          transform: 'translate(-50%, -100%)',
+        }}>
+          <div style={{
+            width: 36, height: 36, borderRadius: 18,
+            background: colors.blue500, border: '3px solid white',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+            </svg>
+          </div>
+        </div>
+      ))}
+
+      {/* 현재 위치 마커 */}
+      <div style={{
+        position: 'absolute', left: '50%', top: '50%',
+        transform: 'translate(-50%, -50%)',
+      }}>
+        <div style={{
+          width: 20, height: 20, borderRadius: 10,
+          background: colors.blue500, border: '4px solid white',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+        }} />
+        <div style={{
+          position: 'absolute', top: -4, left: -4,
+          width: 28, height: 28, borderRadius: 14,
+          background: colors.blue500, opacity: 0.3,
+          animation: 'pulse 2s infinite',
+        }} />
+      </div>
+    </div>
+  );
+
+  return (
+    <div style={{ minHeight: '100vh', background: colors.bg }}>
+      {/* 검색 바 */}
+      <div style={{
+        position: 'absolute', top: 16, left: 16, right: 16, zIndex: 10,
+        display: 'flex', gap: 8, alignItems: 'center',
+      }}>
+        <div style={{
+          flex: 1, display: 'flex', alignItems: 'center', gap: 8,
+          background: colors.bgCard, borderRadius: 24, padding: '12px 16px',
+          boxShadow: `0 2px 8px ${colors.shadow}`,
+        }}>
+          <div style={{ width: 24, height: 24, borderRadius: 12, background: '#03C75A', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ color: 'white', fontWeight: 'bold', fontSize: 12 }}>L</span>
+          </div>
+          <span style={{ color: colors.textSecondary, fontSize: 14 }}>럭키밀 검색</span>
+        </div>
+        <div style={{
+          width: 44, height: 44, borderRadius: 22, background: colors.blue500,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          boxShadow: `0 2px 8px ${colors.shadow}`,
+        }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+            <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71L12 2z"/>
+          </svg>
+        </div>
+      </div>
+
+      {/* 지도 */}
+      {renderGridMap()}
+
+      {/* 바텀시트 */}
+      <div style={{
+        position: 'fixed', bottom: 80, left: '50%', transform: 'translateX(-50%)',
+        width: '100%', maxWidth: 480, background: colors.bgCard,
+        borderRadius: '20px 20px 0 0', boxShadow: `0 -4px 20px ${colors.shadow}`,
+        maxHeight: bottomSheetExpanded ? 'calc(100vh - 120px)' : 280,
+        overflow: 'hidden', transition: 'max-height 0.3s ease',
+      }}>
+        {/* 드래그 핸들 */}
+        <div
+          onClick={() => setBottomSheetExpanded(!bottomSheetExpanded)}
+          style={{ padding: '12px 0', cursor: 'pointer' }}
+        >
+          <div style={{
+            width: 40, height: 4, background: colors.gray300,
+            borderRadius: 2, margin: '0 auto',
+          }} />
+        </div>
+
+        {/* 탭 */}
+        <div style={{ display: 'flex', padding: '0 16px', gap: 8, marginBottom: 16 }}>
+          <button
+            onClick={() => setSelectedTab('nearby')}
+            style={{
+              flex: 1, padding: '10px 16px', borderRadius: 20,
+              border: `1px solid ${selectedTab === 'nearby' ? colors.text : colors.border}`,
+              background: selectedTab === 'nearby' ? colors.text : colors.bgCard,
+              color: selectedTab === 'nearby' ? colors.bgCard : colors.text,
+              fontSize: 14, fontWeight: 500, cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+            }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+            </svg>
+            마포구 서교동
+          </button>
+          <button
+            onClick={() => setSelectedTab('trend')}
+            style={{
+              flex: 1, padding: '10px 16px', borderRadius: 20,
+              border: `1px solid ${selectedTab === 'trend' ? colors.text : colors.border}`,
+              background: selectedTab === 'trend' ? colors.text : colors.bgCard,
+              color: selectedTab === 'trend' ? colors.bgCard : colors.text,
+              fontSize: 14, fontWeight: 500, cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+            }}
+          >
+            <span style={{ fontSize: 16 }}>🔥</span>
+            전국 트렌드
+          </button>
+        </div>
+
+        {/* 인기 장소 헤더 */}
+        <div style={{
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          padding: '0 16px', marginBottom: 12,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ fontSize: 16, fontWeight: 700, color: colors.text }}>
+              지금 주변 인기 럭키백
+            </span>
+            <span style={{ color: colors.blue500, fontWeight: 700 }}>TOP 10</span>
+          </div>
+          <span style={{ fontSize: 12, color: colors.textTertiary }}>• 14분 전 업데이트</span>
+        </div>
+
+        {/* 가게 리스트 */}
+        <div style={{
+          overflowY: 'auto', maxHeight: bottomSheetExpanded ? 'calc(100vh - 320px)' : 150,
+          padding: '0 16px 16px',
+        }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            {stores.map((store, idx) => (
+              <div
+                key={store.id}
+                onClick={() => onNavigate('store-detail', store)}
+                style={{
+                  background: colors.bgCard, borderRadius: 12, overflow: 'hidden',
+                  cursor: 'pointer', boxShadow: `0 1px 3px ${colors.shadow}`,
+                }}
+              >
+                <div style={{ position: 'relative' }}>
+                  <img
+                    src={store.image}
+                    alt={store.name}
+                    style={{ width: '100%', height: 120, objectFit: 'cover' }}
+                  />
+                  <div style={{
+                    position: 'absolute', top: 8, left: 8,
+                    background: 'rgba(0,0,0,0.6)', color: 'white',
+                    padding: '4px 8px', borderRadius: 4, fontSize: 20, fontWeight: 700,
+                  }}>
+                    {idx + 1}
+                  </div>
+                  <div style={{
+                    position: 'absolute', bottom: 8, left: 8, right: 8,
+                    background: 'rgba(0,0,0,0.6)', color: 'white',
+                    padding: '6px 8px', borderRadius: 4, fontSize: 11,
+                    whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                  }}>
+                    {store.luckyBagPrice.toLocaleString()}원 럭키백 판매중
+                  </div>
+                </div>
+                <div style={{ padding: 12 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                    <div>
+                      <div style={{ fontWeight: 600, color: colors.text, fontSize: 14, marginBottom: 4 }}>
+                        {store.name}
+                      </div>
+                      <div style={{ fontSize: 12, color: colors.textTertiary }}>
+                        {store.category} • {store.distance}
+                      </div>
+                    </div>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill={colors.gray300}>
+                      <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <style>{`
+        @keyframes pulse {
+          0% { transform: scale(1); opacity: 0.3; }
+          50% { transform: scale(1.5); opacity: 0.1; }
+          100% { transform: scale(1); opacity: 0.3; }
+        }
+      `}</style>
+    </div>
+  );
+};
+
+// ============================================
+// 소비자 앱 - 가게 상세 화면
+// ============================================
+const StoreDetailScreen = ({ store, onBack, onNavigate }) => {
+  const { colors } = useTheme();
+  const [quantity, setQuantity] = useState(1);
+
+  return (
+    <div style={{ minHeight: '100vh', background: colors.bg, paddingBottom: 100 }}>
+      {/* 헤더 이미지 */}
+      <div style={{ position: 'relative' }}>
+        <img src={store.image} alt={store.name} style={{ width: '100%', height: 250, objectFit: 'cover' }} />
+        <button onClick={onBack} style={{
+          position: 'absolute', top: 16, left: 16,
+          width: 40, height: 40, borderRadius: 20, background: 'rgba(255,255,255,0.9)',
+          border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <span style={{ fontSize: 20 }}>←</span>
+        </button>
+      </div>
+
+      {/* 가게 정보 */}
+      <div style={{ padding: 20 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+          <Badge variant="primary">럭키백</Badge>
+          <span style={{ fontSize: 12, color: colors.textTertiary }}>{store.category}</span>
+        </div>
+        <h1 style={{ fontSize: 22, fontWeight: 700, color: colors.text, margin: '0 0 8px' }}>{store.name}</h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFB800">
+              <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+            </svg>
+            <span style={{ fontWeight: 600, color: colors.text }}>{store.rating}</span>
+          </div>
+          <span style={{ color: colors.textTertiary, fontSize: 13 }}>리뷰 {store.reviewCount}개</span>
+          <span style={{ color: colors.textTertiary }}>•</span>
+          <span style={{ color: colors.textTertiary, fontSize: 13 }}>{store.distance}</span>
+        </div>
+
+        {/* 럭키백 카드 */}
+        <Card style={{ marginBottom: 16 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+            <div>
+              <div style={{ fontSize: 16, fontWeight: 600, color: colors.text, marginBottom: 4 }}>오늘의 럭키백</div>
+              <div style={{ fontSize: 13, color: colors.textSecondary }}>{store.description}</div>
+            </div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+            <span style={{ fontSize: 20, fontWeight: 700, color: colors.text }}>
+              {store.luckyBagPrice.toLocaleString()}원
+            </span>
+            <span style={{ fontSize: 14, color: colors.textTertiary, textDecoration: 'line-through' }}>
+              {store.originalPrice.toLocaleString()}원
+            </span>
+            <Badge variant="danger">50%</Badge>
+          </div>
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 8,
+            padding: '12px 16px', background: colors.gray50, borderRadius: 8,
+          }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill={colors.textSecondary}>
+              <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+            </svg>
+            <span style={{ fontSize: 14, color: colors.textSecondary }}>
+              픽업 시간: {store.pickupTime}
+            </span>
+          </div>
+        </Card>
+
+        {/* 수량 선택 */}
+        <Card style={{ marginBottom: 16 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontSize: 15, fontWeight: 500, color: colors.text }}>수량</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              <button
+                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                style={{
+                  width: 32, height: 32, borderRadius: 16, border: `1px solid ${colors.border}`,
+                  background: colors.bgCard, cursor: 'pointer', fontSize: 18, color: colors.text,
+                }}
+              >-</button>
+              <span style={{ fontSize: 16, fontWeight: 600, color: colors.text, minWidth: 24, textAlign: 'center' }}>
+                {quantity}
+              </span>
+              <button
+                onClick={() => setQuantity(Math.min(5, quantity + 1))}
+                style={{
+                  width: 32, height: 32, borderRadius: 16, border: `1px solid ${colors.border}`,
+                  background: colors.bgCard, cursor: 'pointer', fontSize: 18, color: colors.text,
+                }}
+              >+</button>
+            </div>
+          </div>
+        </Card>
+
+        {/* 가게 위치 */}
+        <Card>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill={colors.textSecondary}>
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+            </svg>
+            <div>
+              <div style={{ fontSize: 14, color: colors.text, marginBottom: 4 }}>{store.address}</div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button style={{
+                  padding: '6px 12px', background: colors.gray100, border: 'none',
+                  borderRadius: 6, fontSize: 12, color: colors.textSecondary, cursor: 'pointer',
+                }}>복사</button>
+                <button style={{
+                  padding: '6px 12px', background: colors.gray100, border: 'none',
+                  borderRadius: 6, fontSize: 12, color: colors.textSecondary, cursor: 'pointer',
+                }}>지도</button>
+              </div>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      {/* 하단 주문 바 */}
+      <div style={{
+        position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)',
+        width: '100%', maxWidth: 480, background: colors.bgCard,
+        padding: 16, borderTop: `1px solid ${colors.border}`,
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      }}>
+        <div>
+          <div style={{ fontSize: 20, fontWeight: 700, color: colors.text }}>
+            {(store.luckyBagPrice * quantity).toLocaleString()}원
+          </div>
+          <div style={{ fontSize: 13, color: colors.textTertiary }}>주문 가능</div>
+        </div>
+        <Button
+          variant="primary"
+          size="lg"
+          onClick={() => onNavigate('order-confirm', { store, quantity })}
+          style={{ background: '#00D4AA', padding: '16px 32px' }}
+        >
+          픽업 주문하기
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+// ============================================
+// 소비자 앱 - 주문 확인 화면
+// ============================================
+const OrderConfirmScreen = ({ store, quantity, onBack, onNavigate }) => {
+  const { colors } = useTheme();
+  const totalPrice = store.luckyBagPrice * quantity;
+
+  return (
+    <div style={{ minHeight: '100vh', background: colors.bg, paddingBottom: 100 }}>
+      <Header title="주문 확인" onBack={onBack} />
+
+      <div style={{ padding: 20 }}>
+        {/* 수령 방법 */}
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
+            <span style={{ fontSize: 16, fontWeight: 600, color: colors.text }}>수령방법을 확인해주세요</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill={colors.textTertiary}>
+              <circle cx="12" cy="12" r="10" stroke="currentColor" fill="none" strokeWidth="2"/>
+              <path d="M12 16v-4M12 8h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
+          </div>
+          <Card>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontWeight: 600, color: colors.text }}>픽업</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill={colors.text}>
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+              </svg>
+            </div>
+            <div style={{ fontSize: 13, color: colors.textSecondary, marginTop: 4 }}>
+              7~17분 후 픽업
+            </div>
+          </Card>
+        </div>
+
+        {/* 결제 금액 */}
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ fontSize: 16, fontWeight: 600, color: colors.text, marginBottom: 12 }}>
+            결제금액을 확인해주세요
+          </div>
+          <Card>
+            <div style={{
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+              paddingBottom: 16, borderBottom: `1px solid ${colors.border}`, marginBottom: 16,
+            }}>
+              <span style={{ color: colors.textSecondary }}>메뉴 금액</span>
+              <span style={{ color: colors.text }}>{totalPrice.toLocaleString()}원</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontWeight: 600, color: colors.text }}>결제예정금액</span>
+              <span style={{ fontSize: 20, fontWeight: 700, color: colors.text }}>
+                {totalPrice.toLocaleString()}원
+              </span>
+            </div>
+          </Card>
+        </div>
+      </div>
+
+      {/* 하단 주문 바 */}
+      <div style={{
+        position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)',
+        width: '100%', maxWidth: 480, background: colors.bgCard,
+        padding: 16, borderTop: `1px solid ${colors.border}`,
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      }}>
+        <div>
+          <div style={{ fontSize: 20, fontWeight: 700, color: colors.text }}>
+            {totalPrice.toLocaleString()}원
+          </div>
+          <div style={{ fontSize: 13, color: colors.textTertiary }}>주문 가능</div>
+        </div>
+        <Button
+          variant="primary"
+          size="lg"
+          onClick={() => onNavigate('checkout', { store, quantity, totalPrice })}
+          style={{ background: '#00D4AA', padding: '16px 32px' }}
+        >
+          픽업 주문하기
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+// ============================================
+// 소비자 앱 - 결제하기 화면
+// ============================================
+const CheckoutScreen = ({ store, quantity, totalPrice, onBack, onNavigate }) => {
+  const { colors } = useTheme();
+  const [selectedPayment, setSelectedPayment] = useState('card');
+  const [noUtensils, setNoUtensils] = useState(true);
+
+  const paymentMethods = [
+    { id: 'baemin', label: '배민페이머니', icon: '💳', bonus: '최대 10원 적립' },
+    { id: 'card', label: '신용/체크카드', icon: '💳', subLabel: '현대카드' },
+    { id: 'toss', label: '토스페이', icon: '💙' },
+    { id: 'kakao', label: '카카오페이', icon: '💛' },
+  ];
+
+  return (
+    <div style={{ minHeight: '100vh', background: colors.bg, paddingBottom: 100 }}>
+      <Header title="주문하기" onBack={onBack} />
+
+      <div style={{ padding: '8px 20px' }}>
+        {/* 픽업 정보 헤더 */}
+        <div style={{
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          padding: '12px 0', marginBottom: 16,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill={colors.text}>
+              <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/>
+            </svg>
+            <span style={{ fontWeight: 500, color: colors.text }}>픽업해서 직접 가져갈게요</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: colors.textSecondary, fontSize: 13 }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+            </svg>
+            7~17분 후 픽업
+          </div>
+        </div>
+
+        {/* 가게 정보 */}
+        <Card style={{ marginBottom: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+            <div style={{
+              width: 40, height: 40, borderRadius: 8,
+              background: colors.gray100, display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <span style={{ fontSize: 20 }}>🏪</span>
+            </div>
+            <div>
+              <div style={{ fontWeight: 600, color: colors.text }}>{store.name}</div>
+              <div style={{ fontSize: 12, color: colors.textTertiary }}>{store.address}</div>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button style={{
+              padding: '6px 12px', background: colors.gray100, border: 'none',
+              borderRadius: 6, fontSize: 12, color: colors.textSecondary, cursor: 'pointer',
+            }}>복사</button>
+            <button style={{
+              padding: '6px 12px', background: colors.gray100, border: 'none',
+              borderRadius: 6, fontSize: 12, color: colors.textSecondary, cursor: 'pointer',
+            }}>지도</button>
+            <button style={{
+              padding: '6px 12px', background: colors.gray100, border: 'none',
+              borderRadius: 6, fontSize: 12, color: colors.textSecondary, cursor: 'pointer',
+            }}>...</button>
+          </div>
+        </Card>
+
+        {/* 내 연락처 */}
+        <Card style={{ marginBottom: 16 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <div style={{ fontSize: 13, color: colors.textTertiary, marginBottom: 4 }}>내 연락처</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span style={{ fontWeight: 500, color: colors.text }}>010-1234-5678</span>
+                <Badge>안심번호</Badge>
+              </div>
+            </div>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill={colors.gray400}>
+              <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+            </svg>
+          </div>
+        </Card>
+
+        {/* 가게 요청사항 */}
+        <Card style={{ marginBottom: 16 }}>
+          <div style={{ fontWeight: 500, color: colors.text, marginBottom: 12 }}>가게 요청사항</div>
+          <div style={{
+            padding: '12px 16px', background: colors.gray50, borderRadius: 8,
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            marginBottom: 12,
+          }}>
+            <span style={{ color: colors.textTertiary }}>요청사항 없음</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill={colors.gray400}>
+              <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
+            </svg>
+          </div>
+          <div
+            onClick={() => setNoUtensils(!noUtensils)}
+            style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}
+          >
+            <div style={{
+              width: 24, height: 24, borderRadius: 4,
+              background: noUtensils ? colors.text : colors.bgCard,
+              border: `2px solid ${noUtensils ? colors.text : colors.gray300}`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              {noUtensils && <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
+                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+              </svg>}
+            </div>
+            <span style={{ color: colors.text }}>수저·포크 안 받기</span>
+          </div>
+        </Card>
+
+        {/* 결제수단 */}
+        <Card style={{ marginBottom: 16 }}>
+          <div style={{ fontWeight: 500, color: colors.text, marginBottom: 16 }}>결제수단</div>
+          {paymentMethods.map(method => (
+            <div
+              key={method.id}
+              onClick={() => setSelectedPayment(method.id)}
+              style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                padding: '12px 0', cursor: 'pointer',
+                borderBottom: method.id !== 'kakao' ? `1px solid ${colors.border}` : 'none',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{
+                  width: 24, height: 24, borderRadius: 12,
+                  border: `2px solid ${selectedPayment === method.id ? colors.text : colors.gray300}`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  {selectedPayment === method.id && (
+                    <div style={{ width: 12, height: 12, borderRadius: 6, background: colors.text }} />
+                  )}
+                </div>
+                <span style={{ fontSize: 16 }}>{method.icon}</span>
+                <span style={{ fontWeight: 500, color: colors.text }}>{method.label}</span>
+                {method.subLabel && (
+                  <span style={{ fontSize: 13, color: colors.textTertiary }}>{method.subLabel}</span>
+                )}
+                {method.bonus && (
+                  <span style={{ fontSize: 12, color: colors.blue500, fontWeight: 500 }}>{method.bonus}</span>
+                )}
+              </div>
+              {method.subLabel && (
+                <span style={{ fontSize: 13, color: colors.blue500, cursor: 'pointer' }}>변경 {'>'}</span>
+              )}
+            </div>
+          ))}
+        </Card>
+
+        {/* 할인/쿠폰 */}
+        <Card style={{ marginBottom: 16 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+            <span style={{ fontWeight: 500, color: colors.text }}>할인쿠폰</span>
+            <span style={{ fontSize: 13, color: colors.textTertiary }}>보유쿠폰 없음</span>
+          </div>
+          <div style={{
+            padding: '12px 16px', background: colors.gray50, borderRadius: 8,
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            marginBottom: 16,
+          }}>
+            <span style={{ color: colors.textTertiary }}>사용 가능한 쿠폰이 없어요</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill={colors.gray400}>
+              <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+            </svg>
+          </div>
+          <div style={{
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            paddingBottom: 12, borderBottom: `1px solid ${colors.border}`, marginBottom: 12,
+          }}>
+            <span style={{ fontWeight: 500, color: colors.text }}>선물함</span>
+            <span style={{ fontSize: 13, color: colors.textSecondary }}>0원 보유 {'>'}</span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontWeight: 500, color: colors.text }}>포인트</span>
+            <span style={{ fontSize: 13, color: colors.textTertiary }}>0원 보유 {'>'}</span>
+          </div>
+        </Card>
+
+        {/* 최종 결제 금액 */}
+        <Card style={{ marginBottom: 16 }}>
+          <div style={{
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            paddingBottom: 16, borderBottom: `1px solid ${colors.border}`, marginBottom: 16,
+          }}>
+            <span style={{ color: colors.textSecondary }}>메뉴금액</span>
+            <span style={{ color: colors.text }}>{totalPrice.toLocaleString()}원</span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <span style={{ fontWeight: 600, color: colors.text }}>결제금액</span>
+            <span style={{ fontSize: 20, fontWeight: 700, color: colors.text }}>
+              {totalPrice.toLocaleString()}원
+            </span>
+          </div>
+        </Card>
+
+        {/* 안내 문구 */}
+        <div style={{ fontSize: 12, color: colors.textTertiary, marginBottom: 16 }}>
+          픽업 주문은 직접 음식을 찾아가주세요. 미수령된 음식은 폐기될 수 있으며 환불되지 않아요.
+        </div>
+
+        {/* 동의 항목 */}
+        <div style={{ marginBottom: 16 }}>
+          <div style={{
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            padding: '12px 0', borderBottom: `1px solid ${colors.border}`,
+          }}>
+            <span style={{ fontSize: 13, color: colors.textTertiary }}>(주)우아한형제들 상품 주의사항 동의</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill={colors.gray400}>
+              <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+            </svg>
+          </div>
+          <div style={{
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            padding: '12px 0',
+          }}>
+            <span style={{ fontSize: 13, color: colors.textTertiary }}>개인정보 제3자 제공 동의</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill={colors.gray400}>
+              <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+            </svg>
+          </div>
+        </div>
+
+        <div style={{ textAlign: 'center', fontSize: 13, color: colors.textTertiary, marginBottom: 16 }}>
+          위 내용을 확인하였으며 결제에 동의합니다
+        </div>
+      </div>
+
+      {/* 하단 결제 버튼 */}
+      <div style={{
+        position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)',
+        width: '100%', maxWidth: 480, padding: 16, background: colors.bgCard,
+      }}>
+        <Button
+          fullWidth
+          size="lg"
+          onClick={() => onNavigate('payment-complete', { store, quantity, totalPrice })}
+          style={{ background: '#00D4AA', padding: '18px', fontSize: 16 }}
+        >
+          {totalPrice.toLocaleString()}원 결제하기
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+// ============================================
+// 소비자 앱 - 결제 완료 화면
+// ============================================
+const PaymentCompleteScreen = ({ store, quantity, totalPrice, onNavigate }) => {
+  const { colors } = useTheme();
+  const orderCode = ['가', '나', '다'][Math.floor(Math.random() * 3)] +
+                    ['라', '마', '바'][Math.floor(Math.random() * 3)] +
+                    ['사', '아', '자'][Math.floor(Math.random() * 3)];
+
+  return (
+    <div style={{ minHeight: '100vh', background: colors.bg, padding: 20 }}>
+      <div style={{ textAlign: 'center', paddingTop: 60, paddingBottom: 40 }}>
+        <div style={{
+          width: 80, height: 80, borderRadius: 40, background: '#00D4AA',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          margin: '0 auto 24px',
+        }}>
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="white">
+            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+          </svg>
+        </div>
+        <h1 style={{ fontSize: 24, fontWeight: 700, color: colors.text, margin: '0 0 8px' }}>
+          주문이 완료되었어요!
+        </h1>
+        <p style={{ fontSize: 14, color: colors.textSecondary, margin: 0 }}>
+          픽업 시간에 맞춰 방문해주세요
+        </p>
+      </div>
+
+      <Card style={{ marginBottom: 16 }}>
+        <div style={{ textAlign: 'center', marginBottom: 20 }}>
+          <div style={{ fontSize: 13, color: colors.textTertiary, marginBottom: 8 }}>주문 코드</div>
+          <div style={{ fontSize: 32, fontWeight: 700, color: colors.text, letterSpacing: 4 }}>
+            {orderCode}
+          </div>
+        </div>
+        <div style={{ borderTop: `1px solid ${colors.border}`, paddingTop: 16 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
+            <span style={{ color: colors.textSecondary }}>가게</span>
+            <span style={{ color: colors.text, fontWeight: 500 }}>{store.name}</span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
+            <span style={{ color: colors.textSecondary }}>픽업 시간</span>
+            <span style={{ color: colors.text, fontWeight: 500 }}>{store.pickupTime}</span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
+            <span style={{ color: colors.textSecondary }}>수량</span>
+            <span style={{ color: colors.text, fontWeight: 500 }}>{quantity}개</span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span style={{ color: colors.textSecondary }}>결제 금액</span>
+            <span style={{ color: colors.text, fontWeight: 700 }}>{totalPrice.toLocaleString()}원</span>
+          </div>
+        </div>
+      </Card>
+
+      <Card style={{ marginBottom: 24 }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill={colors.textSecondary}>
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+          </svg>
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 500, color: colors.text, marginBottom: 4 }}>
+              픽업 장소
+            </div>
+            <div style={{ fontSize: 13, color: colors.textSecondary }}>{store.address}</div>
+          </div>
+        </div>
+      </Card>
+
+      <div style={{
+        background: colors.green50, borderRadius: 12, padding: 16,
+        display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24,
+      }}>
+        <span style={{ fontSize: 24 }}>🌱</span>
+        <div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: colors.green600 }}>
+            환경 보호에 동참해주셔서 감사해요!
+          </div>
+          <div style={{ fontSize: 12, color: colors.green500 }}>
+            이번 주문으로 약 0.5kg의 CO2 배출을 줄였어요
+          </div>
+        </div>
+      </div>
+
+      <Button
+        fullWidth
+        size="lg"
+        onClick={() => onNavigate('consumer-home')}
+        style={{ background: colors.gray100, color: colors.text }}
+      >
+        홈으로 돌아가기
+      </Button>
+    </div>
+  );
+};
+
+// ============================================
+// 소비자 앱 - 예약 내역 화면
+// ============================================
+const ConsumerOrdersScreen = ({ onNavigate }) => {
+  const { colors } = useTheme();
+  const [orders] = useState([
+    {
+      id: 1, store: consumerMockStores[4], orderCode: '푸른바다',
+      status: 'confirmed', quantity: 1, totalPrice: 2000,
+      pickupTime: '17:00-18:00', orderedAt: '2024-12-12 14:30',
+    },
+  ]);
+
+  return (
+    <div style={{ minHeight: '100vh', background: colors.bg }}>
+      <Header title="예약 내역" />
+      <div style={{ padding: 20 }}>
+        {orders.length === 0 ? (
+          <div style={{ textAlign: 'center', paddingTop: 100 }}>
+            <div style={{ fontSize: 48, marginBottom: 16 }}>📋</div>
+            <div style={{ fontSize: 16, fontWeight: 600, color: colors.text, marginBottom: 8 }}>
+              예약 내역이 없어요
+            </div>
+            <div style={{ fontSize: 14, color: colors.textSecondary }}>
+              주변 럭키백을 찾아보세요!
+            </div>
+          </div>
+        ) : (
+          orders.map(order => (
+            <Card key={order.id} style={{ marginBottom: 16 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+                <div>
+                  <div style={{ fontWeight: 600, color: colors.text, marginBottom: 4 }}>{order.store.name}</div>
+                  <div style={{ fontSize: 13, color: colors.textTertiary }}>{order.orderedAt}</div>
+                </div>
+                <Badge variant="success">확정됨</Badge>
+              </div>
+              <div style={{
+                padding: 12, background: colors.gray50, borderRadius: 8, marginBottom: 12,
+                textAlign: 'center',
+              }}>
+                <div style={{ fontSize: 12, color: colors.textTertiary, marginBottom: 4 }}>주문 코드</div>
+                <div style={{ fontSize: 24, fontWeight: 700, color: colors.text }}>{order.orderCode}</div>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
+                <span style={{ color: colors.textSecondary }}>픽업 시간: {order.pickupTime}</span>
+                <span style={{ fontWeight: 600, color: colors.text }}>{order.totalPrice.toLocaleString()}원</span>
+              </div>
+            </Card>
+          ))
+        )}
+      </div>
+    </div>
+  );
+};
+
+// ============================================
 // 앱 메인
 // ============================================
 export default function App() {
+  // 역할: 'seller' (판매자) 또는 'consumer' (소비자)
+  const [role, setRole] = useState('consumer');
+
+  // 판매자 앱 상태
   const [activeTab, setActiveTab] = useState('orders');
   const [currentScreen, setCurrentScreen] = useState('orders');
   const [isDark, setIsDark] = useState(false);
+
+  // 소비자 앱 상태
+  const [consumerActiveTab, setConsumerActiveTab] = useState('discover');
+  const [consumerScreen, setConsumerScreen] = useState('consumer-home');
+  const [selectedStore, setSelectedStore] = useState(null);
+  const [orderData, setOrderData] = useState({ quantity: 1, totalPrice: 0 });
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
@@ -3665,6 +4646,7 @@ export default function App() {
   const [currentStoreId, setCurrentStoreId] = useState(3);
   const currentStore = stores.find(s => s.id === currentStoreId);
 
+  // 판매자 앱 네비게이션
   const navigate = (screen) => {
     if (['orders', 'settings'].includes(screen)) setActiveTab(screen);
     setCurrentScreen(screen);
@@ -3672,7 +4654,45 @@ export default function App() {
 
   const goBack = () => setCurrentScreen(activeTab);
 
-  const renderScreen = () => {
+  // 소비자 앱 네비게이션
+  const consumerNavigate = (screen, data) => {
+    if (['discover', 'orders', 'transit', 'navi', 'saved'].includes(screen)) {
+      setConsumerActiveTab(screen);
+      if (screen === 'discover') setConsumerScreen('consumer-home');
+      else if (screen === 'orders') setConsumerScreen('consumer-orders');
+      else setConsumerScreen('consumer-home');
+    } else if (screen === 'store-detail') {
+      setSelectedStore(data);
+      setConsumerScreen('store-detail');
+    } else if (screen === 'order-confirm') {
+      setSelectedStore(data.store);
+      setOrderData({ quantity: data.quantity, totalPrice: data.store.luckyBagPrice * data.quantity });
+      setConsumerScreen('order-confirm');
+    } else if (screen === 'checkout') {
+      setOrderData({ quantity: data.quantity, totalPrice: data.totalPrice });
+      setConsumerScreen('checkout');
+    } else if (screen === 'payment-complete') {
+      setConsumerScreen('payment-complete');
+    } else if (screen === 'consumer-home') {
+      setConsumerActiveTab('discover');
+      setConsumerScreen('consumer-home');
+    }
+  };
+
+  const consumerGoBack = () => {
+    if (consumerScreen === 'store-detail') {
+      setConsumerScreen('consumer-home');
+    } else if (consumerScreen === 'order-confirm') {
+      setConsumerScreen('store-detail');
+    } else if (consumerScreen === 'checkout') {
+      setConsumerScreen('order-confirm');
+    } else {
+      setConsumerScreen('consumer-home');
+    }
+  };
+
+  // 판매자 화면 렌더링
+  const renderSellerScreen = () => {
     switch (currentScreen) {
       case 'orders': return <OrdersScreen onNavigate={navigate} shopData={shopData} setShopData={setShopData} stores={stores} currentStoreId={currentStoreId} currentStore={currentStore} onSelectStore={setCurrentStoreId} />;
       case 'settings': return <SettingsScreen onNavigate={navigate} shopData={shopData} stores={stores} currentStoreId={currentStoreId} currentStore={currentStore} onSelectStore={setCurrentStoreId} />;
@@ -3694,7 +4714,48 @@ export default function App() {
     }
   };
 
-  const showBottomNav = ['orders', 'settings'].includes(currentScreen);
+  // 소비자 화면 렌더링
+  const renderConsumerScreen = () => {
+    switch (consumerScreen) {
+      case 'consumer-home':
+        return <ConsumerHomeScreen onNavigate={consumerNavigate} stores={consumerMockStores} />;
+      case 'consumer-orders':
+        return <ConsumerOrdersScreen onNavigate={consumerNavigate} />;
+      case 'store-detail':
+        return <StoreDetailScreen store={selectedStore} onBack={consumerGoBack} onNavigate={consumerNavigate} />;
+      case 'order-confirm':
+        return <OrderConfirmScreen store={selectedStore} quantity={orderData.quantity} onBack={consumerGoBack} onNavigate={consumerNavigate} />;
+      case 'checkout':
+        return <CheckoutScreen store={selectedStore} quantity={orderData.quantity} totalPrice={orderData.totalPrice} onBack={consumerGoBack} onNavigate={consumerNavigate} />;
+      case 'payment-complete':
+        return <PaymentCompleteScreen store={selectedStore} quantity={orderData.quantity} totalPrice={orderData.totalPrice} onNavigate={consumerNavigate} />;
+      default:
+        return <ConsumerHomeScreen onNavigate={consumerNavigate} stores={consumerMockStores} />;
+    }
+  };
+
+  const showSellerBottomNav = ['orders', 'settings'].includes(currentScreen);
+  const showConsumerBottomNav = ['consumer-home', 'consumer-orders'].includes(consumerScreen);
+
+  // 역할 전환 버튼 컴포넌트
+  const RoleSwitcher = () => (
+    <div
+      onClick={() => setRole(role === 'seller' ? 'consumer' : 'seller')}
+      style={{
+        position: 'fixed', top: 16, right: 16, zIndex: 1000,
+        background: role === 'seller' ? colors.blue500 : '#00D4AA',
+        color: 'white', padding: '8px 16px', borderRadius: 20,
+        fontSize: 12, fontWeight: 600, cursor: 'pointer',
+        boxShadow: `0 2px 8px ${colors.shadow}`,
+        display: 'flex', alignItems: 'center', gap: 6,
+      }}
+    >
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
+        <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/>
+      </svg>
+      {role === 'seller' ? '소비자로 전환' : '사장님으로 전환'}
+    </div>
+  );
 
   return (
     <ThemeContext.Provider value={{ colors, isDark, toggleTheme }}>
@@ -3703,9 +4764,20 @@ export default function App() {
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
         transition: 'background 0.3s', position: 'relative',
       }}>
-        <div style={{ paddingBottom: showBottomNav ? 100 : 0 }}>{renderScreen()}</div>
-        {showBottomNav && <BottomNav activeTab={activeTab} onChange={navigate} />}
-        <FloatingChatButton />
+        <RoleSwitcher />
+
+        {role === 'seller' ? (
+          <>
+            <div style={{ paddingBottom: showSellerBottomNav ? 100 : 0 }}>{renderSellerScreen()}</div>
+            {showSellerBottomNav && <BottomNav activeTab={activeTab} onChange={navigate} />}
+            <FloatingChatButton />
+          </>
+        ) : (
+          <>
+            <div style={{ paddingBottom: showConsumerBottomNav ? 100 : 0 }}>{renderConsumerScreen()}</div>
+            {showConsumerBottomNav && <ConsumerBottomNav activeTab={consumerActiveTab} onChange={consumerNavigate} />}
+          </>
+        )}
       </div>
     </ThemeContext.Provider>
   );
