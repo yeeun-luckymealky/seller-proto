@@ -3618,6 +3618,7 @@ const consumerMockStores = [
     luckyBagPrice: 3900, originalPrice: 7800, pickupTime: '19:00-20:00',
     address: '서울특별시 마포구 합정동 373-3', lat: 37.5495, lng: 126.9138,
     description: '오늘의 치킨 럭키백! 다양한 치킨 메뉴를 할인된 가격에 만나보세요.',
+    remaining: 4,
   },
   {
     id: 2, name: '일심장어 홍대본점', category: '장어, 먹장어요리', distance: '1.1km',
@@ -3625,6 +3626,7 @@ const consumerMockStores = [
     luckyBagPrice: 5900, originalPrice: 11800, pickupTime: '20:00-21:00',
     address: '서울특별시 마포구 서교동 123-45', lat: 37.5512, lng: 126.9189,
     description: '신선한 장어요리를 럭키백으로! 오늘 남은 장어 메뉴를 특별 가격에 제공해요.',
+    remaining: 3,
   },
   {
     id: 3, name: '라이즈오토그래프컬렉션', category: '호텔', distance: '500m',
@@ -3632,6 +3634,7 @@ const consumerMockStores = [
     luckyBagPrice: 4500, originalPrice: 9000, pickupTime: '18:00-19:00',
     address: '서울특별시 마포구 서교동 456-78', lat: 37.5478, lng: 126.9156,
     description: '호텔 베이커리 럭키백! 프리미엄 빵과 케이크를 담았어요.',
+    remaining: 5,
   },
   {
     id: 4, name: '홍대 육지', category: '육류, 고기요리', distance: '197m',
@@ -3639,6 +3642,7 @@ const consumerMockStores = [
     luckyBagPrice: 6900, originalPrice: 13800, pickupTime: '21:00-22:00',
     address: '서울특별시 마포구 서교동 789-12', lat: 37.5501, lng: 126.9201,
     description: '프리미엄 고기 럭키백! 오늘의 특선 육류를 할인가에 만나보세요.',
+    remaining: 2,
   },
   {
     id: 5, name: '빽다방 합정역사거리점', category: '카페', distance: '230m',
@@ -3646,6 +3650,7 @@ const consumerMockStores = [
     luckyBagPrice: 2000, originalPrice: 4000, pickupTime: '17:00-18:00',
     address: '서울특별시 마포구 합정동 373-3 1층 코너', lat: 37.5489, lng: 126.9145,
     description: '음료 + 디저트 럭키백! 커피와 함께 맛있는 디저트를 즐겨보세요.',
+    remaining: 3,
   },
   {
     id: 6, name: '깨비콕스타일', category: '분식', distance: '450m',
@@ -3653,6 +3658,7 @@ const consumerMockStores = [
     luckyBagPrice: 3500, originalPrice: 7000, pickupTime: '19:30-20:30',
     address: '서울특별시 마포구 서교동 111-22', lat: 37.5505, lng: 126.9178,
     description: '분식 럭키백! 떡볶이, 순대, 튀김 등 인기 분식을 담았어요.',
+    remaining: 4,
   },
 ];
 
@@ -3667,24 +3673,14 @@ const ConsumerBottomNav = ({ activeTab, onChange }) => {
         <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="currentColor"/>
       </svg>
     )},
-    { id: 'orders', label: '예약', icon: (
+    { id: 'orders', label: '주문현황', icon: (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
         <path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" fill="currentColor"/>
       </svg>
     )},
-    { id: 'transit', label: '대중교통', icon: (
+    { id: 'mypage', label: '내 럭키밀', icon: (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-        <path d="M12 2c-4 0-8 .5-8 4v9.5C4 17.43 5.57 19 7.5 19L6 20.5v.5h12v-.5L16.5 19c1.93 0 3.5-1.57 3.5-3.5V6c0-3.5-4-4-8-4zM7.5 17c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm3.5-6H6V6h5v5zm2 0V6h5v5h-5zm3.5 6c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" fill="currentColor"/>
-      </svg>
-    )},
-    { id: 'navi', label: '내비게이션', icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-        <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71L12 2z" fill="currentColor"/>
-      </svg>
-    )},
-    { id: 'saved', label: '저장', icon: (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" fill="currentColor"/>
+        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="currentColor"/>
       </svg>
     )},
   ];
@@ -3795,7 +3791,7 @@ const ConsumerHomeScreen = ({ onNavigate, stores }) => {
           <div style={{ width: 24, height: 24, borderRadius: 12, background: '#03C75A', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <span style={{ color: 'white', fontWeight: 'bold', fontSize: 12 }}>L</span>
           </div>
-          <span style={{ color: colors.textSecondary, fontSize: 14 }}>럭키밀 검색</span>
+          <span style={{ color: colors.textSecondary, fontSize: 13 }}>내 주변 럭키백을 검색해보세요!</span>
         </div>
         <div style={{
           width: 44, height: 44, borderRadius: 22, background: colors.blue500,
@@ -4071,21 +4067,15 @@ const StoreDetailScreen = ({ store, onBack, onNavigate }) => {
         position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)',
         width: '100%', maxWidth: 480, background: colors.bgCard,
         padding: 16, borderTop: `1px solid ${colors.border}`,
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       }}>
-        <div>
-          <div style={{ fontSize: 20, fontWeight: 700, color: colors.text }}>
-            {(store.luckyBagPrice * quantity).toLocaleString()}원
-          </div>
-          <div style={{ fontSize: 13, color: colors.textTertiary }}>주문 가능</div>
-        </div>
         <Button
           variant="primary"
           size="lg"
-          onClick={() => onNavigate('order-confirm', { store, quantity })}
-          style={{ background: '#00D4AA', padding: '16px 32px' }}
+          fullWidth
+          onClick={() => onNavigate('checkout', { store, quantity, totalPrice: store.luckyBagPrice * quantity })}
+          style={{ background: '#00D4AA', padding: '18px', fontSize: 16, borderRadius: 14 }}
         >
-          픽업 주문하기
+          럭키백 픽업 예약하기 ({store.remaining}개 남음)
         </Button>
       </div>
     </div>
@@ -4178,249 +4168,208 @@ const OrderConfirmScreen = ({ store, quantity, onBack, onNavigate }) => {
 // ============================================
 // 소비자 앱 - 결제하기 화면
 // ============================================
-const CheckoutScreen = ({ store, quantity, totalPrice, onBack, onNavigate }) => {
+const CheckoutScreen = ({ store, quantity: initialQuantity, totalPrice: initialPrice, onBack, onNavigate }) => {
   const { colors } = useTheme();
-  const [selectedPayment, setSelectedPayment] = useState('card');
-  const [noUtensils, setNoUtensils] = useState(true);
+  const [qty, setQty] = useState(initialQuantity);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [selectedPayment, setSelectedPayment] = useState('kakao');
 
-  const paymentMethods = [
-    { id: 'baemin', label: '배민페이머니', icon: '💳', bonus: '최대 10원 적립' },
-    { id: 'card', label: '신용/체크카드', icon: '💳', subLabel: '현대카드' },
-    { id: 'toss', label: '토스페이', icon: '💙' },
-    { id: 'kakao', label: '카카오페이', icon: '💛' },
-  ];
+  const unitPrice = store.luckyBagPrice;
+  const finalPrice = unitPrice * qty;
 
   return (
-    <div style={{ minHeight: '100vh', background: colors.bg, paddingBottom: 100 }}>
-      <Header title="주문하기" onBack={onBack} />
+    <div style={{ minHeight: '100vh', background: colors.bg, display: 'flex', flexDirection: 'column' }}>
+      {/* 헤더 */}
+      <div style={{
+        padding: '16px 20px', borderBottom: `1px solid ${colors.border}`,
+        display: 'flex', alignItems: 'center', gap: 12, background: colors.bgCard,
+      }}>
+        <button onClick={onBack} style={{
+          background: 'none', border: 'none', fontSize: 24, cursor: 'pointer', padding: 0, color: colors.text,
+        }}>←</button>
+        <span style={{ fontSize: 18, fontWeight: 600, color: colors.text }}>결제하기</span>
+      </div>
 
-      <div style={{ padding: '8px 20px' }}>
-        {/* 픽업 정보 헤더 */}
+      {/* 본문 */}
+      <div style={{ flex: 1, overflow: 'auto', padding: 20 }}>
+        {/* 가게 정보 */}
         <div style={{
-          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          padding: '12px 0', marginBottom: 16,
+          display: 'flex', gap: 14, marginBottom: 24, paddingBottom: 20,
+          borderBottom: `1px solid ${colors.border}`,
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill={colors.text}>
-              <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l7.59-7.59L21 8l-9 9z"/>
-            </svg>
-            <span style={{ fontWeight: 500, color: colors.text }}>픽업해서 직접 가져갈게요</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 4, color: colors.textSecondary, fontSize: 13 }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
-            </svg>
-            7~17분 후 픽업
+          <img src={store.image} alt={store.name} style={{
+            width: 72, height: 72, borderRadius: 14, objectFit: 'cover',
+          }} />
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 18, fontWeight: 600, color: colors.text, marginBottom: 4 }}>
+              {store.name}
+            </div>
+            <div style={{ fontSize: 14, color: colors.textTertiary, marginBottom: 8 }}>럭키백</div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
+              <span style={{ fontSize: 13, color: colors.textTertiary, textDecoration: 'line-through' }}>
+                {store.originalPrice.toLocaleString()}원
+              </span>
+              <span style={{ fontSize: 17, fontWeight: 700, color: colors.text }}>
+                {store.luckyBagPrice.toLocaleString()}원
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* 가게 정보 */}
-        <Card style={{ marginBottom: 16 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
-            <div style={{
-              width: 40, height: 40, borderRadius: 8,
-              background: colors.gray100, display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}>
-              <span style={{ fontSize: 20 }}>🏪</span>
-            </div>
-            <div>
-              <div style={{ fontWeight: 600, color: colors.text }}>{store.name}</div>
-              <div style={{ fontSize: 12, color: colors.textTertiary }}>{store.address}</div>
-            </div>
-          </div>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <button style={{
-              padding: '6px 12px', background: colors.gray100, border: 'none',
-              borderRadius: 6, fontSize: 12, color: colors.textSecondary, cursor: 'pointer',
-            }}>복사</button>
-            <button style={{
-              padding: '6px 12px', background: colors.gray100, border: 'none',
-              borderRadius: 6, fontSize: 12, color: colors.textSecondary, cursor: 'pointer',
-            }}>지도</button>
-            <button style={{
-              padding: '6px 12px', background: colors.gray100, border: 'none',
-              borderRadius: 6, fontSize: 12, color: colors.textSecondary, cursor: 'pointer',
-            }}>...</button>
-          </div>
-        </Card>
-
-        {/* 내 연락처 */}
-        <Card style={{ marginBottom: 16 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div>
-              <div style={{ fontSize: 13, color: colors.textTertiary, marginBottom: 4 }}>내 연락처</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ fontWeight: 500, color: colors.text }}>010-1234-5678</span>
-                <Badge>안심번호</Badge>
-              </div>
-            </div>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill={colors.gray400}>
-              <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
-            </svg>
-          </div>
-        </Card>
-
-        {/* 가게 요청사항 */}
-        <Card style={{ marginBottom: 16 }}>
-          <div style={{ fontWeight: 500, color: colors.text, marginBottom: 12 }}>가게 요청사항</div>
-          <div style={{
-            padding: '12px 16px', background: colors.gray50, borderRadius: 8,
-            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-            marginBottom: 12,
-          }}>
-            <span style={{ color: colors.textTertiary }}>요청사항 없음</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill={colors.gray400}>
-              <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
-            </svg>
-          </div>
-          <div
-            onClick={() => setNoUtensils(!noUtensils)}
-            style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}
-          >
-            <div style={{
-              width: 24, height: 24, borderRadius: 4,
-              background: noUtensils ? colors.text : colors.bgCard,
-              border: `2px solid ${noUtensils ? colors.text : colors.gray300}`,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}>
-              {noUtensils && <svg width="14" height="14" viewBox="0 0 24 24" fill="white">
-                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-              </svg>}
-            </div>
-            <span style={{ color: colors.text }}>수저·포크 안 받기</span>
-          </div>
-        </Card>
-
-        {/* 결제수단 */}
-        <Card style={{ marginBottom: 16 }}>
-          <div style={{ fontWeight: 500, color: colors.text, marginBottom: 16 }}>결제수단</div>
-          {paymentMethods.map(method => (
-            <div
-              key={method.id}
-              onClick={() => setSelectedPayment(method.id)}
-              style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                padding: '12px 0', cursor: 'pointer',
-                borderBottom: method.id !== 'kakao' ? `1px solid ${colors.border}` : 'none',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <div style={{
-                  width: 24, height: 24, borderRadius: 12,
-                  border: `2px solid ${selectedPayment === method.id ? colors.text : colors.gray300}`,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                }}>
-                  {selectedPayment === method.id && (
-                    <div style={{ width: 12, height: 12, borderRadius: 6, background: colors.text }} />
-                  )}
-                </div>
-                <span style={{ fontSize: 16 }}>{method.icon}</span>
-                <span style={{ fontWeight: 500, color: colors.text }}>{method.label}</span>
-                {method.subLabel && (
-                  <span style={{ fontSize: 13, color: colors.textTertiary }}>{method.subLabel}</span>
-                )}
-                {method.bonus && (
-                  <span style={{ fontSize: 12, color: colors.blue500, fontWeight: 500 }}>{method.bonus}</span>
-                )}
-              </div>
-              {method.subLabel && (
-                <span style={{ fontSize: 13, color: colors.blue500, cursor: 'pointer' }}>변경 {'>'}</span>
-              )}
-            </div>
-          ))}
-        </Card>
-
-        {/* 할인/쿠폰 */}
-        <Card style={{ marginBottom: 16 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-            <span style={{ fontWeight: 500, color: colors.text }}>할인쿠폰</span>
-            <span style={{ fontSize: 13, color: colors.textTertiary }}>보유쿠폰 없음</span>
-          </div>
-          <div style={{
-            padding: '12px 16px', background: colors.gray50, borderRadius: 8,
-            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-            marginBottom: 16,
-          }}>
-            <span style={{ color: colors.textTertiary }}>사용 가능한 쿠폰이 없어요</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill={colors.gray400}>
-              <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
-            </svg>
-          </div>
-          <div style={{
-            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-            paddingBottom: 12, borderBottom: `1px solid ${colors.border}`, marginBottom: 12,
-          }}>
-            <span style={{ fontWeight: 500, color: colors.text }}>선물함</span>
-            <span style={{ fontSize: 13, color: colors.textSecondary }}>0원 보유 {'>'}</span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontWeight: 500, color: colors.text }}>포인트</span>
-            <span style={{ fontSize: 13, color: colors.textTertiary }}>0원 보유 {'>'}</span>
-          </div>
-        </Card>
-
-        {/* 최종 결제 금액 */}
-        <Card style={{ marginBottom: 16 }}>
-          <div style={{
-            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-            paddingBottom: 16, borderBottom: `1px solid ${colors.border}`, marginBottom: 16,
-          }}>
-            <span style={{ color: colors.textSecondary }}>메뉴금액</span>
-            <span style={{ color: colors.text }}>{totalPrice.toLocaleString()}원</span>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontWeight: 600, color: colors.text }}>결제금액</span>
-            <span style={{ fontSize: 20, fontWeight: 700, color: colors.text }}>
-              {totalPrice.toLocaleString()}원
+        {/* 픽업 정보 */}
+        <div style={{
+          background: colors.gray100, borderRadius: 16, padding: 18, marginBottom: 24,
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 14 }}>
+            <span style={{ color: colors.textTertiary, fontSize: 14 }}>픽업 일시</span>
+            <span style={{ color: colors.text, fontSize: 15, fontWeight: 600 }}>
+              <span style={{ color: colors.green500 }}>오늘</span> {store.pickupTime}
             </span>
           </div>
-        </Card>
-
-        {/* 안내 문구 */}
-        <div style={{ fontSize: 12, color: colors.textTertiary, marginBottom: 16 }}>
-          픽업 주문은 직접 음식을 찾아가주세요. 미수령된 음식은 폐기될 수 있으며 환불되지 않아요.
-        </div>
-
-        {/* 동의 항목 */}
-        <div style={{ marginBottom: 16 }}>
-          <div style={{
-            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-            padding: '12px 0', borderBottom: `1px solid ${colors.border}`,
-          }}>
-            <span style={{ fontSize: 13, color: colors.textTertiary }}>(주)우아한형제들 상품 주의사항 동의</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill={colors.gray400}>
-              <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
-            </svg>
-          </div>
-          <div style={{
-            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-            padding: '12px 0',
-          }}>
-            <span style={{ fontSize: 13, color: colors.textTertiary }}>개인정보 제3자 제공 동의</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill={colors.gray400}>
-              <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
-            </svg>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <span style={{ color: colors.textTertiary, fontSize: 14 }}>픽업 위치</span>
+            <span style={{ color: colors.text, fontSize: 14 }}>{store.address.slice(0, 15)}...</span>
           </div>
         </div>
 
-        <div style={{ textAlign: 'center', fontSize: 13, color: colors.textTertiary, marginBottom: 16 }}>
-          위 내용을 확인하였으며 결제에 동의합니다
+        {/* 수량 선택 */}
+        <div style={{
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          padding: '18px 0', borderBottom: `1px solid ${colors.border}`,
+        }}>
+          <span style={{ fontSize: 16, color: colors.text, fontWeight: 500 }}>수량</span>
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 16,
+            background: colors.gray100, borderRadius: 12, padding: '8px 14px',
+          }}>
+            <button
+              onClick={() => setQty(Math.max(1, qty - 1))}
+              style={{
+                width: 32, height: 32, border: 'none', background: 'transparent',
+                fontSize: 20, color: qty > 1 ? colors.blue500 : colors.gray300,
+                cursor: qty > 1 ? 'pointer' : 'not-allowed',
+              }}
+            >−</button>
+            <span style={{ fontWeight: 700, fontSize: 17, minWidth: 24, textAlign: 'center' }}>{qty}</span>
+            <button
+              onClick={() => setQty(Math.min(store.remaining, qty + 1))}
+              style={{
+                width: 32, height: 32, border: 'none', background: 'transparent',
+                fontSize: 20, color: qty < store.remaining ? colors.blue500 : colors.gray300,
+                cursor: qty < store.remaining ? 'pointer' : 'not-allowed',
+              }}
+            >+</button>
+          </div>
+        </div>
+
+        {/* 쿠폰 */}
+        <div style={{
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          padding: '18px 0', borderBottom: `1px solid ${colors.border}`,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{ fontSize: 16, color: colors.text, fontWeight: 500 }}>쿠폰</span>
+            <span style={{
+              background: colors.blue50, color: colors.blue500,
+              padding: '3px 10px', borderRadius: 12, fontSize: 12, fontWeight: 700,
+            }}>2개 보유</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ color: colors.textTertiary, fontSize: 15 }}>선택하기</span>
+            <span style={{ color: colors.gray300, fontSize: 18 }}>›</span>
+          </div>
+        </div>
+
+        {/* 결제 수단 */}
+        <div style={{
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          padding: '18px 0', borderBottom: `1px solid ${colors.border}`,
+        }}>
+          <span style={{ fontSize: 16, color: colors.text, fontWeight: 500 }}>결제 수단</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{
+              width: 24, height: 24, background: '#FFE15D', borderRadius: 6,
+              display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700,
+            }}>K</div>
+            <span style={{ color: colors.text, fontSize: 15 }}>카카오페이</span>
+            <span style={{ color: colors.gray300, fontSize: 18 }}>›</span>
+          </div>
+        </div>
+
+        {/* 이용 안내 체크박스 */}
+        <div style={{
+          background: agreedToTerms ? colors.green50 : colors.gray100,
+          borderRadius: 16, padding: 18, marginTop: 24,
+          border: agreedToTerms ? `2px solid ${colors.green500}` : '2px solid transparent',
+          transition: 'all 0.2s ease',
+        }}>
+          <label style={{ display: 'flex', gap: 14, cursor: 'pointer' }}>
+            <div style={{
+              width: 24, height: 24, borderRadius: 6,
+              border: agreedToTerms ? 'none' : `2px solid ${colors.gray300}`,
+              background: agreedToTerms ? colors.green500 : colors.bgCard,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              flexShrink: 0, marginTop: 2, transition: 'all 0.2s ease',
+            }}>
+              {agreedToTerms && <span style={{ color: 'white', fontSize: 14 }}>✓</span>}
+            </div>
+            <input
+              type="checkbox"
+              checked={agreedToTerms}
+              onChange={(e) => setAgreedToTerms(e.target.checked)}
+              style={{ display: 'none' }}
+            />
+            <div>
+              <div style={{ fontSize: 16, fontWeight: 600, color: colors.text, marginBottom: 10 }}>
+                럭키밀 이용 안내를 확인했어요
+              </div>
+              <div style={{ fontSize: 14, color: colors.textSecondary, lineHeight: 1.7 }}>
+                • 픽업 시간을 꼭 지켜주세요<br/>
+                • 메뉴는 재고에 따라 달라요<br/>
+                • 확정은 픽업 30분 전에 돼요
+              </div>
+            </div>
+          </label>
         </div>
       </div>
 
       {/* 하단 결제 버튼 */}
       <div style={{
-        position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)',
-        width: '100%', maxWidth: 480, padding: 16, background: colors.bgCard,
+        padding: '16px 20px 36px', borderTop: `1px solid ${colors.border}`, background: colors.bgCard,
       }}>
-        <Button
-          fullWidth
-          size="lg"
-          onClick={() => onNavigate('payment-complete', { store, quantity, totalPrice })}
-          style={{ background: '#00D4AA', padding: '18px', fontSize: 16 }}
+        <div style={{
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16,
+        }}>
+          <span style={{ fontSize: 15, color: colors.textTertiary }}>총 결제금액</span>
+          <span style={{ fontSize: 22, fontWeight: 700, color: colors.text }}>
+            {finalPrice.toLocaleString()}원
+          </span>
+        </div>
+        <button
+          onClick={() => agreedToTerms && onNavigate('payment-complete', { store, quantity: qty, totalPrice: finalPrice })}
+          disabled={!agreedToTerms}
+          style={{
+            width: '100%', padding: 18, borderRadius: 14, border: 'none',
+            background: agreedToTerms ? '#00D4AA' : colors.gray200,
+            color: agreedToTerms ? 'white' : colors.gray400,
+            fontSize: 17, fontWeight: 600,
+            cursor: agreedToTerms ? 'pointer' : 'not-allowed',
+            transition: 'all 0.2s ease',
+          }}
         >
-          {totalPrice.toLocaleString()}원 결제하기
-        </Button>
+          {finalPrice.toLocaleString()}원 결제하기
+        </button>
+        {/* 테스트용 결제 실패 링크 */}
+        <div
+          onClick={() => onNavigate('payment-fail', { store })}
+          style={{
+            textAlign: 'center', marginTop: 12, fontSize: 12,
+            color: colors.textTertiary, cursor: 'pointer',
+            textDecoration: 'underline',
+          }}
+        >
+          결제 실패 테스트
+        </div>
       </div>
     </div>
   );
@@ -4524,6 +4473,160 @@ const PaymentCompleteScreen = ({ store, quantity, totalPrice, onNavigate }) => {
 };
 
 // ============================================
+// 소비자 앱 - 결제 실패 화면
+// ============================================
+const PaymentFailScreen = ({ store, onBack, onNavigate }) => {
+  const { colors } = useTheme();
+
+  // 주변 추천 가게들 (현재 가게 제외)
+  const nearbyStores = consumerMockStores.filter(s => s.id !== store.id).slice(0, 3);
+
+  return (
+    <div style={{ minHeight: '100vh', background: colors.bg }}>
+      {/* 헤더 */}
+      <div style={{
+        padding: '16px 20px', background: colors.card,
+        display: 'flex', alignItems: 'center', gap: 12,
+        borderBottom: `1px solid ${colors.border}`,
+      }}>
+        <div onClick={onBack} style={{ cursor: 'pointer', padding: 4 }}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill={colors.text}>
+            <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+          </svg>
+        </div>
+        <span style={{ fontSize: 17, fontWeight: 600, color: colors.text }}>결제 확인</span>
+      </div>
+
+      {/* 실패 메시지 */}
+      <div style={{ textAlign: 'center', paddingTop: 60, paddingBottom: 40, padding: '60px 20px 40px' }}>
+        <div style={{
+          width: 80, height: 80, borderRadius: 40, background: '#FF6B6B',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          margin: '0 auto 24px',
+        }}>
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="white">
+            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+          </svg>
+        </div>
+        <h1 style={{ fontSize: 22, fontWeight: 700, color: colors.text, margin: '0 0 12px' }}>
+          결제에 실패했어요
+        </h1>
+        <p style={{ fontSize: 14, color: colors.textSecondary, margin: 0, lineHeight: 1.5 }}>
+          결제 중 문제가 발생했어요.<br/>
+          다시 시도하시거나, 다른 결제 수단을 이용해 주세요.
+        </p>
+      </div>
+
+      {/* 다시 결제하기 버튼 */}
+      <div style={{ padding: '0 20px', marginBottom: 32 }}>
+        <Button
+          variant="primary" size="lg" fullWidth
+          onClick={onBack}
+          style={{ background: '#00D4AA', padding: '16px', borderRadius: 12 }}
+        >
+          다시 결제하기
+        </Button>
+      </div>
+
+      {/* 주변 가게 추천 */}
+      <div style={{ padding: '0 20px', marginBottom: 24 }}>
+        <div style={{
+          fontSize: 16, fontWeight: 600, color: colors.text, marginBottom: 16,
+        }}>
+          이 근처의 다른 럭키백은 어때요?
+        </div>
+        <div style={{
+          display: 'flex', gap: 12, overflowX: 'auto',
+          paddingBottom: 8, marginRight: -20, paddingRight: 20,
+        }}>
+          {nearbyStores.map(s => (
+            <div
+              key={s.id}
+              onClick={() => onNavigate('store-detail', { store: s })}
+              style={{
+                minWidth: 140, cursor: 'pointer',
+                background: colors.card, borderRadius: 12,
+                overflow: 'hidden', boxShadow: `0 2px 8px ${colors.shadow}`,
+              }}
+            >
+              <img
+                src={s.image}
+                alt={s.name}
+                style={{ width: '100%', height: 90, objectFit: 'cover' }}
+              />
+              <div style={{ padding: 10 }}>
+                <div style={{
+                  fontSize: 13, fontWeight: 600, color: colors.text,
+                  marginBottom: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                }}>
+                  {s.name}
+                </div>
+                <div style={{ fontSize: 12, color: colors.textSecondary, marginBottom: 4 }}>
+                  {s.distance}
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: '#00D4AA' }}>
+                    {s.luckyBagPrice.toLocaleString()}원
+                  </span>
+                  <span style={{
+                    fontSize: 11, color: colors.textTertiary,
+                    textDecoration: 'line-through',
+                  }}>
+                    {s.originalPrice.toLocaleString()}원
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* 고객센터 안내 */}
+      <div style={{ padding: '0 20px', marginBottom: 24 }}>
+        <div style={{
+          background: colors.gray50, borderRadius: 12, padding: 16,
+          display: 'flex', alignItems: 'center', gap: 12,
+        }}>
+          <div style={{
+            width: 40, height: 40, borderRadius: 20, background: colors.gray200,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill={colors.textSecondary}>
+              <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 9h-2V5h2v6zm0 4h-2v-2h2v2z"/>
+            </svg>
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: 14, fontWeight: 500, color: colors.text }}>
+              문제가 계속 발생하시나요?
+            </div>
+            <div style={{ fontSize: 12, color: colors.textSecondary }}>
+              고객센터에서 도움을 드릴게요
+            </div>
+          </div>
+          <div style={{
+            fontSize: 13, fontWeight: 500, color: '#00D4AA', cursor: 'pointer',
+          }}>
+            문의하기
+          </div>
+        </div>
+      </div>
+
+      {/* 홈으로 돌아가기 */}
+      <div style={{ padding: '0 20px', paddingBottom: 40 }}>
+        <Button
+          fullWidth
+          size="lg"
+          onClick={() => onNavigate('consumer-home')}
+          style={{ background: colors.gray100, color: colors.text, borderRadius: 12 }}
+        >
+          홈으로 돌아가기
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+// ============================================
 // 소비자 앱 - 예약 내역 화면
 // ============================================
 const ConsumerOrdersScreen = ({ onNavigate }) => {
@@ -4574,6 +4677,89 @@ const ConsumerOrdersScreen = ({ onNavigate }) => {
             </Card>
           ))
         )}
+      </div>
+    </div>
+  );
+};
+
+// ============================================
+// 소비자 앱 - 내 럭키밀 화면
+// ============================================
+const ConsumerMypageScreen = ({ onNavigate }) => {
+  const { colors } = useTheme();
+
+  return (
+    <div style={{ minHeight: '100vh', background: colors.bg }}>
+      <Header title="내 럭키밀" />
+      <div style={{ padding: 20 }}>
+        {/* 프로필 섹션 */}
+        <Card style={{ marginBottom: 16 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <div style={{
+              width: 60, height: 60, borderRadius: 30,
+              background: colors.gray200, display: 'flex',
+              alignItems: 'center', justifyContent: 'center',
+            }}>
+              <svg width="30" height="30" viewBox="0 0 24 24" fill={colors.gray400}>
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+              </svg>
+            </div>
+            <div>
+              <div style={{ fontSize: 18, fontWeight: 600, color: colors.text }}>럭키밀 회원</div>
+              <div style={{ fontSize: 13, color: colors.textSecondary }}>환경을 생각하는 당신, 멋져요!</div>
+            </div>
+          </div>
+        </Card>
+
+        {/* 환경 기여 통계 */}
+        <Card style={{ marginBottom: 16, background: colors.green50 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+            <span style={{ fontSize: 28 }}>🌱</span>
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 600, color: colors.green600 }}>나의 환경 기여</div>
+              <div style={{ fontSize: 12, color: colors.green500 }}>럭키밀과 함께한 지 30일째</div>
+            </div>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-around', textAlign: 'center' }}>
+            <div>
+              <div style={{ fontSize: 24, fontWeight: 700, color: colors.green600 }}>5</div>
+              <div style={{ fontSize: 12, color: colors.green500 }}>구매한 럭키백</div>
+            </div>
+            <div>
+              <div style={{ fontSize: 24, fontWeight: 700, color: colors.green600 }}>2.5kg</div>
+              <div style={{ fontSize: 12, color: colors.green500 }}>줄인 CO2</div>
+            </div>
+            <div>
+              <div style={{ fontSize: 24, fontWeight: 700, color: colors.green600 }}>12,500원</div>
+              <div style={{ fontSize: 12, color: colors.green500 }}>절약한 금액</div>
+            </div>
+          </div>
+        </Card>
+
+        {/* 메뉴 리스트 */}
+        <Card>
+          {[
+            { icon: '❤️', label: '찜한 가게', count: 3 },
+            { icon: '🎫', label: '쿠폰함', count: 0 },
+            { icon: '💰', label: '포인트', value: '0원' },
+            { icon: '⚙️', label: '설정', arrow: true },
+            { icon: '❓', label: '고객센터', arrow: true },
+          ].map((item, idx) => (
+            <div key={idx} style={{
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+              padding: '16px 0',
+              borderBottom: idx < 4 ? `1px solid ${colors.border}` : 'none',
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <span style={{ fontSize: 20 }}>{item.icon}</span>
+                <span style={{ fontSize: 15, color: colors.text }}>{item.label}</span>
+              </div>
+              <span style={{ fontSize: 14, color: colors.textSecondary }}>
+                {item.count !== undefined ? item.count : item.value || '>'}
+              </span>
+            </div>
+          ))}
+        </Card>
       </div>
     </div>
   );
@@ -4656,11 +4842,11 @@ export default function App() {
 
   // 소비자 앱 네비게이션
   const consumerNavigate = (screen, data) => {
-    if (['discover', 'orders', 'transit', 'navi', 'saved'].includes(screen)) {
+    if (['discover', 'orders', 'mypage'].includes(screen)) {
       setConsumerActiveTab(screen);
       if (screen === 'discover') setConsumerScreen('consumer-home');
       else if (screen === 'orders') setConsumerScreen('consumer-orders');
-      else setConsumerScreen('consumer-home');
+      else if (screen === 'mypage') setConsumerScreen('consumer-mypage');
     } else if (screen === 'store-detail') {
       setSelectedStore(data);
       setConsumerScreen('store-detail');
@@ -4721,6 +4907,8 @@ export default function App() {
         return <ConsumerHomeScreen onNavigate={consumerNavigate} stores={consumerMockStores} />;
       case 'consumer-orders':
         return <ConsumerOrdersScreen onNavigate={consumerNavigate} />;
+      case 'consumer-mypage':
+        return <ConsumerMypageScreen onNavigate={consumerNavigate} />;
       case 'store-detail':
         return <StoreDetailScreen store={selectedStore} onBack={consumerGoBack} onNavigate={consumerNavigate} />;
       case 'order-confirm':
@@ -4729,13 +4917,15 @@ export default function App() {
         return <CheckoutScreen store={selectedStore} quantity={orderData.quantity} totalPrice={orderData.totalPrice} onBack={consumerGoBack} onNavigate={consumerNavigate} />;
       case 'payment-complete':
         return <PaymentCompleteScreen store={selectedStore} quantity={orderData.quantity} totalPrice={orderData.totalPrice} onNavigate={consumerNavigate} />;
+      case 'payment-fail':
+        return <PaymentFailScreen store={selectedStore} onBack={consumerGoBack} onNavigate={consumerNavigate} />;
       default:
         return <ConsumerHomeScreen onNavigate={consumerNavigate} stores={consumerMockStores} />;
     }
   };
 
   const showSellerBottomNav = ['orders', 'settings'].includes(currentScreen);
-  const showConsumerBottomNav = ['consumer-home', 'consumer-orders'].includes(consumerScreen);
+  const showConsumerBottomNav = ['consumer-home', 'consumer-orders', 'consumer-mypage'].includes(consumerScreen);
 
   // 역할 전환 버튼 컴포넌트
   const RoleSwitcher = () => (
@@ -4761,7 +4951,7 @@ export default function App() {
     <ThemeContext.Provider value={{ colors, isDark, toggleTheme }}>
       <div style={{
         maxWidth: 480, margin: '0 auto', minHeight: '100vh', background: colors.bg,
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        fontFamily: '"Sweet", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
         transition: 'background 0.3s', position: 'relative',
       }}>
         <RoleSwitcher />
