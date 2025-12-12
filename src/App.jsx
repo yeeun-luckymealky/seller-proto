@@ -3614,7 +3614,7 @@ const TermsScreen = ({ onBack }) => {
 const consumerMockStores = [
   {
     id: 1, name: '어반써티연남', category: '베이커리', distance: '370m',
-    image: 'https://picsum.photos/300/200?random=10', rating: 4.5, reviewCount: 128,
+    image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=300&h=200&fit=crop', rating: 4.5, reviewCount: 128,
     luckyBagPrice: 5500, originalPrice: 11000, pickupTime: '21:50-22:00',
     address: '서울특별시 마포구 연남동 373-3', lat: 37.5495, lng: 126.9138,
     description: '오늘의 빵 럭키백! 갓 구운 다양한 빵을 할인된 가격에 만나보세요.',
@@ -3622,7 +3622,7 @@ const consumerMockStores = [
   },
   {
     id: 2, name: '카페공명', category: '카페, 디저트', distance: '1.1km',
-    image: 'https://picsum.photos/300/200?random=11', rating: 4.8, reviewCount: 256,
+    image: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=300&h=200&fit=crop', rating: 4.8, reviewCount: 256,
     luckyBagPrice: 4900, originalPrice: 9800, pickupTime: '20:00-21:00',
     address: '서울특별시 마포구 서교동 123-45', lat: 37.5512, lng: 126.9189,
     description: '커피와 디저트 럭키백! 시그니처 음료와 케이크를 특별 가격에.',
@@ -3630,7 +3630,7 @@ const consumerMockStores = [
   },
   {
     id: 3, name: '빨간토마토피자', category: '피자', distance: '500m',
-    image: 'https://picsum.photos/300/200?random=12', rating: 4.3, reviewCount: 89,
+    image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=300&h=200&fit=crop', rating: 4.3, reviewCount: 89,
     luckyBagPrice: 6500, originalPrice: 13000, pickupTime: '18:00-19:00',
     address: '서울특별시 마포구 서교동 456-78', lat: 37.5478, lng: 126.9156,
     description: '피자 럭키백! 오늘 남은 피자를 반값에 가져가세요.',
@@ -3638,7 +3638,7 @@ const consumerMockStores = [
   },
   {
     id: 4, name: '저스티나', category: '이탈리안', distance: '197m',
-    image: 'https://picsum.photos/300/200?random=13', rating: 4.6, reviewCount: 342,
+    image: 'https://images.unsplash.com/photo-1534620808146-d33bb39128b2?w=300&h=200&fit=crop', rating: 4.6, reviewCount: 342,
     luckyBagPrice: 7900, originalPrice: 15800, pickupTime: '21:00-22:00',
     address: '서울특별시 마포구 서교동 789-12', lat: 37.5501, lng: 126.9201,
     description: '이탈리안 럭키백! 파스타와 리조또를 할인가에 만나보세요.',
@@ -3646,7 +3646,7 @@ const consumerMockStores = [
   },
   {
     id: 5, name: '녹턴', category: '베이커리, 카페', distance: '230m',
-    image: 'https://picsum.photos/300/200?random=14', rating: 4.2, reviewCount: 567,
+    image: 'https://images.unsplash.com/photo-1549931319-a545dcf3bc73?w=300&h=200&fit=crop', rating: 4.2, reviewCount: 567,
     luckyBagPrice: 4000, originalPrice: 8000, pickupTime: '17:00-18:00',
     address: '서울특별시 마포구 합정동 373-3 1층', lat: 37.5489, lng: 126.9145,
     description: '베이커리 럭키백! 오늘 구운 빵과 디저트를 즐겨보세요.',
@@ -3654,7 +3654,7 @@ const consumerMockStores = [
   },
   {
     id: 6, name: '네스토베이커리', category: '베이커리', distance: '450m',
-    image: 'https://picsum.photos/300/200?random=15', rating: 4.4, reviewCount: 203,
+    image: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=300&h=200&fit=crop', rating: 4.4, reviewCount: 203,
     luckyBagPrice: 5000, originalPrice: 10000, pickupTime: '19:30-20:30',
     address: '서울특별시 마포구 서교동 111-22', lat: 37.5505, lng: 126.9178,
     description: '수제 빵 럭키백! 정성껏 만든 빵을 반값에 담아가세요.',
@@ -3662,7 +3662,7 @@ const consumerMockStores = [
   },
   {
     id: 7, name: '소행당', category: '베이커리, 디저트', distance: '320m',
-    image: 'https://picsum.photos/300/200?random=16', rating: 4.7, reviewCount: 412,
+    image: 'https://images.unsplash.com/photo-1486427944299-d1955d23e34d?w=300&h=200&fit=crop', rating: 4.7, reviewCount: 412,
     luckyBagPrice: 4500, originalPrice: 9000, pickupTime: '20:30-21:00',
     address: '서울특별시 마포구 연남동 222-33', lat: 37.5498, lng: 126.9165,
     description: '디저트 럭키백! 케이크와 쿠키를 특별 가격에.',
@@ -3670,7 +3670,7 @@ const consumerMockStores = [
   },
   {
     id: 8, name: '바이닐인사이드', category: '카페, 브런치', distance: '580m',
-    image: 'https://picsum.photos/300/200?random=17', rating: 4.5, reviewCount: 189,
+    image: 'https://images.unsplash.com/photo-1517433367423-c7e5b0f35086?w=300&h=200&fit=crop', rating: 4.5, reviewCount: 189,
     luckyBagPrice: 5500, originalPrice: 11000, pickupTime: '18:30-19:30',
     address: '서울특별시 마포구 연남동 444-55', lat: 37.5510, lng: 126.9195,
     description: '브런치 럭키백! 샌드위치와 음료를 할인가에 만나보세요.',
@@ -4419,11 +4419,11 @@ const CheckoutScreen = ({ store, quantity: initialQuantity, totalPrice: initialP
           position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 1000,
           display: 'flex', flexDirection: 'column',
         }}>
-          {/* 딤 배경 */}
+          {/* 딤 배경 (회색 40%) */}
           <div
             onClick={() => setShowCouponSheet(false)}
             style={{
-              flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', cursor: 'pointer',
+              flex: 1, backgroundColor: 'rgba(128,128,128,0.4)', cursor: 'pointer',
             }}
           />
 
@@ -4784,7 +4784,7 @@ const ConsumerOrdersScreen = ({ onNavigate }) => {
     {
       id: 1,
       storeName: '네스토베이커리',
-      storeImage: 'https://picsum.photos/60/60?random=20',
+      storeImage: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=60&h=60&fit=crop',
       pickupDate: '25. 12. 11 (목) 20:00 ~ 20:50',
       totalPrice: 5000,
       quantity: 1,
@@ -4793,7 +4793,7 @@ const ConsumerOrdersScreen = ({ onNavigate }) => {
     {
       id: 2,
       storeName: '바이닐인사이드',
-      storeImage: 'https://picsum.photos/60/60?random=21',
+      storeImage: 'https://images.unsplash.com/photo-1517433367423-c7e5b0f35086?w=60&h=60&fit=crop',
       pickupDate: '25. 12. 5 (금) 21:00 ~ 21:50',
       totalPrice: 5500,
       quantity: 1,
@@ -4802,7 +4802,7 @@ const ConsumerOrdersScreen = ({ onNavigate }) => {
     {
       id: 3,
       storeName: '소행당',
-      storeImage: 'https://picsum.photos/60/60?random=22',
+      storeImage: 'https://images.unsplash.com/photo-1486427944299-d1955d23e34d?w=60&h=60&fit=crop',
       pickupDate: '25. 11. 30 (일) 21:10 ~ 21:40',
       totalPrice: 4500,
       quantity: 1,
@@ -4976,7 +4976,7 @@ const ConsumerMypageScreen = ({ onNavigate, onSwitchRole }) => {
         {/* 프로필 섹션 */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 20 }}>
           <img
-            src="https://picsum.photos/70/70?random=avatar"
+            src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=70&h=70&fit=crop&crop=face"
             alt="프로필"
             style={{ width: 70, height: 70, borderRadius: 35, objectFit: 'cover' }}
           />
@@ -5101,12 +5101,12 @@ const ConsumerMypageScreen = ({ onNavigate, onSwitchRole }) => {
           {/* 포토 리뷰 그리드 */}
           <div style={{ display: 'flex', gap: 8 }}>
             <img
-              src="https://picsum.photos/150/150?random=30"
+              src="https://images.unsplash.com/photo-1509440159596-0249088772ff?w=150&h=150&fit=crop"
               alt="리뷰 사진"
               style={{ flex: 1, aspectRatio: '1', borderRadius: 8, objectFit: 'cover' }}
             />
             <img
-              src="https://picsum.photos/150/150?random=31"
+              src="https://images.unsplash.com/photo-1549931319-a545dcf3bc73?w=150&h=150&fit=crop"
               alt="리뷰 사진"
               style={{ flex: 1, aspectRatio: '1', borderRadius: 8, objectFit: 'cover' }}
             />
@@ -5166,7 +5166,7 @@ export default function App() {
     purchaseLimit: '2',
     confirmMessage: '맛있는 럭키백 준비 중이에요! 픽업 시간에 방문해주세요.',
     cancelMessage: '',
-    photos: ['https://picsum.photos/400/300?random=1', 'https://picsum.photos/400/300?random=2'],
+    photos: ['https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400&h=300&fit=crop', 'https://images.unsplash.com/photo-1549931319-a545dcf3bc73?w=400&h=300&fit=crop'],
     employees: [
       { name: '홍길동', email: 'hong@example.com', phone: '010-1234-5678', grade: PLACE_ROLE_GRADE.ADMIN },
       { name: '김직원', email: 'kim@example.com', phone: '010-9876-5432', grade: PLACE_ROLE_GRADE.STAFF },
