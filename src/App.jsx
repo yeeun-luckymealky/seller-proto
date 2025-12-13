@@ -3637,6 +3637,7 @@ const consumerMockStores = [
     get remaining() { return this.luckyBagCount; },
     get lat() { return this.latitude; },
     get lng() { return this.longitude; },
+    get distanceText() { return this.distance >= 1000 ? `${(this.distance / 1000).toFixed(1)}km` : `${this.distance}m`; },
   },
   {
     id: 2, name: '카페공명', category: '카페, 디저트', distance: 1100,
@@ -3658,6 +3659,7 @@ const consumerMockStores = [
     get remaining() { return this.luckyBagCount; },
     get lat() { return this.latitude; },
     get lng() { return this.longitude; },
+    get distanceText() { return this.distance >= 1000 ? `${(this.distance / 1000).toFixed(1)}km` : `${this.distance}m`; },
   },
   {
     id: 3, name: '빨간토마토피자', category: '피자', distance: 500,
@@ -3679,6 +3681,7 @@ const consumerMockStores = [
     get remaining() { return this.luckyBagCount; },
     get lat() { return this.latitude; },
     get lng() { return this.longitude; },
+    get distanceText() { return this.distance >= 1000 ? `${(this.distance / 1000).toFixed(1)}km` : `${this.distance}m`; },
   },
   {
     id: 4, name: '저스티나', category: '이탈리안', distance: 197,
@@ -3700,6 +3703,7 @@ const consumerMockStores = [
     get remaining() { return this.luckyBagCount; },
     get lat() { return this.latitude; },
     get lng() { return this.longitude; },
+    get distanceText() { return this.distance >= 1000 ? `${(this.distance / 1000).toFixed(1)}km` : `${this.distance}m`; },
   },
   {
     id: 5, name: '녹턴', category: '베이커리, 카페', distance: 230,
@@ -3721,6 +3725,7 @@ const consumerMockStores = [
     get remaining() { return this.luckyBagCount; },
     get lat() { return this.latitude; },
     get lng() { return this.longitude; },
+    get distanceText() { return this.distance >= 1000 ? `${(this.distance / 1000).toFixed(1)}km` : `${this.distance}m`; },
   },
   {
     id: 6, name: '네스토베이커리', category: '베이커리', distance: 450,
@@ -3742,6 +3747,7 @@ const consumerMockStores = [
     get remaining() { return this.luckyBagCount; },
     get lat() { return this.latitude; },
     get lng() { return this.longitude; },
+    get distanceText() { return this.distance >= 1000 ? `${(this.distance / 1000).toFixed(1)}km` : `${this.distance}m`; },
   },
   {
     id: 7, name: '소행당', category: '베이커리, 디저트', distance: 320,
@@ -3763,6 +3769,7 @@ const consumerMockStores = [
     get remaining() { return this.luckyBagCount; },
     get lat() { return this.latitude; },
     get lng() { return this.longitude; },
+    get distanceText() { return this.distance >= 1000 ? `${(this.distance / 1000).toFixed(1)}km` : `${this.distance}m`; },
   },
   {
     id: 8, name: '바이닐인사이드', category: '카페, 브런치', distance: 580,
@@ -3784,6 +3791,7 @@ const consumerMockStores = [
     get remaining() { return this.luckyBagCount; },
     get lat() { return this.latitude; },
     get lng() { return this.longitude; },
+    get distanceText() { return this.distance >= 1000 ? `${(this.distance / 1000).toFixed(1)}km` : `${this.distance}m`; },
   },
 ];
 
@@ -4043,7 +4051,7 @@ const ConsumerHomeScreen = ({ onNavigate, stores }) => {
                         {store.name}
                       </div>
                       <div style={{ fontSize: 12, color: colors.textTertiary }}>
-                        {store.category} • {store.distance}
+                        {store.category} • {store.distanceText}
                       </div>
                     </div>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill={colors.gray300}>
@@ -4105,7 +4113,7 @@ const StoreDetailScreen = ({ store, onBack, onNavigate }) => {
           </div>
           <span style={{ color: colors.textTertiary, fontSize: 13 }}>리뷰 {store.reviewCount}개</span>
           <span style={{ color: colors.textTertiary }}>•</span>
-          <span style={{ color: colors.textTertiary, fontSize: 13 }}>{store.distance}</span>
+          <span style={{ color: colors.textTertiary, fontSize: 13 }}>{store.distanceText}</span>
         </div>
 
         {/* 럭키백 카드 */}
@@ -5254,7 +5262,7 @@ const PaymentCompleteScreen = ({ store, quantity, totalPrice, onNavigate }) => {
                   {s.name}
                 </div>
                 <div style={{ fontSize: 12, color: colors.textSecondary, marginBottom: 6 }}>
-                  {s.distance}
+                  {s.distanceText}
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                   <span style={{ fontSize: 14, fontWeight: 700, color: '#16CC82' }}>
@@ -5378,7 +5386,7 @@ const PaymentFailScreen = ({ store, onBack, onNavigate }) => {
                   {s.name}
                 </div>
                 <div style={{ fontSize: 12, color: colors.textSecondary, marginBottom: 4 }}>
-                  {s.distance}
+                  {s.distanceText}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                   <span style={{ fontSize: 13, fontWeight: 700, color: '#16CC82' }}>
