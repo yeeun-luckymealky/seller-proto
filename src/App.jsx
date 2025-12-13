@@ -4941,7 +4941,6 @@ const PaymentCompleteScreen = ({ store, quantity, totalPrice, onNavigate }) => {
 
   // 확정 시간 계산 (픽업 시간 30분 전)
   const getConfirmTime = () => {
-    // store.pickupTime 예: "19:00-20:00"
     const startTime = store.pickupTime.split('-')[0].trim();
     const [hours, minutes] = startTime.split(':').map(Number);
     let confirmHours = hours;
@@ -4953,153 +4952,130 @@ const PaymentCompleteScreen = ({ store, quantity, totalPrice, onNavigate }) => {
     return `오늘 ${confirmHours}:${confirmMinutes.toString().padStart(2, '0')}`;
   };
 
+  // CO2 절감량 계산: (원가 - 할인가) / 3000 (g 단위)
+  const savedPrice = (store.originalPrice - store.luckyBagPrice) * quantity;
+  const savedCo2 = Math.round(savedPrice / 3000);
+
   // 주변 추천 가게들 (현재 가게 제외)
   const nearbyStores = consumerMockStores.filter(s => s.id !== store.id).slice(0, 3);
 
   return (
     <div style={{ minHeight: '100vh', background: colors.bg }}>
-      <div style={{ padding: 20 }}>
-        <div style={{ textAlign: 'center', paddingTop: 32, paddingBottom: 40 }}>
-          <div style={{
-            width: 80, height: 80, borderRadius: 40, background: '#00D4AA',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            margin: '0 auto 24px',
-          }}>
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="white">
-              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-            </svg>
-          </div>
-          <h1 style={{ fontSize: 24, fontWeight: 700, color: colors.text, margin: '0 0 8px' }}>
-            예약이 완료되었어요!
-          </h1>
-          <p style={{ fontSize: 14, color: colors.textSecondary, margin: 0 }}>
-            픽업 확정은 {getConfirmTime()}에 알려드릴게요 :)
-          </p>
+      {/* 상단 초록 배경 영역 */}
+      <div style={{
+        background: '#00D4AA',
+        padding: '32px 20px 48px',
+        textAlign: 'center',
+        borderRadius: '0 0 32px 32px',
+      }}>
+        {/* 기뻐하는 캐릭터 이미지 */}
+        <div style={{
+          width: 100, height: 100, margin: '0 auto 20px',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <svg width="100" height="100" viewBox="0 0 100 100" fill="none">
+            {/* 반짝이 */}
+            <path d="M15 25L17 30L22 32L17 34L15 39L13 34L8 32L13 30L15 25Z" fill="#FFE082"/>
+            <path d="M85 60L87 65L92 67L87 69L85 74L83 69L78 67L83 65L85 60Z" fill="#A5D6A7"/>
+            <circle cx="20" cy="60" r="3" fill="#A5D6A7" opacity="0.6"/>
+            <circle cx="80" cy="30" r="2" fill="#FFE082" opacity="0.6"/>
+            {/* 얼굴 */}
+            <circle cx="50" cy="50" r="28" fill="#FFE0B2"/>
+            {/* 머리카락 */}
+            <ellipse cx="50" cy="30" rx="26" ry="18" fill="#4E7C59"/>
+            <ellipse cx="35" cy="38" rx="8" ry="6" fill="#4E7C59"/>
+            <ellipse cx="65" cy="38" rx="8" ry="6" fill="#4E7C59"/>
+            {/* 볼터치 */}
+            <ellipse cx="35" cy="55" rx="6" ry="4" fill="#FFAB91" opacity="0.5"/>
+            <ellipse cx="65" cy="55" rx="6" ry="4" fill="#FFAB91" opacity="0.5"/>
+            {/* 눈 (웃는 눈) */}
+            <path d="M38 48C40 45 44 45 46 48" stroke="#5D4037" strokeWidth="2.5" strokeLinecap="round"/>
+            <path d="M54 48C56 45 60 45 62 48" stroke="#5D4037" strokeWidth="2.5" strokeLinecap="round"/>
+            {/* 입 (활짝 웃음) */}
+            <path d="M40 58Q50 68 60 58" stroke="#E65100" strokeWidth="2" fill="#FF8A65"/>
+            {/* 팔 */}
+            <ellipse cx="22" cy="42" rx="8" ry="6" fill="#FFE0B2" transform="rotate(-30 22 42)"/>
+            <ellipse cx="78" cy="42" rx="8" ry="6" fill="#FFE0B2" transform="rotate(30 78 42)"/>
+            {/* 손 */}
+            <circle cx="16" cy="36" r="6" fill="#FFE0B2"/>
+            <circle cx="84" cy="36" r="6" fill="#FFE0B2"/>
+            {/* 몸 */}
+            <ellipse cx="50" cy="85" rx="22" ry="15" fill="#4E7C59"/>
+          </svg>
         </div>
+        <h1 style={{ fontSize: 22, fontWeight: 700, color: 'white', margin: '0 0 8px' }}>
+          예약이 완료되었어요!
+        </h1>
+        <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.9)', margin: 0 }}>
+          픽업 확정은 {getConfirmTime()}에 알려드릴게요 :)
+        </p>
+      </div>
 
-        <Card style={{ marginBottom: 16 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
-            <span style={{ color: colors.textSecondary }}>가게</span>
-            <span style={{ color: colors.text, fontWeight: 500 }}>{store.name}</span>
+      <div style={{ padding: 20, marginTop: -24 }}>
+        {/* 예약 정보 카드 */}
+        <Card style={{ marginBottom: 20, borderRadius: 20, padding: 20 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
+            <span style={{ color: colors.textSecondary, fontSize: 14 }}>가게</span>
+            <span style={{ color: colors.text, fontWeight: 600, fontSize: 15 }}>{store.name}</span>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
-            <span style={{ color: colors.textSecondary }}>픽업 시간</span>
-            <span style={{ color: colors.text, fontWeight: 500 }}>{store.pickupTime}</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+            <span style={{ color: colors.textSecondary, fontSize: 14 }}>주소</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, maxWidth: '65%' }}>
+              <span style={{ color: colors.text, fontSize: 14, textAlign: 'right', lineHeight: 1.4 }}>{store.address}</span>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(store.address);
+                  alert('주소가 복사되었어요');
+                }}
+                style={{
+                  background: 'none', border: 'none', padding: 2, cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', flexShrink: 0,
+                }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={colors.textTertiary} strokeWidth="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                </svg>
+              </button>
+            </div>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
-            <span style={{ color: colors.textSecondary }}>수량</span>
-            <span style={{ color: colors.text, fontWeight: 500 }}>{quantity}개</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
+            <span style={{ color: colors.textSecondary, fontSize: 14 }}>픽업 시간</span>
+            <span style={{ color: colors.text, fontWeight: 500, fontSize: 15 }}>{store.pickupTime}</span>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <span style={{ color: colors.textSecondary }}>결제 금액</span>
-            <span style={{ color: colors.text, fontWeight: 700 }}>{totalPrice.toLocaleString()}원</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
+            <span style={{ color: colors.textSecondary, fontSize: 14 }}>예약 수량</span>
+            <span style={{ color: colors.text, fontWeight: 500, fontSize: 15 }}>{quantity}개</span>
+          </div>
+          <div style={{
+            display: 'flex', justifyContent: 'space-between',
+            paddingTop: 16, borderTop: `1px solid ${colors.gray100}`,
+          }}>
+            <span style={{ color: colors.text, fontSize: 15, fontWeight: 600 }}>결제 금액</span>
+            <span style={{ color: '#00D4AA', fontWeight: 700, fontSize: 18 }}>{totalPrice.toLocaleString()}원</span>
           </div>
         </Card>
 
-        {/* 픽업 장소 */}
-        <div style={{ marginBottom: 24 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
-            <span style={{ fontSize: 15, color: colors.textSecondary }}>주소</span>
-            <div style={{ flex: 1, marginLeft: 24, textAlign: 'right' }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 8 }}>
-                <span style={{ fontSize: 15, color: colors.text, lineHeight: 1.5 }}>{store.address}</span>
-                <button
-                  onClick={() => {
-                    navigator.clipboard.writeText(store.address);
-                    alert('주소가 복사되었어요');
-                  }}
-                  style={{
-                    background: 'none', border: 'none', padding: 4, cursor: 'pointer',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                  }}
-                >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={colors.textTertiary} strokeWidth="2">
-                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* 지도 앱 버튼 */}
-          <div style={{ display: 'flex', gap: 10, marginBottom: 16 }}>
-            <button
-              onClick={() => window.open(`https://map.naver.com/v5/search/${encodeURIComponent(store.address)}`, '_blank')}
-              style={{
-                flex: 1, padding: '14px 16px', borderRadius: 10,
-                border: `1px solid ${colors.gray200}`, background: colors.bgCard,
-                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-              }}
-            >
-              <span style={{ fontSize: 14, fontWeight: 500, color: colors.text }}>네이버지도</span>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={colors.text} strokeWidth="2">
-                <path d="M7 17L17 7M17 7H7M17 7V17"/>
-              </svg>
-            </button>
-            <button
-              onClick={() => window.open(`https://map.kakao.com/link/search/${encodeURIComponent(store.address)}`, '_blank')}
-              style={{
-                flex: 1, padding: '14px 16px', borderRadius: 10,
-                border: `1px solid ${colors.gray200}`, background: colors.bgCard,
-                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-              }}
-            >
-              <span style={{ fontSize: 14, fontWeight: 500, color: colors.text }}>카카오맵</span>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={colors.text} strokeWidth="2">
-                <path d="M7 17L17 7M17 7H7M17 7V17"/>
-              </svg>
-            </button>
-          </div>
-
-          {/* 지도 썸네일 */}
-          <div style={{
-            borderRadius: 12, overflow: 'hidden',
-            height: 160, background: '#E8E8E8', position: 'relative',
-          }}>
-            <div style={{
-              position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-              background: 'linear-gradient(135deg, #E8ECF0 0%, #D5DDE5 100%)',
-            }} />
-            {/* 지도 배경 패턴 */}
-            <div style={{
-              position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-              background: `
-                linear-gradient(90deg, rgba(200,200,200,0.3) 1px, transparent 1px),
-                linear-gradient(rgba(200,200,200,0.3) 1px, transparent 1px)
-              `,
-              backgroundSize: '20px 20px',
-            }} />
-            {/* 가게 위치 마커 */}
-            <div style={{
-              position: 'absolute', top: '50%', left: '50%',
-              transform: 'translate(-50%, -50%)',
-            }}>
-              <div style={{
-                width: 48, height: 48, borderRadius: '50%',
-                background: '#00D4AA', display: 'flex',
-                alignItems: 'center', justifyContent: 'center',
-                boxShadow: '0 4px 12px rgba(0,212,170,0.4)',
-              }}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
-                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-                </svg>
-              </div>
-            </div>
-          </div>
-        </div>
-
+        {/* CO2 절감 카드 */}
         <div style={{
-          background: colors.green50, borderRadius: 12, padding: 16,
-          display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24,
+          background: 'linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%)',
+          borderRadius: 20, padding: 20,
+          display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24,
         }}>
-          <span style={{ fontSize: 24 }}>🌱</span>
+          <div style={{
+            width: 48, height: 48, borderRadius: 16,
+            background: 'white', display: 'flex',
+            alignItems: 'center', justifyContent: 'center',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+          }}>
+            <span style={{ fontSize: 24 }}>🌱</span>
+          </div>
           <div>
-            <div style={{ fontSize: 14, fontWeight: 600, color: colors.green600 }}>
-              환경 보호에 동참해주셔서 감사해요!
+            <div style={{ fontSize: 15, fontWeight: 600, color: '#2E7D32', marginBottom: 4 }}>
+              환경 보호에 동참해주셨어요!
             </div>
-            <div style={{ fontSize: 12, color: colors.green500 }}>
-              이번 주문으로 약 0.5kg의 CO2 배출을 줄였어요
+            <div style={{ fontSize: 13, color: '#558B2F' }}>
+              이번 주문으로 약 {savedCo2}g의 CO2 배출을 줄였어요
             </div>
           </div>
         </div>
