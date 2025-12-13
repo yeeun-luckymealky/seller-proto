@@ -5809,7 +5809,7 @@ export default function App() {
     <ThemeContext.Provider value={{ colors, isDark, toggleTheme }}>
       <div style={{
         maxWidth: 480, margin: '0 auto', minHeight: '100vh', background: colors.bg,
-        fontFamily: '"OngleipKonkon", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        fontFamily: '"Paperlogy", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
         transition: 'background 0.3s', position: 'relative',
       }}>
         {/* 사장님 모드에서만 플로팅 전환 버튼 표시 */}
