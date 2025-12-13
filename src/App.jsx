@@ -4245,6 +4245,69 @@ const CheckoutScreen = ({ store, quantity: initialQuantity, totalPrice: initialP
 
       {/* 본문 */}
       <div style={{ flex: 1, overflow: 'auto', padding: 20 }}>
+        {/* 럭키백 안내 카드 */}
+        {(() => {
+          const pickupStartTime = store.pickupTime?.split('-')[0] || '19:00';
+          const [hours, minutes] = pickupStartTime.split(':').map(Number);
+          const confirmDate = new Date();
+          confirmDate.setHours(hours, minutes - 30);
+          const confirmTime = `${confirmDate.getHours()}:${String(confirmDate.getMinutes()).padStart(2, '0')}`;
+
+          return (
+            <div style={{
+              background: colors.green50 || '#E8FBF3',
+              borderRadius: 16,
+              padding: 18,
+              marginBottom: 20,
+            }}>
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14,
+                fontSize: 15, fontWeight: 600, color: colors.green600 || '#12A86B',
+              }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M20 6h-2.18c.11-.31.18-.65.18-1a2.996 2.996 0 00-5.5-1.65l-.5.67-.5-.68C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-5-2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM9 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm11 15H4v-2h16v2zm0-5H4V8h5.08L7 10.83 8.62 12 11 8.76l1-1.36 1 1.36L15.38 12 17 10.83 14.92 8H20v6z"/>
+                </svg>
+                럭키백 안내
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                  <span style={{ fontSize: 14, color: colors.textSecondary, minWidth: 52 }}>픽업</span>
+                  <span style={{ fontSize: 14, color: colors.text, fontWeight: 500 }}>
+                    오늘 {store.pickupTime} · {store.address?.split(' ').slice(0, 2).join(' ')}
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                  <span style={{ fontSize: 14, color: colors.textSecondary, minWidth: 52 }}>확정</span>
+                  <span style={{ fontSize: 14, color: colors.text, fontWeight: 500 }}>
+                    {confirmTime}에 알림을 보내드려요
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                  <span style={{ fontSize: 14, color: colors.textSecondary, minWidth: 52 }}>구성</span>
+                  <span style={{ fontSize: 14, color: colors.text, fontWeight: 500 }}>
+                    오늘의 메뉴로 랜덤 구성돼요
+                  </span>
+                </div>
+              </div>
+
+              <div style={{
+                marginTop: 14, paddingTop: 12,
+                borderTop: `1px solid ${colors.green100 || '#B1F1CC'}`,
+                fontSize: 13, color: colors.green600 || '#12A86B',
+                display: 'flex', alignItems: 'center', gap: 6,
+              }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                </svg>
+                확정 전 취소 시 전액 환불돼요
+              </div>
+            </div>
+          );
+        })()}
+
         {/* 가게 정보 */}
         <div style={{
           display: 'flex', gap: 14, marginBottom: 24, paddingBottom: 20,
