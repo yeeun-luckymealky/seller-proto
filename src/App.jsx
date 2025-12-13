@@ -4959,7 +4959,7 @@ const PaymentCompleteScreen = ({ store, quantity, totalPrice, onNavigate }) => {
   return (
     <div style={{ minHeight: '100vh', background: colors.bg }}>
       <div style={{ padding: 20 }}>
-        <div style={{ textAlign: 'center', paddingTop: 60, paddingBottom: 40 }}>
+        <div style={{ textAlign: 'center', paddingTop: 32, paddingBottom: 40 }}>
           <div style={{
             width: 80, height: 80, borderRadius: 40, background: '#00D4AA',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
