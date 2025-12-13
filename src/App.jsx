@@ -4996,19 +4996,98 @@ const PaymentCompleteScreen = ({ store, quantity, totalPrice, onNavigate }) => {
           </div>
         </Card>
 
-        <Card style={{ marginBottom: 24 }}>
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill={colors.textSecondary}>
-              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-            </svg>
-            <div>
-              <div style={{ fontSize: 14, fontWeight: 500, color: colors.text, marginBottom: 4 }}>
-                픽업 장소
+        {/* 픽업 장소 */}
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+            <span style={{ fontSize: 15, color: colors.textSecondary }}>주소</span>
+            <div style={{ flex: 1, marginLeft: 24, textAlign: 'right' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 8 }}>
+                <span style={{ fontSize: 15, color: colors.text, lineHeight: 1.5 }}>{store.address}</span>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(store.address);
+                    alert('주소가 복사되었어요');
+                  }}
+                  style={{
+                    background: 'none', border: 'none', padding: 4, cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                  }}
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={colors.textTertiary} strokeWidth="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                  </svg>
+                </button>
               </div>
-              <div style={{ fontSize: 13, color: colors.textSecondary }}>{store.address}</div>
             </div>
           </div>
-        </Card>
+
+          {/* 지도 앱 버튼 */}
+          <div style={{ display: 'flex', gap: 10, marginBottom: 16 }}>
+            <button
+              onClick={() => window.open(`https://map.naver.com/v5/search/${encodeURIComponent(store.address)}`, '_blank')}
+              style={{
+                flex: 1, padding: '14px 16px', borderRadius: 10,
+                border: `1px solid ${colors.gray200}`, background: colors.bgCard,
+                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+              }}
+            >
+              <span style={{ fontSize: 14, fontWeight: 500, color: colors.text }}>네이버지도</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={colors.text} strokeWidth="2">
+                <path d="M7 17L17 7M17 7H7M17 7V17"/>
+              </svg>
+            </button>
+            <button
+              onClick={() => window.open(`https://map.kakao.com/link/search/${encodeURIComponent(store.address)}`, '_blank')}
+              style={{
+                flex: 1, padding: '14px 16px', borderRadius: 10,
+                border: `1px solid ${colors.gray200}`, background: colors.bgCard,
+                cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+              }}
+            >
+              <span style={{ fontSize: 14, fontWeight: 500, color: colors.text }}>카카오맵</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={colors.text} strokeWidth="2">
+                <path d="M7 17L17 7M17 7H7M17 7V17"/>
+              </svg>
+            </button>
+          </div>
+
+          {/* 지도 썸네일 */}
+          <div style={{
+            borderRadius: 12, overflow: 'hidden',
+            height: 160, background: '#E8E8E8', position: 'relative',
+          }}>
+            <div style={{
+              position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+              background: 'linear-gradient(135deg, #E8ECF0 0%, #D5DDE5 100%)',
+            }} />
+            {/* 지도 배경 패턴 */}
+            <div style={{
+              position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+              background: `
+                linear-gradient(90deg, rgba(200,200,200,0.3) 1px, transparent 1px),
+                linear-gradient(rgba(200,200,200,0.3) 1px, transparent 1px)
+              `,
+              backgroundSize: '20px 20px',
+            }} />
+            {/* 가게 위치 마커 */}
+            <div style={{
+              position: 'absolute', top: '50%', left: '50%',
+              transform: 'translate(-50%, -50%)',
+            }}>
+              <div style={{
+                width: 48, height: 48, borderRadius: '50%',
+                background: '#00D4AA', display: 'flex',
+                alignItems: 'center', justifyContent: 'center',
+                boxShadow: '0 4px 12px rgba(0,212,170,0.4)',
+              }}>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <div style={{
           background: colors.green50, borderRadius: 12, padding: 16,
