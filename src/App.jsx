@@ -4938,38 +4938,46 @@ const CheckoutScreen = ({ store, quantity: initialQuantity, totalPrice: initialP
 // ============================================
 const PaymentCompleteScreen = ({ store, quantity, totalPrice, onNavigate }) => {
   const { colors } = useTheme();
-  const orderCode = ['가', '나', '다'][Math.floor(Math.random() * 3)] +
-                    ['라', '마', '바'][Math.floor(Math.random() * 3)] +
-                    ['사', '아', '자'][Math.floor(Math.random() * 3)];
+
+  // 확정 시간 계산 (픽업 시간 30분 전)
+  const getConfirmTime = () => {
+    // store.pickupTime 예: "19:00~20:00"
+    const startTime = store.pickupTime.split('~')[0].trim();
+    const [hours, minutes] = startTime.split(':').map(Number);
+    let confirmHours = hours;
+    let confirmMinutes = minutes - 30;
+    if (confirmMinutes < 0) {
+      confirmMinutes += 60;
+      confirmHours -= 1;
+    }
+    return `오늘 ${confirmHours}:${confirmMinutes.toString().padStart(2, '0')}`;
+  };
+
+  // 주변 추천 가게들 (현재 가게 제외)
+  const nearbyStores = consumerMockStores.filter(s => s.id !== store.id).slice(0, 3);
 
   return (
-    <div style={{ minHeight: '100vh', background: colors.bg, padding: 20 }}>
-      <div style={{ textAlign: 'center', paddingTop: 60, paddingBottom: 40 }}>
-        <div style={{
-          width: 80, height: 80, borderRadius: 40, background: '#00D4AA',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          margin: '0 auto 24px',
-        }}>
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="white">
-            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-          </svg>
-        </div>
-        <h1 style={{ fontSize: 24, fontWeight: 700, color: colors.text, margin: '0 0 8px' }}>
-          주문이 완료되었어요!
-        </h1>
-        <p style={{ fontSize: 14, color: colors.textSecondary, margin: 0 }}>
-          픽업 시간에 맞춰 방문해주세요
-        </p>
-      </div>
-
-      <Card style={{ marginBottom: 16 }}>
-        <div style={{ textAlign: 'center', marginBottom: 20 }}>
-          <div style={{ fontSize: 13, color: colors.textTertiary, marginBottom: 8 }}>주문 코드</div>
-          <div style={{ fontSize: 32, fontWeight: 700, color: colors.text, letterSpacing: 4 }}>
-            {orderCode}
+    <div style={{ minHeight: '100vh', background: colors.bg }}>
+      <div style={{ padding: 20 }}>
+        <div style={{ textAlign: 'center', paddingTop: 60, paddingBottom: 40 }}>
+          <div style={{
+            width: 80, height: 80, borderRadius: 40, background: '#00D4AA',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            margin: '0 auto 24px',
+          }}>
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="white">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+            </svg>
           </div>
+          <h1 style={{ fontSize: 24, fontWeight: 700, color: colors.text, margin: '0 0 8px' }}>
+            예약이 완료되었어요!
+          </h1>
+          <p style={{ fontSize: 14, color: colors.textSecondary, margin: 0 }}>
+            픽업 확정은 {getConfirmTime()}에 알려드릴게요 :)
+          </p>
         </div>
-        <div style={{ borderTop: `1px solid ${colors.border}`, paddingTop: 16 }}>
+
+        <Card style={{ marginBottom: 16 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
             <span style={{ color: colors.textSecondary }}>가게</span>
             <span style={{ color: colors.text, fontWeight: 500 }}>{store.name}</span>
@@ -4986,46 +4994,101 @@ const PaymentCompleteScreen = ({ store, quantity, totalPrice, onNavigate }) => {
             <span style={{ color: colors.textSecondary }}>결제 금액</span>
             <span style={{ color: colors.text, fontWeight: 700 }}>{totalPrice.toLocaleString()}원</span>
           </div>
-        </div>
-      </Card>
+        </Card>
 
-      <Card style={{ marginBottom: 24 }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill={colors.textSecondary}>
-            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-          </svg>
-          <div>
-            <div style={{ fontSize: 14, fontWeight: 500, color: colors.text, marginBottom: 4 }}>
-              픽업 장소
+        <Card style={{ marginBottom: 24 }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill={colors.textSecondary}>
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+            </svg>
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 500, color: colors.text, marginBottom: 4 }}>
+                픽업 장소
+              </div>
+              <div style={{ fontSize: 13, color: colors.textSecondary }}>{store.address}</div>
             </div>
-            <div style={{ fontSize: 13, color: colors.textSecondary }}>{store.address}</div>
           </div>
-        </div>
-      </Card>
+        </Card>
 
-      <div style={{
-        background: colors.green50, borderRadius: 12, padding: 16,
-        display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24,
-      }}>
-        <span style={{ fontSize: 24 }}>🌱</span>
-        <div>
-          <div style={{ fontSize: 14, fontWeight: 600, color: colors.green600 }}>
-            환경 보호에 동참해주셔서 감사해요!
-          </div>
-          <div style={{ fontSize: 12, color: colors.green500 }}>
-            이번 주문으로 약 0.5kg의 CO2 배출을 줄였어요
+        <div style={{
+          background: colors.green50, borderRadius: 12, padding: 16,
+          display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24,
+        }}>
+          <span style={{ fontSize: 24 }}>🌱</span>
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: colors.green600 }}>
+              환경 보호에 동참해주셔서 감사해요!
+            </div>
+            <div style={{ fontSize: 12, color: colors.green500 }}>
+              이번 주문으로 약 0.5kg의 CO2 배출을 줄였어요
+            </div>
           </div>
         </div>
       </div>
 
-      <Button
-        fullWidth
-        size="lg"
-        onClick={() => onNavigate('consumer-home')}
-        style={{ background: colors.gray100, color: colors.text }}
-      >
-        홈으로 돌아가기
-      </Button>
+      {/* 근처 가게 추천 섹션 */}
+      <div style={{ padding: '0 20px', marginBottom: 24 }}>
+        <div style={{
+          fontSize: 17, fontWeight: 700, color: colors.text, marginBottom: 16,
+        }}>
+          이 근처에서 함께 픽업할 럭키백을 추천 드려요!
+        </div>
+        <div style={{
+          display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10,
+        }}>
+          {nearbyStores.map(s => (
+            <div
+              key={s.id}
+              onClick={() => onNavigate('store-detail', { store: s })}
+              style={{
+                cursor: 'pointer',
+                background: colors.card, borderRadius: 12,
+                overflow: 'hidden', boxShadow: `0 2px 8px ${colors.shadow}`,
+              }}
+            >
+              <img
+                src={s.image}
+                alt={s.name}
+                style={{ width: '100%', height: 80, objectFit: 'cover' }}
+              />
+              <div style={{ padding: 10 }}>
+                <div style={{
+                  fontSize: 13, fontWeight: 600, color: colors.text,
+                  marginBottom: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                }}>
+                  {s.name}
+                </div>
+                <div style={{ fontSize: 12, color: colors.textSecondary, marginBottom: 6 }}>
+                  {s.distance}
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: '#00D4AA' }}>
+                    {s.luckyBagPrice.toLocaleString()}원
+                  </span>
+                  <span style={{
+                    fontSize: 11, color: colors.textTertiary,
+                    textDecoration: 'line-through',
+                  }}>
+                    {s.originalPrice.toLocaleString()}원
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* CTA 버튼 */}
+      <div style={{ padding: '0 20px', paddingBottom: 40 }}>
+        <Button
+          fullWidth
+          size="lg"
+          onClick={() => onNavigate('consumer-orders')}
+          style={{ background: '#00D4AA', color: 'white' }}
+        >
+          주문 현황 보러가기
+        </Button>
+      </div>
     </div>
   );
 };
