@@ -4280,23 +4280,14 @@ const CheckoutScreen = ({ store, quantity: initialQuantity, totalPrice: initialP
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                  <span style={{ fontSize: 14, color: colors.textSecondary, minWidth: 52 }}>픽업</span>
-                  <span style={{ fontSize: 14, color: colors.text, fontWeight: 500 }}>
-                    오늘 {store.pickupTime} · {store.town?.name || store.address?.split(' ').slice(0, 2).join(' ')}
+                  <span style={{ fontSize: 14, color: colors.text }}>
+                    • 구성은 랜덤이에요
                   </span>
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                  <span style={{ fontSize: 14, color: colors.textSecondary, minWidth: 52 }}>확정</span>
-                  <span style={{ fontSize: 14, color: colors.text, fontWeight: 500 }}>
-                    {confirmTime}에 알림을 보내드려요
-                  </span>
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                  <span style={{ fontSize: 14, color: colors.textSecondary, minWidth: 52 }}>구성</span>
-                  <span style={{ fontSize: 14, color: colors.text, fontWeight: 500 }}>
-                    오늘의 메뉴로 랜덤 구성돼요
+                  <span style={{ fontSize: 14, color: colors.text }}>
+                    • {confirmTime}에 확정 알림을 보내드려요
                   </span>
                 </div>
               </div>
@@ -4310,7 +4301,7 @@ const CheckoutScreen = ({ store, quantity: initialQuantity, totalPrice: initialP
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
                 </svg>
-                확정 전 취소 시 전액 환불돼요
+                확정 전 취소 시 환불돼요
               </div>
             </div>
           );
