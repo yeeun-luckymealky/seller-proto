@@ -4279,9 +4279,75 @@ const CheckoutScreen = ({ store, quantity: initialQuantity, totalPrice: initialP
               <span style={{ color: colors.green500 }}>오늘</span> {store.pickupTime}
             </span>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ color: colors.textTertiary, fontSize: 14 }}>픽업 위치</span>
-            <span style={{ color: colors.text, fontSize: 14 }}>{store.address.slice(0, 15)}...</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ color: colors.text, fontSize: 14 }}>{store.address}</span>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigator.clipboard.writeText(store.address);
+                  alert('주소가 복사되었어요');
+                }}
+                style={{
+                  background: 'none', border: 'none', padding: 4, cursor: 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={colors.textTertiary} strokeWidth="2">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          {/* 지도 영역 */}
+          <div style={{
+            marginTop: 16, borderRadius: 12, overflow: 'hidden',
+            height: 160, background: '#E8E8E8', position: 'relative',
+          }}>
+            {/* 카카오맵 Static API 또는 이미지 대체 */}
+            <img
+              src={`https://map.kakao.com/link/map/${encodeURIComponent(store.name)},37.5175,126.8625`}
+              alt="가게 위치"
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              onError={(e) => {
+                e.target.style.display = 'none';
+                e.target.parentElement.style.background = 'linear-gradient(135deg, #E8ECF0 0%, #D5DDE5 100%)';
+              }}
+            />
+            {/* 지도 오버레이 - 가게 위치 표시 */}
+            <div style={{
+              position: 'absolute', top: '50%', left: '50%',
+              transform: 'translate(-50%, -100%)',
+            }}>
+              <div style={{
+                background: '#00D4AA', color: 'white', padding: '8px 16px',
+                borderRadius: 20, fontSize: 13, fontWeight: 600,
+                boxShadow: '0 2px 8px rgba(0,212,170,0.3)',
+                whiteSpace: 'nowrap',
+              }}>
+                가게 위치
+              </div>
+              <div style={{
+                width: 0, height: 0,
+                borderLeft: '8px solid transparent',
+                borderRight: '8px solid transparent',
+                borderTop: '8px solid #00D4AA',
+                margin: '0 auto',
+              }} />
+            </div>
+            {/* 지도 배경 패턴 (실제 지도 로드 실패 시) */}
+            <div style={{
+              position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+              background: `
+                linear-gradient(90deg, rgba(200,200,200,0.3) 1px, transparent 1px),
+                linear-gradient(rgba(200,200,200,0.3) 1px, transparent 1px)
+              `,
+              backgroundSize: '20px 20px',
+              pointerEvents: 'none',
+            }} />
           </div>
         </div>
 
@@ -4567,7 +4633,6 @@ const CheckoutScreen = ({ store, quantity: initialQuantity, totalPrice: initialP
           <div style={{
             padding: '16px 20px', background: '#FFFFFF',
             display: 'flex', alignItems: 'center', gap: 16,
-            borderBottom: '1px solid #EEEEEE',
           }}>
             <button
               onClick={() => setShowPaymentMethods(false)}
@@ -4576,160 +4641,274 @@ const CheckoutScreen = ({ store, quantity: initialQuantity, totalPrice: initialP
                 padding: 0, color: '#333333', display: 'flex', alignItems: 'center',
               }}
             >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M15 18l-6-6 6-6"/>
               </svg>
             </button>
-            <span style={{ fontSize: 18, fontWeight: 600, color: '#333333' }}>신용/체크카드</span>
+            <span style={{ fontSize: 17, fontWeight: 600, color: '#191F28' }}>신용/체크카드</span>
           </div>
 
           {/* 진행 바 */}
-          <div style={{ height: 3, background: '#0064FF' }} />
+          <div style={{ height: 3, background: '#3182F6' }} />
 
           {/* 본문 */}
-          <div style={{ padding: 20, overflowY: 'auto', height: 'calc(100vh - 60px)' }}>
+          <div style={{ padding: '24px 20px', overflowY: 'auto', height: 'calc(100vh - 60px)' }}>
             {/* 간편결제 섹션 */}
             <div style={{ marginBottom: 32 }}>
-              <div style={{ fontSize: 14, color: '#888888', marginBottom: 12 }}>간편결제</div>
-              <div style={{ display: 'flex', gap: 12 }}>
-                {paymentMethods.simple.map(method => (
-                  <button
-                    key={method.id}
-                    onClick={() => {
-                      setSelectedPayment(method.id);
-                      setShowPaymentMethods(false);
-                    }}
-                    style={{
-                      flex: 1, padding: '20px 16px', borderRadius: 12,
-                      border: selectedPayment === method.id ? '2px solid #FFE15D' : '1px solid #E5E5E5',
-                      background: selectedPayment === method.id ? '#FFFEF5' : '#FFFFFF',
-                      cursor: 'pointer', display: 'flex', flexDirection: 'column',
-                      alignItems: 'center', gap: 8,
-                    }}
-                  >
-                    <div style={{
-                      padding: '6px 12px', borderRadius: 4,
-                      background: method.id === 'kakao' ? '#FFE15D' : '#FFFFFF',
-                      border: method.id === 'toss' ? '1px solid #E5E5E5' : 'none',
-                      display: 'flex', alignItems: 'center', gap: 4,
-                    }}>
-                      {method.id === 'kakao' ? (
-                        <span style={{ fontSize: 12, fontWeight: 700, color: '#3C1E1E' }}>
-                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2 }}>
-                            <span style={{ fontSize: 14 }}>●</span>pay
-                          </span>
-                        </span>
-                      ) : (
-                        <span style={{ fontSize: 12, fontWeight: 700, color: '#0064FF' }}>
-                          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2 }}>
-                            <span style={{ color: '#0064FF' }}>●</span>toss pay
-                          </span>
-                        </span>
-                      )}
-                    </div>
-                    <span style={{ fontSize: 14, color: '#333333' }}>{method.name}</span>
-                  </button>
-                ))}
+              <div style={{ fontSize: 13, color: '#8B95A1', marginBottom: 14, fontWeight: 500 }}>간편결제</div>
+              <div style={{ display: 'flex', gap: 10 }}>
+                {/* 카카오페이 */}
+                <button
+                  onClick={() => {
+                    setSelectedPayment('kakao');
+                    setShowPaymentMethods(false);
+                  }}
+                  style={{
+                    flex: 1, padding: '24px 16px', borderRadius: 12,
+                    border: selectedPayment === 'kakao' ? '2px solid #FEE500' : '1px solid #E5E8EB',
+                    background: selectedPayment === 'kakao' ? '#FFFDE7' : '#FFFFFF',
+                    cursor: 'pointer', display: 'flex', flexDirection: 'column',
+                    alignItems: 'center', gap: 10,
+                  }}
+                >
+                  <div style={{
+                    padding: '6px 14px', borderRadius: 6,
+                    background: '#FEE500',
+                    display: 'flex', alignItems: 'center', gap: 3,
+                  }}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#3C1E1E">
+                      <path d="M12 3C6.48 3 2 6.58 2 11c0 2.76 1.81 5.18 4.5 6.52-.15.55-.81 2.98-.84 3.18 0 0-.02.16.08.22.1.06.22.01.22.01.29-.04 3.37-2.2 3.9-2.57.7.1 1.42.14 2.14.14 5.52 0 10-3.58 10-8s-4.48-8-10-8z"/>
+                    </svg>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: '#3C1E1E' }}>pay</span>
+                  </div>
+                  <span style={{ fontSize: 14, color: '#333D4B', fontWeight: 500 }}>카카오페이</span>
+                </button>
+
+                {/* 토스페이 */}
+                <button
+                  onClick={() => {
+                    setSelectedPayment('toss');
+                    setShowPaymentMethods(false);
+                  }}
+                  style={{
+                    flex: 1, padding: '24px 16px', borderRadius: 12,
+                    border: selectedPayment === 'toss' ? '2px solid #3182F6' : '1px solid #E5E8EB',
+                    background: selectedPayment === 'toss' ? '#F2F7FF' : '#FFFFFF',
+                    cursor: 'pointer', display: 'flex', flexDirection: 'column',
+                    alignItems: 'center', gap: 10,
+                  }}
+                >
+                  <div style={{
+                    padding: '6px 14px', borderRadius: 6,
+                    background: '#FFFFFF',
+                    border: '1px solid #E5E8EB',
+                    display: 'flex', alignItems: 'center', gap: 4,
+                  }}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#3182F6">
+                      <circle cx="12" cy="12" r="10"/>
+                    </svg>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: '#3182F6' }}>toss</span>
+                    <span style={{ fontSize: 13, fontWeight: 500, color: '#8B95A1' }}>pay</span>
+                  </div>
+                  <span style={{ fontSize: 14, color: '#333D4B', fontWeight: 500 }}>토스페이</span>
+                </button>
               </div>
             </div>
 
             {/* 신용·체크카드 섹션 */}
             <div>
-              <div style={{ fontSize: 14, color: '#888888', marginBottom: 12 }}>신용·체크카드</div>
+              <div style={{ fontSize: 13, color: '#8B95A1', marginBottom: 14, fontWeight: 500 }}>신용·체크카드</div>
               <div style={{
-                display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12,
+                display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10,
               }}>
-                {paymentMethods.cards.map(card => (
-                  <button
-                    key={card.id}
-                    onClick={() => {
-                      setSelectedPayment(card.id);
-                      setShowPaymentMethods(false);
-                    }}
-                    style={{
-                      padding: '20px 8px', borderRadius: 12,
-                      border: selectedPayment === card.id ? '2px solid #0064FF' : '1px solid #E5E5E5',
-                      background: selectedPayment === card.id ? '#F0F7FF' : '#FFFFFF',
-                      cursor: 'pointer', display: 'flex', flexDirection: 'column',
-                      alignItems: 'center', gap: 10,
-                    }}
-                  >
-                    {/* 카드 로고 */}
+                {/* 신한 */}
+                <button
+                  onClick={() => { setSelectedPayment('shinhan'); setShowPaymentMethods(false); }}
+                  style={{
+                    padding: '20px 8px', borderRadius: 12,
+                    border: selectedPayment === 'shinhan' ? '2px solid #3182F6' : '1px solid #E5E8EB',
+                    background: '#FFFFFF',
+                    cursor: 'pointer', display: 'flex', flexDirection: 'column',
+                    alignItems: 'center', gap: 10,
+                  }}
+                >
+                  <div style={{
+                    background: '#0046FF', borderRadius: 8, padding: '5px 10px',
+                    display: 'flex', alignItems: 'center', gap: 2,
+                  }}>
+                    <span style={{ color: '#FFFFFF', fontSize: 9, fontWeight: 700 }}>신한</span>
+                    <span style={{ color: '#FF3B30', fontSize: 10, fontWeight: 800 }}>SOL</span>
+                    <span style={{ color: '#FFFFFF', fontSize: 8, fontWeight: 500 }}>Pay</span>
+                  </div>
+                  <span style={{ fontSize: 13, color: '#333D4B', fontWeight: 500 }}>신한</span>
+                </button>
+
+                {/* 하나 */}
+                <button
+                  onClick={() => { setSelectedPayment('hana'); setShowPaymentMethods(false); }}
+                  style={{
+                    padding: '20px 8px', borderRadius: 12,
+                    border: selectedPayment === 'hana' ? '2px solid #3182F6' : '1px solid #E5E8EB',
+                    background: '#FFFFFF',
+                    cursor: 'pointer', display: 'flex', flexDirection: 'column',
+                    alignItems: 'center', gap: 10,
+                  }}
+                >
+                  <div style={{
+                    background: '#009591', borderRadius: 8, padding: '5px 10px',
+                    display: 'flex', alignItems: 'center', gap: 2,
+                  }}>
+                    <span style={{ color: '#FFFFFF', fontSize: 10, fontWeight: 700 }}>하나</span>
+                    <span style={{ color: '#FF6B35', fontSize: 10, fontWeight: 700 }}>pay</span>
+                  </div>
+                  <span style={{ fontSize: 13, color: '#333D4B', fontWeight: 500 }}>하나Pay</span>
+                </button>
+
+                {/* 삼성 */}
+                <button
+                  onClick={() => { setSelectedPayment('samsung'); setShowPaymentMethods(false); }}
+                  style={{
+                    padding: '20px 8px', borderRadius: 12,
+                    border: selectedPayment === 'samsung' ? '2px solid #3182F6' : '1px solid #E5E8EB',
+                    background: '#FFFFFF',
+                    cursor: 'pointer', display: 'flex', flexDirection: 'column',
+                    alignItems: 'center', gap: 10,
+                  }}
+                >
+                  <div style={{ height: 24, display: 'flex', alignItems: 'center' }}>
+                    <span style={{ color: '#1428A0', fontSize: 11, fontWeight: 700, letterSpacing: -0.3 }}>Samsung Card</span>
+                  </div>
+                  <span style={{ fontSize: 13, color: '#333D4B', fontWeight: 500 }}>삼성</span>
+                </button>
+
+                {/* 롯데 */}
+                <button
+                  onClick={() => { setSelectedPayment('lotte'); setShowPaymentMethods(false); }}
+                  style={{
+                    padding: '20px 8px', borderRadius: 12,
+                    border: selectedPayment === 'lotte' ? '2px solid #3182F6' : '1px solid #E5E8EB',
+                    background: '#FFFFFF',
+                    cursor: 'pointer', display: 'flex', flexDirection: 'column',
+                    alignItems: 'center', gap: 10,
+                  }}
+                >
+                  <div style={{ height: 24, display: 'flex', alignItems: 'center' }}>
+                    <span style={{ fontSize: 14, fontWeight: 800, color: '#ED1C24', letterSpacing: 2 }}>LOCA</span>
+                  </div>
+                  <span style={{ fontSize: 13, color: '#333D4B', fontWeight: 500 }}>롯데</span>
+                </button>
+
+                {/* 토스뱅크 */}
+                <button
+                  onClick={() => { setSelectedPayment('tossbank'); setShowPaymentMethods(false); }}
+                  style={{
+                    padding: '20px 8px', borderRadius: 12,
+                    border: selectedPayment === 'tossbank' ? '2px solid #3182F6' : '1px solid #E5E8EB',
+                    background: '#FFFFFF',
+                    cursor: 'pointer', display: 'flex', flexDirection: 'column',
+                    alignItems: 'center', gap: 10,
+                  }}
+                >
+                  <div style={{ height: 24, display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="#3182F6">
+                      <circle cx="12" cy="12" r="10"/>
+                    </svg>
+                    <span style={{ color: '#333D4B', fontSize: 13, fontWeight: 700 }}>bank</span>
+                  </div>
+                  <span style={{ fontSize: 13, color: '#333D4B', fontWeight: 500 }}>토스뱅크</span>
+                </button>
+
+                {/* 현대 */}
+                <button
+                  onClick={() => { setSelectedPayment('hyundai'); setShowPaymentMethods(false); }}
+                  style={{
+                    padding: '20px 8px', borderRadius: 12,
+                    border: selectedPayment === 'hyundai' ? '2px solid #3182F6' : '1px solid #E5E8EB',
+                    background: '#FFFFFF',
+                    cursor: 'pointer', display: 'flex', flexDirection: 'column',
+                    alignItems: 'center', gap: 10,
+                  }}
+                >
+                  <div style={{ height: 24, display: 'flex', alignItems: 'center' }}>
                     <div style={{
-                      height: 28, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      border: '1.5px solid #333D4B', borderRadius: 4, padding: '3px 8px',
                     }}>
-                      {card.id === 'shinhan' && (
-                        <div style={{
-                          background: '#0046FF', borderRadius: 6, padding: '4px 8px',
-                          display: 'flex', alignItems: 'center', gap: 2,
-                        }}>
-                          <span style={{ color: 'white', fontSize: 8, fontWeight: 700 }}>신한</span>
-                          <span style={{ color: '#FF0000', fontSize: 10, fontWeight: 700 }}>SOL</span>
-                          <span style={{ color: 'white', fontSize: 8 }}>Pay</span>
-                        </div>
-                      )}
-                      {card.id === 'hana' && (
-                        <div style={{
-                          background: '#009490', borderRadius: 6, padding: '4px 8px',
-                          display: 'flex', alignItems: 'center', gap: 2,
-                        }}>
-                          <span style={{ color: 'white', fontSize: 10, fontWeight: 700 }}>하나</span>
-                          <span style={{ color: '#FF6B35', fontSize: 10, fontWeight: 700 }}>pay</span>
-                        </div>
-                      )}
-                      {card.id === 'samsung' && (
-                        <span style={{ color: '#1428A0', fontSize: 11, fontWeight: 700, letterSpacing: -0.5 }}>Samsung Card</span>
-                      )}
-                      {card.id === 'lotte' && (
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                          <span style={{ fontSize: 10, fontWeight: 700, color: '#ED1C24', letterSpacing: 1 }}>LOCA</span>
-                        </div>
-                      )}
-                      {card.id === 'tossbank' && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                          <span style={{ color: '#0064FF', fontSize: 14 }}>●</span>
-                          <span style={{ color: '#333333', fontSize: 12, fontWeight: 600 }}>bank</span>
-                        </div>
-                      )}
-                      {card.id === 'hyundai' && (
-                        <div style={{
-                          border: '1px solid #333333', borderRadius: 4, padding: '2px 6px',
-                        }}>
-                          <span style={{ fontSize: 9, fontWeight: 600, color: '#333333' }}>Hyundai Card</span>
-                        </div>
-                      )}
-                      {card.id === 'kb' && (
-                        <span style={{ color: '#FFBC00', fontSize: 20, fontWeight: 700 }}>KB</span>
-                      )}
-                      {card.id === 'bc' && (
-                        <div style={{
-                          background: '#F04651', borderRadius: '50%', width: 28, height: 28,
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        }}>
-                          <span style={{ color: 'white', fontSize: 11, fontWeight: 700 }}>BC</span>
-                        </div>
-                      )}
-                      {card.id === 'nh' && (
-                        <div style={{
-                          background: '#F5A623', borderRadius: 6, width: 28, height: 28,
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        }}>
-                          <span style={{ color: 'white', fontSize: 10, fontWeight: 700 }}>NH</span>
-                        </div>
-                      )}
+                      <span style={{ fontSize: 8, fontWeight: 600, color: '#333D4B' }}>Hyundai Card</span>
                     </div>
-                    <span style={{ fontSize: 13, color: '#333333', textAlign: 'center' }}>{card.name}</span>
-                  </button>
-                ))}
+                  </div>
+                  <span style={{ fontSize: 13, color: '#333D4B', fontWeight: 500 }}>현대</span>
+                </button>
+
+                {/* KB국민 */}
+                <button
+                  onClick={() => { setSelectedPayment('kb'); setShowPaymentMethods(false); }}
+                  style={{
+                    padding: '20px 8px', borderRadius: 12,
+                    border: selectedPayment === 'kb' ? '2px solid #3182F6' : '1px solid #E5E8EB',
+                    background: '#FFFFFF',
+                    cursor: 'pointer', display: 'flex', flexDirection: 'column',
+                    alignItems: 'center', gap: 10,
+                  }}
+                >
+                  <div style={{ height: 24, display: 'flex', alignItems: 'center' }}>
+                    <span style={{ color: '#FFBC00', fontSize: 18, fontWeight: 800 }}>KB</span>
+                  </div>
+                  <span style={{ fontSize: 12, color: '#333D4B', fontWeight: 500 }}>KB국민(KB pay)</span>
+                </button>
+
+                {/* 비씨 */}
+                <button
+                  onClick={() => { setSelectedPayment('bc'); setShowPaymentMethods(false); }}
+                  style={{
+                    padding: '20px 8px', borderRadius: 12,
+                    border: selectedPayment === 'bc' ? '2px solid #3182F6' : '1px solid #E5E8EB',
+                    background: '#FFFFFF',
+                    cursor: 'pointer', display: 'flex', flexDirection: 'column',
+                    alignItems: 'center', gap: 10,
+                  }}
+                >
+                  <div style={{ height: 24, display: 'flex', alignItems: 'center' }}>
+                    <div style={{
+                      background: '#F04651', borderRadius: '50%', width: 26, height: 26,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      <span style={{ color: 'white', fontSize: 10, fontWeight: 800 }}>BC</span>
+                    </div>
+                  </div>
+                  <span style={{ fontSize: 12, color: '#333D4B', fontWeight: 500 }}>비씨(페이북)</span>
+                </button>
+
+                {/* 농협 */}
+                <button
+                  onClick={() => { setSelectedPayment('nh'); setShowPaymentMethods(false); }}
+                  style={{
+                    padding: '20px 8px', borderRadius: 12,
+                    border: selectedPayment === 'nh' ? '2px solid #3182F6' : '1px solid #E5E8EB',
+                    background: '#FFFFFF',
+                    cursor: 'pointer', display: 'flex', flexDirection: 'column',
+                    alignItems: 'center', gap: 10,
+                  }}
+                >
+                  <div style={{ height: 24, display: 'flex', alignItems: 'center' }}>
+                    <div style={{
+                      background: '#F5A623', borderRadius: 6, width: 26, height: 26,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      <span style={{ color: 'white', fontSize: 10, fontWeight: 800 }}>NH</span>
+                    </div>
+                  </div>
+                  <span style={{ fontSize: 12, color: '#333D4B', fontWeight: 500 }}>농협(NH페이)</span>
+                </button>
               </div>
             </div>
 
             {/* 더 보기 버튼 */}
             <button style={{
-              width: '100%', padding: 16, marginTop: 20,
+              width: '100%', padding: 16, marginTop: 24,
               background: 'transparent', border: 'none',
-              color: '#888888', fontSize: 14, cursor: 'pointer',
+              color: '#8B95A1', fontSize: 14, cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4,
+              fontWeight: 500,
             }}>
               더 보기
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -4740,10 +4919,12 @@ const CheckoutScreen = ({ store, quantity: initialQuantity, totalPrice: initialP
             {/* toss payments 로고 */}
             <div style={{
               display: 'flex', justifyContent: 'center', alignItems: 'center',
-              gap: 6, marginTop: 40, marginBottom: 40,
+              gap: 6, marginTop: 48, marginBottom: 40,
             }}>
-              <span style={{ color: '#0064FF', fontSize: 16 }}>●</span>
-              <span style={{ color: '#AAAAAA', fontSize: 14, fontWeight: 500 }}>toss payments</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="#3182F6">
+                <circle cx="12" cy="12" r="10"/>
+              </svg>
+              <span style={{ color: '#B0B8C1', fontSize: 15, fontWeight: 600, letterSpacing: -0.3 }}>toss payments</span>
             </div>
           </div>
         </div>
