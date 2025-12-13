@@ -4963,44 +4963,58 @@ const PaymentCompleteScreen = ({ store, quantity, totalPrice, onNavigate }) => {
     <div style={{ minHeight: '100vh', background: colors.bg }}>
       {/* 상단 초록 배경 영역 */}
       <div style={{
-        background: '#00D4AA',
+        background: '#16CC82',
         padding: '32px 20px 48px',
         textAlign: 'center',
         borderRadius: '0 0 32px 32px',
       }}>
         {/* 기뻐하는 캐릭터 이미지 */}
         <div style={{
-          width: 100, height: 100, margin: '0 auto 20px',
+          width: 120, height: 120, margin: '0 auto 16px',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
-          <svg width="100" height="100" viewBox="0 0 100 100" fill="none">
-            {/* 반짝이 */}
-            <path d="M15 25L17 30L22 32L17 34L15 39L13 34L8 32L13 30L15 25Z" fill="#FFE082"/>
-            <path d="M85 60L87 65L92 67L87 69L85 74L83 69L78 67L83 65L85 60Z" fill="#A5D6A7"/>
-            <circle cx="20" cy="60" r="3" fill="#A5D6A7" opacity="0.6"/>
-            <circle cx="80" cy="30" r="2" fill="#FFE082" opacity="0.6"/>
+          <svg width="120" height="120" viewBox="0 0 120 120" fill="none">
+            {/* 반짝이 왼쪽 위 */}
+            <path d="M18 28L21 35L28 38L21 41L18 48L15 41L8 38L15 35L18 28Z" fill="#4ADE80" fillOpacity="0.8"/>
+            {/* 반짝이 오른쪽 위 */}
+            <path d="M102 22L104 27L109 29L104 31L102 36L100 31L95 29L100 27L102 22Z" fill="#FCD34D" fillOpacity="0.9"/>
+            {/* 반짝이 오른쪽 아래 */}
+            <path d="M105 75L107 80L112 82L107 84L105 89L103 84L98 82L103 80L105 75Z" fill="#4ADE80" fillOpacity="0.6"/>
+            {/* 작은 동그라미들 */}
+            <circle cx="15" cy="70" r="3" fill="#4ADE80" fillOpacity="0.5"/>
+            <circle cx="25" cy="45" r="2" fill="#86EFAC" fillOpacity="0.6"/>
+
+            {/* 왼팔 */}
+            <ellipse cx="25" cy="58" rx="12" ry="8" fill="#FFDAB9" transform="rotate(-45 25 58)"/>
+            {/* 왼손 */}
+            <circle cx="18" cy="48" r="8" fill="#FFDAB9"/>
+
+            {/* 오른팔 */}
+            <ellipse cx="95" cy="58" rx="12" ry="8" fill="#FFDAB9" transform="rotate(45 95 58)"/>
+            {/* 오른손 */}
+            <circle cx="102" cy="48" r="8" fill="#FFDAB9"/>
+
+            {/* 몸통 */}
+            <ellipse cx="60" cy="95" rx="25" ry="18" fill="#3D8B5F"/>
+
             {/* 얼굴 */}
-            <circle cx="50" cy="50" r="28" fill="#FFE0B2"/>
+            <circle cx="60" cy="60" r="30" fill="#FFDAB9"/>
+
             {/* 머리카락 */}
-            <ellipse cx="50" cy="30" rx="26" ry="18" fill="#4E7C59"/>
-            <ellipse cx="35" cy="38" rx="8" ry="6" fill="#4E7C59"/>
-            <ellipse cx="65" cy="38" rx="8" ry="6" fill="#4E7C59"/>
+            <ellipse cx="60" cy="38" rx="28" ry="20" fill="#3D8B5F"/>
+            <ellipse cx="40" cy="48" rx="10" ry="8" fill="#3D8B5F"/>
+            <ellipse cx="80" cy="48" rx="10" ry="8" fill="#3D8B5F"/>
+
             {/* 볼터치 */}
-            <ellipse cx="35" cy="55" rx="6" ry="4" fill="#FFAB91" opacity="0.5"/>
-            <ellipse cx="65" cy="55" rx="6" ry="4" fill="#FFAB91" opacity="0.5"/>
-            {/* 눈 (웃는 눈) */}
-            <path d="M38 48C40 45 44 45 46 48" stroke="#5D4037" strokeWidth="2.5" strokeLinecap="round"/>
-            <path d="M54 48C56 45 60 45 62 48" stroke="#5D4037" strokeWidth="2.5" strokeLinecap="round"/>
-            {/* 입 (활짝 웃음) */}
-            <path d="M40 58Q50 68 60 58" stroke="#E65100" strokeWidth="2" fill="#FF8A65"/>
-            {/* 팔 */}
-            <ellipse cx="22" cy="42" rx="8" ry="6" fill="#FFE0B2" transform="rotate(-30 22 42)"/>
-            <ellipse cx="78" cy="42" rx="8" ry="6" fill="#FFE0B2" transform="rotate(30 78 42)"/>
-            {/* 손 */}
-            <circle cx="16" cy="36" r="6" fill="#FFE0B2"/>
-            <circle cx="84" cy="36" r="6" fill="#FFE0B2"/>
-            {/* 몸 */}
-            <ellipse cx="50" cy="85" rx="22" ry="15" fill="#4E7C59"/>
+            <ellipse cx="42" cy="68" rx="7" ry="5" fill="#FFB6A3" fillOpacity="0.6"/>
+            <ellipse cx="78" cy="68" rx="7" ry="5" fill="#FFB6A3" fillOpacity="0.6"/>
+
+            {/* 눈 (웃는 눈 - 반달 모양) */}
+            <path d="M46 58C49 54 55 54 58 58" stroke="#5D4037" strokeWidth="3" strokeLinecap="round" fill="none"/>
+            <path d="M62 58C65 54 71 54 74 58" stroke="#5D4037" strokeWidth="3" strokeLinecap="round" fill="none"/>
+
+            {/* 입 (활짝 웃는 입) */}
+            <path d="M48 72C54 82 66 82 72 72" fill="#E8846B" stroke="#D97355" strokeWidth="1"/>
           </svg>
         </div>
         <h1 style={{ fontSize: 22, fontWeight: 700, color: 'white', margin: '0 0 8px' }}>
