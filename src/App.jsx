@@ -4941,8 +4941,8 @@ const PaymentCompleteScreen = ({ store, quantity, totalPrice, onNavigate }) => {
 
   // 확정 시간 계산 (픽업 시간 30분 전)
   const getConfirmTime = () => {
-    // store.pickupTime 예: "19:00~20:00"
-    const startTime = store.pickupTime.split('~')[0].trim();
+    // store.pickupTime 예: "19:00-20:00"
+    const startTime = store.pickupTime.split('-')[0].trim();
     const [hours, minutes] = startTime.split(':').map(Number);
     let confirmHours = hours;
     let confirmMinutes = minutes - 30;
