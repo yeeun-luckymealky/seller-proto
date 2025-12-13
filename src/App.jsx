@@ -3617,6 +3617,7 @@ const consumerMockStores = [
     image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=300&h=200&fit=crop', rating: 4.5, reviewCount: 128,
     luckyBagPrice: 5500, originalPrice: 11000, pickupTime: '21:50-22:00',
     address: '서울특별시 마포구 연남동 373-3', lat: 37.5495, lng: 126.9138,
+    town: { name: '연남동' },
     description: '오늘의 빵 럭키백! 갓 구운 다양한 빵을 할인된 가격에 만나보세요.',
     remaining: 4,
   },
@@ -3625,6 +3626,7 @@ const consumerMockStores = [
     image: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=300&h=200&fit=crop', rating: 4.8, reviewCount: 256,
     luckyBagPrice: 4900, originalPrice: 9800, pickupTime: '20:00-21:00',
     address: '서울특별시 마포구 서교동 123-45', lat: 37.5512, lng: 126.9189,
+    town: { name: '서교동' },
     description: '커피와 디저트 럭키백! 시그니처 음료와 케이크를 특별 가격에.',
     remaining: 3,
   },
@@ -3633,6 +3635,7 @@ const consumerMockStores = [
     image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=300&h=200&fit=crop', rating: 4.3, reviewCount: 89,
     luckyBagPrice: 6500, originalPrice: 13000, pickupTime: '18:00-19:00',
     address: '서울특별시 마포구 서교동 456-78', lat: 37.5478, lng: 126.9156,
+    town: { name: '서교동' },
     description: '피자 럭키백! 오늘 남은 피자를 반값에 가져가세요.',
     remaining: 5,
   },
@@ -3641,6 +3644,7 @@ const consumerMockStores = [
     image: 'https://images.unsplash.com/photo-1534620808146-d33bb39128b2?w=300&h=200&fit=crop', rating: 4.6, reviewCount: 342,
     luckyBagPrice: 7900, originalPrice: 15800, pickupTime: '21:00-22:00',
     address: '서울특별시 마포구 서교동 789-12', lat: 37.5501, lng: 126.9201,
+    town: { name: '서교동' },
     description: '이탈리안 럭키백! 파스타와 리조또를 할인가에 만나보세요.',
     remaining: 2,
   },
@@ -3649,6 +3653,7 @@ const consumerMockStores = [
     image: 'https://images.unsplash.com/photo-1549931319-a545dcf3bc73?w=300&h=200&fit=crop', rating: 4.2, reviewCount: 567,
     luckyBagPrice: 4000, originalPrice: 8000, pickupTime: '17:00-18:00',
     address: '서울특별시 마포구 합정동 373-3 1층', lat: 37.5489, lng: 126.9145,
+    town: { name: '합정동' },
     description: '베이커리 럭키백! 오늘 구운 빵과 디저트를 즐겨보세요.',
     remaining: 3,
   },
@@ -3657,6 +3662,7 @@ const consumerMockStores = [
     image: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=300&h=200&fit=crop', rating: 4.4, reviewCount: 203,
     luckyBagPrice: 5000, originalPrice: 10000, pickupTime: '19:30-20:30',
     address: '서울특별시 마포구 서교동 111-22', lat: 37.5505, lng: 126.9178,
+    town: { name: '서교동' },
     description: '수제 빵 럭키백! 정성껏 만든 빵을 반값에 담아가세요.',
     remaining: 4,
   },
@@ -3665,6 +3671,7 @@ const consumerMockStores = [
     image: 'https://images.unsplash.com/photo-1486427944299-d1955d23e34d?w=300&h=200&fit=crop', rating: 4.7, reviewCount: 412,
     luckyBagPrice: 4500, originalPrice: 9000, pickupTime: '20:30-21:00',
     address: '서울특별시 마포구 연남동 222-33', lat: 37.5498, lng: 126.9165,
+    town: { name: '연남동' },
     description: '디저트 럭키백! 케이크와 쿠키를 특별 가격에.',
     remaining: 3,
   },
@@ -3673,6 +3680,7 @@ const consumerMockStores = [
     image: 'https://images.unsplash.com/photo-1517433367423-c7e5b0f35086?w=300&h=200&fit=crop', rating: 4.5, reviewCount: 189,
     luckyBagPrice: 5500, originalPrice: 11000, pickupTime: '18:30-19:30',
     address: '서울특별시 마포구 연남동 444-55', lat: 37.5510, lng: 126.9195,
+    town: { name: '연남동' },
     description: '브런치 럭키백! 샌드위치와 음료를 할인가에 만나보세요.',
     remaining: 2,
   },
@@ -4274,7 +4282,7 @@ const CheckoutScreen = ({ store, quantity: initialQuantity, totalPrice: initialP
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
                   <span style={{ fontSize: 14, color: colors.textSecondary, minWidth: 52 }}>픽업</span>
                   <span style={{ fontSize: 14, color: colors.text, fontWeight: 500 }}>
-                    오늘 {store.pickupTime} · {store.address?.split(' ').slice(0, 2).join(' ')}
+                    오늘 {store.pickupTime} · {store.town?.name || store.address?.split(' ').slice(0, 2).join(' ')}
                   </span>
                 </div>
 
