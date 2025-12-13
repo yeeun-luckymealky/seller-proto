@@ -48,7 +48,7 @@ const lightColors = {
   gray300: '#D1D6DB', gray400: '#B0B8C1', gray500: '#8B95A1',
   gray600: '#6B7684', gray700: '#4E5968', gray800: '#333D4B', gray900: '#191F28',
   blue50: '#E8F3FF', blue100: '#C9E2FF', blue500: '#3182F6', blue600: '#1B64DA',
-  green50: '#E8FAF0', green100: '#B1F1CC', green500: '#16CC83', green600: '#0AB26F',
+  green50: '#E8FBF3', green100: '#B1F1CC', green500: '#16CC82', green600: '#12A86B',
   red50: '#FFEBEE', red100: '#FFCDD2', red500: '#F44336', red600: '#E53935',
   orange50: '#FFF3E0', orange100: '#FFE0B2', orange500: '#FF9800',
   white: '#FFFFFF', text: '#191F28', textSecondary: '#6B7684', textTertiary: '#8B95A1',
@@ -893,7 +893,7 @@ const OrdersScreen = ({ onNavigate, shopData, setShopData, stores, currentStoreI
   // 상태 배지 설정
   const getStatusBadge = (status) => {
     if (status === 'before_open') return { text: '오픈 전', bg: colors.gray100, color: colors.gray600 };
-    if (status === 'accepting') return { text: '접수중', bg: '#E8F5E9', color: '#2E7D32' };
+    if (status === 'accepting') return { text: '접수중', bg: '#E8F5E9', color: '#12A86B' };
     if (status === 'closed') return { text: '접수 마감', bg: colors.gray100, color: colors.gray600 };
     return { text: '', bg: '', color: '' };
   };
@@ -938,10 +938,10 @@ const OrdersScreen = ({ onNavigate, shopData, setShopData, stores, currentStoreI
               padding: 0,
             }}
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" strokeWidth="2">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16CC82" strokeWidth="2">
               <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0" />
             </svg>
-            <span style={{ fontSize: 13, color: '#4CAF50', fontWeight: 500 }}>198명</span>
+            <span style={{ fontSize: 13, color: '#16CC82', fontWeight: 500 }}>198명</span>
           </button>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={colors.gray400} strokeWidth="2">
             <path d="M6 9l6 6 6-6" />
@@ -1039,7 +1039,7 @@ const OrdersScreen = ({ onNavigate, shopData, setShopData, stores, currentStoreI
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
               <div>
                 <div style={{ fontSize: 15, fontWeight: 600, color: colors.text, marginBottom: 8 }}>오늘</div>
-                <div style={{ fontSize: 24, fontWeight: 700, color: '#2E7D32', marginBottom: 4 }}>
+                <div style={{ fontSize: 24, fontWeight: 700, color: '#12A86B', marginBottom: 4 }}>
                   {slot.pickupStart}-{slot.pickupEnd} <span style={{ fontSize: 16, fontWeight: 400, color: colors.gray600 }}>에</span>
                 </div>
                 <div style={{ fontSize: 15, color: colors.gray600 }}>
@@ -4089,7 +4089,7 @@ const StoreDetailScreen = ({ store, onBack, onNavigate }) => {
           size="lg"
           fullWidth
           onClick={() => onNavigate('checkout', { store, quantity, totalPrice: store.luckyBagPrice * quantity })}
-          style={{ background: '#00D4AA', padding: '18px', fontSize: 16, borderRadius: 14 }}
+          style={{ background: '#16CC82', padding: '18px', fontSize: 16, borderRadius: 14 }}
         >
           럭키백 픽업 예약({store.remaining}개 남음)
         </Button>
@@ -4172,7 +4172,7 @@ const OrderConfirmScreen = ({ store, quantity, onBack, onNavigate }) => {
           variant="primary"
           size="lg"
           onClick={() => onNavigate('checkout', { store, quantity, totalPrice })}
-          style={{ background: '#00D4AA', padding: '16px 32px' }}
+          style={{ background: '#16CC82', padding: '16px 32px' }}
         >
           픽업 주문하기
         </Button>
@@ -4323,7 +4323,7 @@ const CheckoutScreen = ({ store, quantity: initialQuantity, totalPrice: initialP
               transform: 'translate(-50%, -100%)',
             }}>
               <div style={{
-                background: '#00D4AA', color: 'white', padding: '8px 16px',
+                background: '#16CC82', color: 'white', padding: '8px 16px',
                 borderRadius: 20, fontSize: 13, fontWeight: 600,
                 boxShadow: '0 2px 8px rgba(0,212,170,0.3)',
                 whiteSpace: 'nowrap',
@@ -4334,7 +4334,7 @@ const CheckoutScreen = ({ store, quantity: initialQuantity, totalPrice: initialP
                 width: 0, height: 0,
                 borderLeft: '8px solid transparent',
                 borderRight: '8px solid transparent',
-                borderTop: '8px solid #00D4AA',
+                borderTop: '8px solid #16CC82',
                 margin: '0 auto',
               }} />
             </div>
@@ -4398,7 +4398,7 @@ const CheckoutScreen = ({ store, quantity: initialQuantity, totalPrice: initialP
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             {selectedCoupon ? (
-              <span style={{ color: '#00D4AA', fontSize: 15, fontWeight: 600 }}>
+              <span style={{ color: '#16CC82', fontSize: 15, fontWeight: 600 }}>
                 -{selectedCoupon.discount.toLocaleString()}원
               </span>
             ) : (
@@ -4485,7 +4485,7 @@ const CheckoutScreen = ({ store, quantity: initialQuantity, totalPrice: initialP
           <span style={{ fontSize: 15, color: colors.textTertiary }}>총 결제금액</span>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
             {couponDiscount > 0 && (
-              <span style={{ fontSize: 13, color: '#00D4AA' }}>
+              <span style={{ fontSize: 13, color: '#16CC82' }}>
                 -{couponDiscount.toLocaleString()}원 할인
               </span>
             )}
@@ -4499,7 +4499,7 @@ const CheckoutScreen = ({ store, quantity: initialQuantity, totalPrice: initialP
           disabled={!agreedToTerms}
           style={{
             width: '100%', padding: 18, borderRadius: 14, border: 'none',
-            background: agreedToTerms ? '#00D4AA' : colors.gray200,
+            background: agreedToTerms ? '#16CC82' : colors.gray200,
             color: agreedToTerms ? 'white' : colors.gray400,
             fontSize: 17, fontWeight: 600,
             cursor: agreedToTerms ? 'pointer' : 'not-allowed',
@@ -4570,7 +4570,7 @@ const CheckoutScreen = ({ store, quantity: initialQuantity, totalPrice: initialP
                     display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                     padding: 18, borderRadius: 16,
                     border: selectedCoupon?.id === coupon.id
-                      ? '2px solid #00D4AA'
+                      ? '2px solid #16CC82'
                       : `1px solid ${colors.gray200}`,
                     backgroundColor: coupon.available
                       ? (selectedCoupon?.id === coupon.id ? 'rgba(0,212,170,0.1)' : colors.card)
@@ -4597,7 +4597,7 @@ const CheckoutScreen = ({ store, quantity: initialQuantity, totalPrice: initialP
                   {coupon.discount > 0 && (
                     <div style={{
                       fontSize: 18, fontWeight: 700,
-                      color: coupon.available ? '#00D4AA' : colors.textTertiary,
+                      color: coupon.available ? '#16CC82' : colors.textTertiary,
                     }}>
                       -{coupon.discount.toLocaleString()}원
                     </div>
@@ -4611,7 +4611,7 @@ const CheckoutScreen = ({ store, quantity: initialQuantity, totalPrice: initialP
               onClick={() => setShowCouponSheet(false)}
               style={{
                 width: '100%', padding: 18, borderRadius: 14, border: 'none',
-                backgroundColor: selectedCoupon ? '#00D4AA' : colors.gray200,
+                backgroundColor: selectedCoupon ? '#16CC82' : colors.gray200,
                 color: selectedCoupon ? 'white' : colors.textTertiary,
                 fontSize: 17, fontWeight: 600,
                 cursor: 'pointer', marginTop: 24, transition: 'all 0.2s ease',
@@ -5023,7 +5023,7 @@ const PaymentCompleteScreen = ({ store, quantity, totalPrice, onNavigate }) => {
             paddingTop: 16, borderTop: `1px solid ${colors.gray100}`,
           }}>
             <span style={{ color: colors.text, fontSize: 15, fontWeight: 600 }}>결제 금액</span>
-            <span style={{ color: '#00D4AA', fontWeight: 700, fontSize: 18 }}>{totalPrice.toLocaleString()}원</span>
+            <span style={{ color: '#16CC82', fontWeight: 700, fontSize: 18 }}>{totalPrice.toLocaleString()}원</span>
           </div>
         </Card>
 
@@ -5042,10 +5042,10 @@ const PaymentCompleteScreen = ({ store, quantity, totalPrice, onNavigate }) => {
             <span style={{ fontSize: 24 }}>🌱</span>
           </div>
           <div>
-            <div style={{ fontSize: 15, fontWeight: 600, color: '#2E7D32', marginBottom: 4 }}>
+            <div style={{ fontSize: 15, fontWeight: 600, color: '#12A86B', marginBottom: 4 }}>
               환경 보호에 동참해주셨어요!
             </div>
-            <div style={{ fontSize: 13, color: '#558B2F' }}>
+            <div style={{ fontSize: 13, color: '#12A86B' }}>
               이번 주문으로 약 {savedCo2}g의 CO2 배출을 줄였어요
             </div>
           </div>
@@ -5088,7 +5088,7 @@ const PaymentCompleteScreen = ({ store, quantity, totalPrice, onNavigate }) => {
                   {s.distance}
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  <span style={{ fontSize: 14, fontWeight: 700, color: '#00D4AA' }}>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: '#16CC82' }}>
                     {s.luckyBagPrice.toLocaleString()}원
                   </span>
                   <span style={{
@@ -5110,7 +5110,7 @@ const PaymentCompleteScreen = ({ store, quantity, totalPrice, onNavigate }) => {
           fullWidth
           size="lg"
           onClick={() => onNavigate('consumer-orders')}
-          style={{ background: '#00D4AA', color: 'white' }}
+          style={{ background: '#16CC82', color: 'white' }}
         >
           주문 현황 보러가기
         </Button>
@@ -5169,7 +5169,7 @@ const PaymentFailScreen = ({ store, onBack, onNavigate }) => {
         <Button
           variant="primary" size="lg" fullWidth
           onClick={onBack}
-          style={{ background: '#00D4AA', padding: '16px', borderRadius: 12 }}
+          style={{ background: '#16CC82', padding: '16px', borderRadius: 12 }}
         >
           다시 결제하기
         </Button>
@@ -5212,7 +5212,7 @@ const PaymentFailScreen = ({ store, onBack, onNavigate }) => {
                   {s.distance}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: '#00D4AA' }}>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: '#16CC82' }}>
                     {s.luckyBagPrice.toLocaleString()}원
                   </span>
                   <span style={{
@@ -5251,7 +5251,7 @@ const PaymentFailScreen = ({ store, onBack, onNavigate }) => {
             </div>
           </div>
           <div style={{
-            fontSize: 13, fontWeight: 500, color: '#00D4AA', cursor: 'pointer',
+            fontSize: 13, fontWeight: 500, color: '#16CC82', cursor: 'pointer',
           }}>
             문의하기
           </div>
@@ -5327,7 +5327,7 @@ const ConsumerOrdersScreen = ({ onNavigate }) => {
             flex: 1, padding: '16px', border: 'none', background: 'none',
             fontSize: 15, fontWeight: activeTab === 'active' ? 600 : 400,
             color: activeTab === 'active' ? colors.text : colors.textTertiary,
-            borderBottom: activeTab === 'active' ? '2px solid #00D4AA' : '2px solid transparent',
+            borderBottom: activeTab === 'active' ? '2px solid #16CC82' : '2px solid transparent',
             cursor: 'pointer', transition: 'all 0.2s',
           }}
         >
@@ -5339,7 +5339,7 @@ const ConsumerOrdersScreen = ({ onNavigate }) => {
             flex: 1, padding: '16px', border: 'none', background: 'none',
             fontSize: 15, fontWeight: activeTab === 'cancelled' ? 600 : 400,
             color: activeTab === 'cancelled' ? colors.text : colors.textTertiary,
-            borderBottom: activeTab === 'cancelled' ? '2px solid #00D4AA' : '2px solid transparent',
+            borderBottom: activeTab === 'cancelled' ? '2px solid #16CC82' : '2px solid transparent',
             cursor: 'pointer', transition: 'all 0.2s',
           }}
         >
@@ -5364,7 +5364,7 @@ const ConsumerOrdersScreen = ({ onNavigate }) => {
               <div
                 onClick={() => onNavigate('discover')}
                 style={{
-                  fontSize: 15, fontWeight: 600, color: '#00D4AA', cursor: 'pointer',
+                  fontSize: 15, fontWeight: 600, color: '#16CC82', cursor: 'pointer',
                 }}
               >
                 가게 찾아보기
@@ -5417,7 +5417,7 @@ const ConsumerOrdersScreen = ({ onNavigate }) => {
 
                 <button style={{
                   width: '100%', padding: '14px', borderRadius: 10, border: 'none',
-                  background: order.hasReview ? colors.gray100 : '#00D4AA',
+                  background: order.hasReview ? colors.gray100 : '#16CC82',
                   color: order.hasReview ? colors.textTertiary : 'white',
                   fontSize: 14, fontWeight: 600, cursor: order.hasReview ? 'default' : 'pointer',
                 }}>
@@ -5496,7 +5496,7 @@ const ConsumerMypageScreen = ({ onNavigate, onSwitchRole }) => {
               }}>
                 <div style={{
                   width: `${Math.min(mannerScore, 150) / 150 * 100}%`,
-                  height: '100%', background: '#00D4AA', borderRadius: 3,
+                  height: '100%', background: '#16CC82', borderRadius: 3,
                 }} />
               </div>
               <div style={{
@@ -5519,7 +5519,7 @@ const ConsumerMypageScreen = ({ onNavigate, onSwitchRole }) => {
             onClick={copyReferralCode}
             style={{
               padding: '6px 14px', borderRadius: 20, border: 'none',
-              background: '#00D4AA', color: 'white', fontSize: 13, fontWeight: 600,
+              background: '#16CC82', color: 'white', fontSize: 13, fontWeight: 600,
               cursor: 'pointer',
             }}
           >
@@ -5529,7 +5529,7 @@ const ConsumerMypageScreen = ({ onNavigate, onSwitchRole }) => {
 
         {/* 환경 기여 통계 카드 */}
         <div style={{
-          background: '#00D4AA', borderRadius: 16, padding: 20, marginBottom: 16,
+          background: '#16CC82', borderRadius: 16, padding: 20, marginBottom: 16,
           display: 'flex', justifyContent: 'space-around',
         }}>
           <div style={{ textAlign: 'center' }}>
@@ -5682,7 +5682,7 @@ export default function App() {
   // 가게 목록 (슬랙 스타일 멀티 가게 지원)
   const [stores, setStores] = useState([
     { id: 1, name: '사덕빵집', emoji: '🥐', color: '#FF9800', status: 'reviewing' },
-    { id: 2, name: 'HeyAlfred', emoji: '🍕', color: '#4CAF50', status: 'draft' },
+    { id: 2, name: 'HeyAlfred', emoji: '🍕', color: '#16CC82', status: 'draft' },
     { id: 3, name: '행복한 베이커리', emoji: '🍞', color: '#2196F3', status: 'active' },
   ]);
   const [currentStoreId, setCurrentStoreId] = useState(3);
@@ -5791,7 +5791,7 @@ export default function App() {
       onClick={() => setRole(role === 'seller' ? 'consumer' : 'seller')}
       style={{
         position: 'fixed', top: 16, right: 16, zIndex: 1000,
-        background: role === 'seller' ? colors.blue500 : '#00D4AA',
+        background: role === 'seller' ? colors.blue500 : '#16CC82',
         color: 'white', padding: '8px 16px', borderRadius: 20,
         fontSize: 12, fontWeight: 600, cursor: 'pointer',
         boxShadow: `0 2px 8px ${colors.shadow}`,
