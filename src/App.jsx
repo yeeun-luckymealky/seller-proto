@@ -5726,10 +5726,8 @@ export default function App() {
   const consumerGoBack = () => {
     if (consumerScreen === 'store-detail') {
       setConsumerScreen('consumer-home');
-    } else if (consumerScreen === 'order-confirm') {
-      setConsumerScreen('store-detail');
     } else if (consumerScreen === 'checkout') {
-      setConsumerScreen('order-confirm');
+      setConsumerScreen('store-detail');
     } else {
       setConsumerScreen('consumer-home');
     }
