@@ -3611,78 +3611,179 @@ const TermsScreen = ({ onBack }) => {
 // ============================================
 // 소비자 앱 - Mock 데이터
 // ============================================
+// 백엔드 API 스펙 기반 Mock 데이터
+// - luckyBag: LuckyBag 엔티티 (id, name, price, discountPrice, dailySalesCount)
+// - placeImages: PlaceImage[] (path, order)
+// - currentPickupData: { pickupDate, pickupTime: { startTime, endTime } }
 const consumerMockStores = [
   {
-    id: 1, name: '어반써티연남', category: '베이커리', distance: '370m',
-    image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=300&h=200&fit=crop', rating: 4.5, reviewCount: 128,
-    luckyBagPrice: 5500, originalPrice: 11000, pickupTime: '21:50-22:00',
-    address: '서울특별시 마포구 연남동 373-3', lat: 37.5495, lng: 126.9138,
+    id: 1, name: '어반써티연남', category: '베이커리', distance: 370,
+    placeImages: [{ path: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=300&h=200&fit=crop', order: 1 }],
+    reviewCount: 128,
+    luckyBag: {
+      id: 101, name: '오늘의 빵 럭키백', price: 11000, discountPrice: 5500,
+      dailySalesCount: 5, description: '오늘의 빵 럭키백! 갓 구운 다양한 빵을 할인된 가격에 만나보세요.',
+    },
+    currentPickupData: { pickupDate: '2024-12-13', pickupTime: { startTime: '21:50', endTime: '22:00' } },
+    address: '서울특별시 마포구 연남동 373-3', latitude: 37.5495, longitude: 126.9138,
     town: { name: '연남동' },
-    description: '오늘의 빵 럭키백! 갓 구운 다양한 빵을 할인된 가격에 만나보세요.',
-    remaining: 4,
+    luckyBagCount: 4, // 남은 수량
+    // 하위 호환용 (프로토타입 UI에서 사용)
+    get image() { return this.placeImages[0]?.path; },
+    get luckyBagPrice() { return this.luckyBag.discountPrice; },
+    get originalPrice() { return this.luckyBag.price; },
+    get pickupTime() { return `${this.currentPickupData.pickupTime.startTime}-${this.currentPickupData.pickupTime.endTime}`; },
+    get description() { return this.luckyBag.description; },
+    get remaining() { return this.luckyBagCount; },
+    get lat() { return this.latitude; },
+    get lng() { return this.longitude; },
   },
   {
-    id: 2, name: '카페공명', category: '카페, 디저트', distance: '1.1km',
-    image: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=300&h=200&fit=crop', rating: 4.8, reviewCount: 256,
-    luckyBagPrice: 4900, originalPrice: 9800, pickupTime: '20:00-21:00',
-    address: '서울특별시 마포구 서교동 123-45', lat: 37.5512, lng: 126.9189,
+    id: 2, name: '카페공명', category: '카페, 디저트', distance: 1100,
+    placeImages: [{ path: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=300&h=200&fit=crop', order: 1 }],
+    reviewCount: 256,
+    luckyBag: {
+      id: 102, name: '디저트 럭키백', price: 9800, discountPrice: 4900,
+      dailySalesCount: 4, description: '커피와 디저트 럭키백! 시그니처 음료와 케이크를 특별 가격에.',
+    },
+    currentPickupData: { pickupDate: '2024-12-13', pickupTime: { startTime: '20:00', endTime: '21:00' } },
+    address: '서울특별시 마포구 서교동 123-45', latitude: 37.5512, longitude: 126.9189,
     town: { name: '서교동' },
-    description: '커피와 디저트 럭키백! 시그니처 음료와 케이크를 특별 가격에.',
-    remaining: 3,
+    luckyBagCount: 3,
+    get image() { return this.placeImages[0]?.path; },
+    get luckyBagPrice() { return this.luckyBag.discountPrice; },
+    get originalPrice() { return this.luckyBag.price; },
+    get pickupTime() { return `${this.currentPickupData.pickupTime.startTime}-${this.currentPickupData.pickupTime.endTime}`; },
+    get description() { return this.luckyBag.description; },
+    get remaining() { return this.luckyBagCount; },
+    get lat() { return this.latitude; },
+    get lng() { return this.longitude; },
   },
   {
-    id: 3, name: '빨간토마토피자', category: '피자', distance: '500m',
-    image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=300&h=200&fit=crop', rating: 4.3, reviewCount: 89,
-    luckyBagPrice: 6500, originalPrice: 13000, pickupTime: '18:00-19:00',
-    address: '서울특별시 마포구 서교동 456-78', lat: 37.5478, lng: 126.9156,
+    id: 3, name: '빨간토마토피자', category: '피자', distance: 500,
+    placeImages: [{ path: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=300&h=200&fit=crop', order: 1 }],
+    reviewCount: 89,
+    luckyBag: {
+      id: 103, name: '피자 럭키백', price: 13000, discountPrice: 6500,
+      dailySalesCount: 6, description: '피자 럭키백! 오늘 남은 피자를 반값에 가져가세요.',
+    },
+    currentPickupData: { pickupDate: '2024-12-13', pickupTime: { startTime: '18:00', endTime: '19:00' } },
+    address: '서울특별시 마포구 서교동 456-78', latitude: 37.5478, longitude: 126.9156,
     town: { name: '서교동' },
-    description: '피자 럭키백! 오늘 남은 피자를 반값에 가져가세요.',
-    remaining: 5,
+    luckyBagCount: 5,
+    get image() { return this.placeImages[0]?.path; },
+    get luckyBagPrice() { return this.luckyBag.discountPrice; },
+    get originalPrice() { return this.luckyBag.price; },
+    get pickupTime() { return `${this.currentPickupData.pickupTime.startTime}-${this.currentPickupData.pickupTime.endTime}`; },
+    get description() { return this.luckyBag.description; },
+    get remaining() { return this.luckyBagCount; },
+    get lat() { return this.latitude; },
+    get lng() { return this.longitude; },
   },
   {
-    id: 4, name: '저스티나', category: '이탈리안', distance: '197m',
-    image: 'https://images.unsplash.com/photo-1534620808146-d33bb39128b2?w=300&h=200&fit=crop', rating: 4.6, reviewCount: 342,
-    luckyBagPrice: 7900, originalPrice: 15800, pickupTime: '21:00-22:00',
-    address: '서울특별시 마포구 서교동 789-12', lat: 37.5501, lng: 126.9201,
+    id: 4, name: '저스티나', category: '이탈리안', distance: 197,
+    placeImages: [{ path: 'https://images.unsplash.com/photo-1534620808146-d33bb39128b2?w=300&h=200&fit=crop', order: 1 }],
+    reviewCount: 342,
+    luckyBag: {
+      id: 104, name: '이탈리안 럭키백', price: 15800, discountPrice: 7900,
+      dailySalesCount: 3, description: '이탈리안 럭키백! 파스타와 리조또를 할인가에 만나보세요.',
+    },
+    currentPickupData: { pickupDate: '2024-12-13', pickupTime: { startTime: '21:00', endTime: '22:00' } },
+    address: '서울특별시 마포구 서교동 789-12', latitude: 37.5501, longitude: 126.9201,
     town: { name: '서교동' },
-    description: '이탈리안 럭키백! 파스타와 리조또를 할인가에 만나보세요.',
-    remaining: 2,
+    luckyBagCount: 2,
+    get image() { return this.placeImages[0]?.path; },
+    get luckyBagPrice() { return this.luckyBag.discountPrice; },
+    get originalPrice() { return this.luckyBag.price; },
+    get pickupTime() { return `${this.currentPickupData.pickupTime.startTime}-${this.currentPickupData.pickupTime.endTime}`; },
+    get description() { return this.luckyBag.description; },
+    get remaining() { return this.luckyBagCount; },
+    get lat() { return this.latitude; },
+    get lng() { return this.longitude; },
   },
   {
-    id: 5, name: '녹턴', category: '베이커리, 카페', distance: '230m',
-    image: 'https://images.unsplash.com/photo-1549931319-a545dcf3bc73?w=300&h=200&fit=crop', rating: 4.2, reviewCount: 567,
-    luckyBagPrice: 4000, originalPrice: 8000, pickupTime: '17:00-18:00',
-    address: '서울특별시 마포구 합정동 373-3 1층', lat: 37.5489, lng: 126.9145,
+    id: 5, name: '녹턴', category: '베이커리, 카페', distance: 230,
+    placeImages: [{ path: 'https://images.unsplash.com/photo-1549931319-a545dcf3bc73?w=300&h=200&fit=crop', order: 1 }],
+    reviewCount: 567,
+    luckyBag: {
+      id: 105, name: '베이커리 럭키백', price: 8000, discountPrice: 4000,
+      dailySalesCount: 4, description: '베이커리 럭키백! 오늘 구운 빵과 디저트를 즐겨보세요.',
+    },
+    currentPickupData: { pickupDate: '2024-12-13', pickupTime: { startTime: '17:00', endTime: '18:00' } },
+    address: '서울특별시 마포구 합정동 373-3 1층', latitude: 37.5489, longitude: 126.9145,
     town: { name: '합정동' },
-    description: '베이커리 럭키백! 오늘 구운 빵과 디저트를 즐겨보세요.',
-    remaining: 3,
+    luckyBagCount: 3,
+    get image() { return this.placeImages[0]?.path; },
+    get luckyBagPrice() { return this.luckyBag.discountPrice; },
+    get originalPrice() { return this.luckyBag.price; },
+    get pickupTime() { return `${this.currentPickupData.pickupTime.startTime}-${this.currentPickupData.pickupTime.endTime}`; },
+    get description() { return this.luckyBag.description; },
+    get remaining() { return this.luckyBagCount; },
+    get lat() { return this.latitude; },
+    get lng() { return this.longitude; },
   },
   {
-    id: 6, name: '네스토베이커리', category: '베이커리', distance: '450m',
-    image: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=300&h=200&fit=crop', rating: 4.4, reviewCount: 203,
-    luckyBagPrice: 5000, originalPrice: 10000, pickupTime: '19:30-20:30',
-    address: '서울특별시 마포구 서교동 111-22', lat: 37.5505, lng: 126.9178,
+    id: 6, name: '네스토베이커리', category: '베이커리', distance: 450,
+    placeImages: [{ path: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=300&h=200&fit=crop', order: 1 }],
+    reviewCount: 203,
+    luckyBag: {
+      id: 106, name: '수제 빵 럭키백', price: 10000, discountPrice: 5000,
+      dailySalesCount: 5, description: '수제 빵 럭키백! 정성껏 만든 빵을 반값에 담아가세요.',
+    },
+    currentPickupData: { pickupDate: '2024-12-13', pickupTime: { startTime: '19:30', endTime: '20:30' } },
+    address: '서울특별시 마포구 서교동 111-22', latitude: 37.5505, longitude: 126.9178,
     town: { name: '서교동' },
-    description: '수제 빵 럭키백! 정성껏 만든 빵을 반값에 담아가세요.',
-    remaining: 4,
+    luckyBagCount: 4,
+    get image() { return this.placeImages[0]?.path; },
+    get luckyBagPrice() { return this.luckyBag.discountPrice; },
+    get originalPrice() { return this.luckyBag.price; },
+    get pickupTime() { return `${this.currentPickupData.pickupTime.startTime}-${this.currentPickupData.pickupTime.endTime}`; },
+    get description() { return this.luckyBag.description; },
+    get remaining() { return this.luckyBagCount; },
+    get lat() { return this.latitude; },
+    get lng() { return this.longitude; },
   },
   {
-    id: 7, name: '소행당', category: '베이커리, 디저트', distance: '320m',
-    image: 'https://images.unsplash.com/photo-1486427944299-d1955d23e34d?w=300&h=200&fit=crop', rating: 4.7, reviewCount: 412,
-    luckyBagPrice: 4500, originalPrice: 9000, pickupTime: '20:30-21:00',
-    address: '서울특별시 마포구 연남동 222-33', lat: 37.5498, lng: 126.9165,
+    id: 7, name: '소행당', category: '베이커리, 디저트', distance: 320,
+    placeImages: [{ path: 'https://images.unsplash.com/photo-1486427944299-d1955d23e34d?w=300&h=200&fit=crop', order: 1 }],
+    reviewCount: 412,
+    luckyBag: {
+      id: 107, name: '디저트 럭키백', price: 9000, discountPrice: 4500,
+      dailySalesCount: 4, description: '디저트 럭키백! 케이크와 쿠키를 특별 가격에.',
+    },
+    currentPickupData: { pickupDate: '2024-12-13', pickupTime: { startTime: '20:30', endTime: '21:00' } },
+    address: '서울특별시 마포구 연남동 222-33', latitude: 37.5498, longitude: 126.9165,
     town: { name: '연남동' },
-    description: '디저트 럭키백! 케이크와 쿠키를 특별 가격에.',
-    remaining: 3,
+    luckyBagCount: 3,
+    get image() { return this.placeImages[0]?.path; },
+    get luckyBagPrice() { return this.luckyBag.discountPrice; },
+    get originalPrice() { return this.luckyBag.price; },
+    get pickupTime() { return `${this.currentPickupData.pickupTime.startTime}-${this.currentPickupData.pickupTime.endTime}`; },
+    get description() { return this.luckyBag.description; },
+    get remaining() { return this.luckyBagCount; },
+    get lat() { return this.latitude; },
+    get lng() { return this.longitude; },
   },
   {
-    id: 8, name: '바이닐인사이드', category: '카페, 브런치', distance: '580m',
-    image: 'https://images.unsplash.com/photo-1517433367423-c7e5b0f35086?w=300&h=200&fit=crop', rating: 4.5, reviewCount: 189,
-    luckyBagPrice: 5500, originalPrice: 11000, pickupTime: '18:30-19:30',
-    address: '서울특별시 마포구 연남동 444-55', lat: 37.5510, lng: 126.9195,
+    id: 8, name: '바이닐인사이드', category: '카페, 브런치', distance: 580,
+    placeImages: [{ path: 'https://images.unsplash.com/photo-1517433367423-c7e5b0f35086?w=300&h=200&fit=crop', order: 1 }],
+    reviewCount: 189,
+    luckyBag: {
+      id: 108, name: '브런치 럭키백', price: 11000, discountPrice: 5500,
+      dailySalesCount: 3, description: '브런치 럭키백! 샌드위치와 음료를 할인가에 만나보세요.',
+    },
+    currentPickupData: { pickupDate: '2024-12-13', pickupTime: { startTime: '18:30', endTime: '19:30' } },
+    address: '서울특별시 마포구 연남동 444-55', latitude: 37.5510, longitude: 126.9195,
     town: { name: '연남동' },
-    description: '브런치 럭키백! 샌드위치와 음료를 할인가에 만나보세요.',
-    remaining: 2,
+    luckyBagCount: 2,
+    get image() { return this.placeImages[0]?.path; },
+    get luckyBagPrice() { return this.luckyBag.discountPrice; },
+    get originalPrice() { return this.luckyBag.price; },
+    get pickupTime() { return `${this.currentPickupData.pickupTime.startTime}-${this.currentPickupData.pickupTime.endTime}`; },
+    get description() { return this.luckyBag.description; },
+    get remaining() { return this.luckyBagCount; },
+    get lat() { return this.latitude; },
+    get lng() { return this.longitude; },
   },
 ];
 
@@ -4228,14 +4329,16 @@ const CheckoutScreen = ({ store, quantity: initialQuantity, totalPrice: initialP
     return { name: '카카오페이', color: '#FFE15D', isSimple: true };
   };
 
+  // 백엔드 API: GET /api/users/coupons
+  // UserCoupon 엔티티 기반
   const coupons = [
-    { id: 1, name: '첫 주문 500원 할인', discount: 500, available: true, expires: '12.31까지' },
-    { id: 2, name: '리뷰 작성 감사 쿠폰', discount: 500, available: true, expires: '12.25까지' },
-    { id: 3, name: '불편을 드려 죄송합니다', discount: 0, available: true, expires: '1.04까지' },
+    { id: 1, type: 'FIRST_ORDER', name: '첫 주문 500원 할인', discountPrice: 500, expiredAt: '2024-12-31', isUsed: false },
+    { id: 2, type: 'REVIEW', name: '리뷰 작성 감사 쿠폰', discountPrice: 500, expiredAt: '2024-12-25', isUsed: false },
+    { id: 3, type: 'APOLOGY', name: '불편을 드려 죄송합니다', discountPrice: 0, expiredAt: '2025-01-04', isUsed: false },
   ];
 
   const unitPrice = store.luckyBagPrice;
-  const couponDiscount = selectedCoupon ? selectedCoupon.discount : 0;
+  const couponDiscount = selectedCoupon ? selectedCoupon.discountPrice : 0;
   const finalPrice = (unitPrice * qty) - couponDiscount;
 
   return (
@@ -4456,12 +4559,12 @@ const CheckoutScreen = ({ store, quantity: initialQuantity, totalPrice: initialP
             <span style={{
               background: colors.blue50, color: colors.blue500,
               padding: '3px 10px', borderRadius: 12, fontSize: 12, fontWeight: 700,
-            }}>{coupons.filter(c => c.available).length}개 보유</span>
+            }}>{coupons.filter(c => !c.isUsed).length}개 보유</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
             {selectedCoupon ? (
               <span style={{ color: '#16CC82', fontSize: 15, fontWeight: 600 }}>
-                -{selectedCoupon.discount.toLocaleString()}원
+                -{selectedCoupon.discountPrice.toLocaleString()}원
               </span>
             ) : (
               <span style={{ color: colors.textTertiary, fontSize: 15 }}>선택하기</span>
@@ -4615,57 +4718,61 @@ const CheckoutScreen = ({ store, quantity: initialQuantity, totalPrice: initialP
             }}>
               <h3 style={{ fontSize: 20, fontWeight: 700, color: colors.text, margin: 0 }}>쿠폰 선택</h3>
               <span style={{ fontSize: 14, color: colors.textTertiary }}>
-                사용 가능 {coupons.filter(c => c.available).length}개
+                사용 가능 {coupons.filter(c => !c.isUsed).length}개
               </span>
             </div>
 
             {/* 쿠폰 리스트 */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              {coupons.map(coupon => (
-                <button
-                  key={coupon.id}
-                  onClick={() => coupon.available && setSelectedCoupon(
-                    selectedCoupon?.id === coupon.id ? null : coupon
-                  )}
-                  disabled={!coupon.available}
-                  style={{
-                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                    padding: 18, borderRadius: 16,
-                    border: selectedCoupon?.id === coupon.id
-                      ? '2px solid #16CC82'
-                      : `1px solid ${colors.gray200}`,
-                    backgroundColor: coupon.available
-                      ? (selectedCoupon?.id === coupon.id ? 'rgba(0,212,170,0.1)' : colors.card)
-                      : colors.gray100,
-                    cursor: coupon.available ? 'pointer' : 'not-allowed',
-                    opacity: coupon.available ? 1 : 0.6,
-                    textAlign: 'left', transition: 'all 0.2s ease',
-                  }}
-                >
-                  <div>
-                    <div style={{
-                      fontSize: 16, fontWeight: 600,
-                      color: coupon.available ? colors.text : colors.textTertiary,
-                      marginBottom: 4,
-                    }}>
-                      {coupon.name}
+              {coupons.map(coupon => {
+                const isAvailable = !coupon.isUsed;
+                const expiresText = coupon.expiredAt ? `${coupon.expiredAt.slice(5).replace('-', '.')}까지` : '';
+                return (
+                  <button
+                    key={coupon.id}
+                    onClick={() => isAvailable && setSelectedCoupon(
+                      selectedCoupon?.id === coupon.id ? null : coupon
+                    )}
+                    disabled={!isAvailable}
+                    style={{
+                      display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                      padding: 18, borderRadius: 16,
+                      border: selectedCoupon?.id === coupon.id
+                        ? '2px solid #16CC82'
+                        : `1px solid ${colors.gray200}`,
+                      backgroundColor: isAvailable
+                        ? (selectedCoupon?.id === coupon.id ? 'rgba(0,212,170,0.1)' : colors.card)
+                        : colors.gray100,
+                      cursor: isAvailable ? 'pointer' : 'not-allowed',
+                      opacity: isAvailable ? 1 : 0.6,
+                      textAlign: 'left', transition: 'all 0.2s ease',
+                    }}
+                  >
+                    <div>
+                      <div style={{
+                        fontSize: 16, fontWeight: 600,
+                        color: isAvailable ? colors.text : colors.textTertiary,
+                        marginBottom: 4,
+                      }}>
+                        {coupon.name}
+                      </div>
+                      <div style={{
+                        fontSize: 13, color: isAvailable ? colors.textTertiary : colors.gray300,
+                      }}>
+                        {expiresText}
+                      </div>
                     </div>
-                    <div style={{
-                      fontSize: 13, color: coupon.available ? colors.textTertiary : colors.gray300,
-                    }}>
-                      {coupon.expires}
-                    </div>
-                  </div>
-                  {coupon.discount > 0 && (
-                    <div style={{
-                      fontSize: 18, fontWeight: 700,
-                      color: coupon.available ? '#16CC82' : colors.textTertiary,
-                    }}>
-                      -{coupon.discount.toLocaleString()}원
-                    </div>
-                  )}
-                </button>
-              ))}
+                    {coupon.discountPrice > 0 && (
+                      <div style={{
+                        fontSize: 18, fontWeight: 700,
+                        color: isAvailable ? '#16CC82' : colors.textTertiary,
+                      }}>
+                        -{coupon.discountPrice.toLocaleString()}원
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
             </div>
 
             {/* 적용 버튼 */}
