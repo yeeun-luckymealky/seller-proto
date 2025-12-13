@@ -4969,75 +4969,11 @@ const PaymentCompleteScreen = ({ store, quantity, totalPrice, onNavigate }) => {
         borderRadius: '0 0 32px 32px',
       }}>
         {/* 기뻐하는 캐릭터 이미지 */}
-        <div style={{
-          width: 140, height: 140, margin: '0 auto 16px',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          <svg width="140" height="140" viewBox="0 0 140 140" fill="none">
-            {/* 반짝이 왼쪽 위 */}
-            <path d="M12 35L16 45L26 49L16 53L12 63L8 53L-2 49L8 45L12 35Z" fill="#4CAF50"/>
-            {/* 반짝이 오른쪽 아래 */}
-            <path d="M125 95L128 102L135 105L128 108L125 115L122 108L115 105L122 102L125 95Z" fill="#4CAF50"/>
-            {/* 작은 동그라미 */}
-            <circle cx="118" cy="35" r="4" fill="#4CAF50"/>
-
-            {/* 왼팔 */}
-            <path d="M28 75C22 65 18 55 22 48" stroke="#F5C6A5" strokeWidth="14" strokeLinecap="round" fill="none"/>
-            {/* 왼손 (주먹) */}
-            <circle cx="22" cy="42" r="11" fill="#F5C6A5"/>
-            {/* 왼손 주름 */}
-            <path d="M18 38L22 42M22 38L26 42M20 44L24 48" stroke="#E8A880" strokeWidth="1.5" strokeLinecap="round"/>
-
-            {/* 오른팔 */}
-            <path d="M112 75C118 65 122 55 118 48" stroke="#F5C6A5" strokeWidth="14" strokeLinecap="round" fill="none"/>
-            {/* 오른손 (주먹) */}
-            <circle cx="118" cy="42" r="11" fill="#F5C6A5"/>
-            {/* 오른손 주름 */}
-            <path d="M114 38L118 42M118 38L122 42M116 44L120 48" stroke="#E8A880" strokeWidth="1.5" strokeLinecap="round"/>
-
-            {/* 몸통 (초록 티셔츠) */}
-            <path d="M40 95C40 85 50 78 70 78C90 78 100 85 100 95L100 130C100 135 95 140 70 140C45 140 40 135 40 130L40 95Z" fill="#4CAF50"/>
-            {/* 목 */}
-            <rect x="60" y="75" width="20" height="12" rx="3" fill="#F5C6A5"/>
-
-            {/* 머리카락 뒤쪽 */}
-            <ellipse cx="70" cy="55" rx="38" ry="35" fill="#3D8B40"/>
-
-            {/* 얼굴 */}
-            <ellipse cx="70" cy="55" rx="30" ry="28" fill="#F5C6A5"/>
-
-            {/* 머리카락 앞쪽 */}
-            <path d="M35 45C35 30 50 20 70 20C90 20 105 30 105 45C105 50 100 52 95 50C90 48 85 45 70 45C55 45 50 48 45 50C40 52 35 50 35 45Z" fill="#3D8B40"/>
-            {/* 머리카락 옆 */}
-            <ellipse cx="38" cy="55" rx="8" ry="15" fill="#3D8B40"/>
-            <ellipse cx="102" cy="55" rx="8" ry="15" fill="#3D8B40"/>
-
-            {/* 귀 */}
-            <ellipse cx="38" cy="55" rx="4" ry="6" fill="#F5C6A5"/>
-            <ellipse cx="102" cy="55" rx="4" ry="6" fill="#F5C6A5"/>
-
-            {/* 볼터치 */}
-            <ellipse cx="50" cy="62" rx="8" ry="5" fill="#FFAA91" fillOpacity="0.5"/>
-            <ellipse cx="90" cy="62" rx="8" ry="5" fill="#FFAA91" fillOpacity="0.5"/>
-
-            {/* 눈썹 */}
-            <path d="M52 42C55 40 60 40 63 42" stroke="#3D8B40" strokeWidth="2" strokeLinecap="round" fill="none"/>
-            <path d="M77 42C80 40 85 40 88 42" stroke="#3D8B40" strokeWidth="2" strokeLinecap="round" fill="none"/>
-
-            {/* 눈 (웃는 눈 - 아래로 굽은 선) */}
-            <path d="M53 50C56 54 60 54 63 50" stroke="#3D8B40" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
-            <path d="M77 50C80 54 84 54 87 50" stroke="#3D8B40" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
-
-            {/* 코 */}
-            <path d="M68 55L70 58L72 55" stroke="#E8A880" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
-
-            {/* 입 (크게 웃는 입) */}
-            <path d="M55 65C60 78 80 78 85 65" fill="#E87A61"/>
-            <path d="M55 65C60 78 80 78 85 65" stroke="#D96A51" strokeWidth="1" fill="none"/>
-            {/* 혀 */}
-            <ellipse cx="70" cy="72" rx="8" ry="5" fill="#FF8A75"/>
-          </svg>
-        </div>
+        <img
+          src="/payment-success.png"
+          alt="예약 완료"
+          style={{ width: 140, height: 140, margin: '0 auto 16px', display: 'block' }}
+        />
         <h1 style={{ fontSize: 22, fontWeight: 700, color: 'white', margin: '0 0 8px' }}>
           예약이 완료되었어요!
         </h1>
