@@ -21,7 +21,7 @@ const Button = ({ children, variant = 'primary', size = 'md', fullWidth, onClick
     <button onClick={onClick} disabled={disabled} style={{
       background: disabled ? colors.gray200 : v.bg, color: disabled ? colors.gray400 : v.color,
       border: 'none', borderRadius: tokens.radius.md, padding: s.padding, fontSize: s.fontSize,
-      fontWeight: 600, width: fullWidth ? '100%' : 'auto', cursor: disabled ? 'not-allowed' : 'pointer',
+      fontWeight: 600, fontFamily: 'inherit', width: fullWidth ? '100%' : 'auto', cursor: disabled ? 'not-allowed' : 'pointer',
       transition: 'all 0.2s', ...style,
     }}>{children}</button>
   );
