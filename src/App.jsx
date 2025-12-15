@@ -3619,7 +3619,7 @@ const consumerMockStores = [
   {
     id: 1, name: '어반써티연남', category: '베이커리', distance: 370,
     placeImages: [{ path: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=300&h=200&fit=crop', order: 1 }],
-    reviewCount: 128,
+    reviewCount: 128, rating: 4.8,
     luckyBag: {
       id: 101, name: '오늘의 빵 럭키백', price: 11000, discountPrice: 5500,
       dailySalesCount: 5, description: '오늘의 빵 럭키백! 갓 구운 다양한 빵을 할인된 가격에 만나보세요.',
@@ -3628,6 +3628,10 @@ const consumerMockStores = [
     address: '서울특별시 마포구 연남동 373-3', latitude: 37.5495, longitude: 126.9138,
     town: { name: '연남동' },
     luckyBagCount: 4, // 남은 수량
+    // 새로운 CTA 관련 필드
+    status: 'TODAY_OPEN', // TODAY_OPEN | TOMORROW_OPEN | SOLD_OUT | CLOSED
+    minutesUntilConfirm: 85, // 확정까지 남은 분
+    pushAlarmQueueCount: 1234, // 오픈 알림 대기 인원
     // 하위 호환용 (프로토타입 UI에서 사용)
     get image() { return this.placeImages[0]?.path; },
     get luckyBagPrice() { return this.luckyBag.discountPrice; },
@@ -3642,7 +3646,7 @@ const consumerMockStores = [
   {
     id: 2, name: '카페공명', category: '카페, 디저트', distance: 1100,
     placeImages: [{ path: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=300&h=200&fit=crop', order: 1 }],
-    reviewCount: 256,
+    reviewCount: 256, rating: 4.6,
     luckyBag: {
       id: 102, name: '디저트 럭키백', price: 9800, discountPrice: 4900,
       dailySalesCount: 4, description: '커피와 디저트 럭키백! 시그니처 음료와 케이크를 특별 가격에.',
@@ -3651,6 +3655,7 @@ const consumerMockStores = [
     address: '서울특별시 마포구 서교동 123-45', latitude: 37.5512, longitude: 126.9189,
     town: { name: '서교동' },
     luckyBagCount: 3,
+    status: 'TODAY_OPEN', minutesUntilConfirm: 25, pushAlarmQueueCount: 892, // 시간 위험
     get image() { return this.placeImages[0]?.path; },
     get luckyBagPrice() { return this.luckyBag.discountPrice; },
     get originalPrice() { return this.luckyBag.price; },
@@ -3664,7 +3669,7 @@ const consumerMockStores = [
   {
     id: 3, name: '빨간토마토피자', category: '피자', distance: 500,
     placeImages: [{ path: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=300&h=200&fit=crop', order: 1 }],
-    reviewCount: 89,
+    reviewCount: 89, rating: 4.5,
     luckyBag: {
       id: 103, name: '피자 럭키백', price: 13000, discountPrice: 6500,
       dailySalesCount: 6, description: '피자 럭키백! 오늘 남은 피자를 반값에 가져가세요.',
@@ -3672,7 +3677,8 @@ const consumerMockStores = [
     currentPickupData: { pickupDate: '2024-12-13', pickupTime: { startTime: '18:00', endTime: '19:00' } },
     address: '서울특별시 마포구 서교동 456-78', latitude: 37.5478, longitude: 126.9156,
     town: { name: '서교동' },
-    luckyBagCount: 5,
+    luckyBagCount: 1, // 마지막 1개
+    status: 'TODAY_OPEN', minutesUntilConfirm: 45, pushAlarmQueueCount: 567, // 재고 위험
     get image() { return this.placeImages[0]?.path; },
     get luckyBagPrice() { return this.luckyBag.discountPrice; },
     get originalPrice() { return this.luckyBag.price; },
@@ -3686,15 +3692,16 @@ const consumerMockStores = [
   {
     id: 4, name: '저스티나', category: '이탈리안', distance: 197,
     placeImages: [{ path: 'https://images.unsplash.com/photo-1534620808146-d33bb39128b2?w=300&h=200&fit=crop', order: 1 }],
-    reviewCount: 342,
+    reviewCount: 342, rating: 4.9,
     luckyBag: {
       id: 104, name: '이탈리안 럭키백', price: 15800, discountPrice: 7900,
       dailySalesCount: 3, description: '이탈리안 럭키백! 파스타와 리조또를 할인가에 만나보세요.',
     },
-    currentPickupData: { pickupDate: '2024-12-13', pickupTime: { startTime: '21:00', endTime: '22:00' } },
+    currentPickupData: { pickupDate: '2024-12-14', pickupTime: { startTime: '21:00', endTime: '22:00' } },
     address: '서울특별시 마포구 서교동 789-12', latitude: 37.5501, longitude: 126.9201,
     town: { name: '서교동' },
     luckyBagCount: 2,
+    status: 'TOMORROW_OPEN', minutesUntilConfirm: 0, pushAlarmQueueCount: 2341, // 내일 픽업
     get image() { return this.placeImages[0]?.path; },
     get luckyBagPrice() { return this.luckyBag.discountPrice; },
     get originalPrice() { return this.luckyBag.price; },
@@ -3708,7 +3715,7 @@ const consumerMockStores = [
   {
     id: 5, name: '녹턴', category: '베이커리, 카페', distance: 230,
     placeImages: [{ path: 'https://images.unsplash.com/photo-1549931319-a545dcf3bc73?w=300&h=200&fit=crop', order: 1 }],
-    reviewCount: 567,
+    reviewCount: 567, rating: 4.7,
     luckyBag: {
       id: 105, name: '베이커리 럭키백', price: 8000, discountPrice: 4000,
       dailySalesCount: 4, description: '베이커리 럭키백! 오늘 구운 빵과 디저트를 즐겨보세요.',
@@ -3716,7 +3723,8 @@ const consumerMockStores = [
     currentPickupData: { pickupDate: '2024-12-13', pickupTime: { startTime: '17:00', endTime: '18:00' } },
     address: '서울특별시 마포구 합정동 373-3 1층', latitude: 37.5489, longitude: 126.9145,
     town: { name: '합정동' },
-    luckyBagCount: 3,
+    luckyBagCount: 0,
+    status: 'SOLD_OUT', minutesUntilConfirm: 0, pushAlarmQueueCount: 1567, // 매진
     get image() { return this.placeImages[0]?.path; },
     get luckyBagPrice() { return this.luckyBag.discountPrice; },
     get originalPrice() { return this.luckyBag.price; },
@@ -3730,7 +3738,7 @@ const consumerMockStores = [
   {
     id: 6, name: '네스토베이커리', category: '베이커리', distance: 450,
     placeImages: [{ path: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=300&h=200&fit=crop', order: 1 }],
-    reviewCount: 203,
+    reviewCount: 203, rating: 4.4,
     luckyBag: {
       id: 106, name: '수제 빵 럭키백', price: 10000, discountPrice: 5000,
       dailySalesCount: 5, description: '수제 빵 럭키백! 정성껏 만든 빵을 반값에 담아가세요.',
@@ -3738,7 +3746,8 @@ const consumerMockStores = [
     currentPickupData: { pickupDate: '2024-12-13', pickupTime: { startTime: '19:30', endTime: '20:30' } },
     address: '서울특별시 마포구 서교동 111-22', latitude: 37.5505, longitude: 126.9178,
     town: { name: '서교동' },
-    luckyBagCount: 4,
+    luckyBagCount: 0,
+    status: 'CLOSED', minutesUntilConfirm: 0, pushAlarmQueueCount: 432, // 휴무
     get image() { return this.placeImages[0]?.path; },
     get luckyBagPrice() { return this.luckyBag.discountPrice; },
     get originalPrice() { return this.luckyBag.price; },
@@ -3752,15 +3761,16 @@ const consumerMockStores = [
   {
     id: 7, name: '소행당', category: '베이커리, 디저트', distance: 320,
     placeImages: [{ path: 'https://images.unsplash.com/photo-1486427944299-d1955d23e34d?w=300&h=200&fit=crop', order: 1 }],
-    reviewCount: 412,
+    reviewCount: 412, rating: 4.8,
     luckyBag: {
       id: 107, name: '디저트 럭키백', price: 9000, discountPrice: 4500,
       dailySalesCount: 4, description: '디저트 럭키백! 케이크와 쿠키를 특별 가격에.',
     },
-    currentPickupData: { pickupDate: '2024-12-13', pickupTime: { startTime: '20:30', endTime: '21:00' } },
+    currentPickupData: { pickupDate: '2024-12-14', pickupTime: { startTime: '20:30', endTime: '21:00' } },
     address: '서울특별시 마포구 연남동 222-33', latitude: 37.5498, longitude: 126.9165,
     town: { name: '연남동' },
     luckyBagCount: 3,
+    status: 'TOMORROW_OPEN', minutesUntilConfirm: 0, pushAlarmQueueCount: 789, // 내일 픽업 재고 위험
     get image() { return this.placeImages[0]?.path; },
     get luckyBagPrice() { return this.luckyBag.discountPrice; },
     get originalPrice() { return this.luckyBag.price; },
@@ -3774,7 +3784,7 @@ const consumerMockStores = [
   {
     id: 8, name: '바이닐인사이드', category: '카페, 브런치', distance: 580,
     placeImages: [{ path: 'https://images.unsplash.com/photo-1517433367423-c7e5b0f35086?w=300&h=200&fit=crop', order: 1 }],
-    reviewCount: 189,
+    reviewCount: 189, rating: 4.3,
     luckyBag: {
       id: 108, name: '브런치 럭키백', price: 11000, discountPrice: 5500,
       dailySalesCount: 3, description: '브런치 럭키백! 샌드위치와 음료를 할인가에 만나보세요.',
@@ -3782,7 +3792,8 @@ const consumerMockStores = [
     currentPickupData: { pickupDate: '2024-12-13', pickupTime: { startTime: '18:30', endTime: '19:30' } },
     address: '서울특별시 마포구 연남동 444-55', latitude: 37.5510, longitude: 126.9195,
     town: { name: '연남동' },
-    luckyBagCount: 2,
+    luckyBagCount: 6,
+    status: 'TODAY_OPEN', minutesUntilConfirm: 120, pushAlarmQueueCount: 345, // 여유
     get image() { return this.placeImages[0]?.path; },
     get luckyBagPrice() { return this.luckyBag.discountPrice; },
     get originalPrice() { return this.luckyBag.price; },
@@ -4082,9 +4093,119 @@ const ConsumerHomeScreen = ({ onNavigate, stores }) => {
 const StoreDetailScreen = ({ store, onBack, onNavigate }) => {
   const { colors } = useTheme();
   const [quantity, setQuantity] = useState(1);
+  const [bookmarked, setBookmarked] = useState(false);
+  const [alarmOn, setAlarmOn] = useState(false);
+
+  // CTA 브랜드 컬러
+  const CTA_COLORS = {
+    todayDefault: '#16CC83',
+    tomorrowDefault: '#5E94FF',
+    danger: '#F39A00',
+    gray: '#6B7280',
+  };
+
+  // 재고 상태 (2단계: 여유 / 위험) - 4개 미만이면 위험
+  const getStockStatus = (count) => count >= 4 ? 'plenty' : 'danger';
+
+  // 시간 상태 (2단계: 여유 / 위험) - TODAY_OPEN만 해당, 30분 이하면 위험
+  const getTimeStatus = (minutes) => {
+    if (minutes <= 0) return 'confirmed';
+    if (minutes <= 30) return 'danger';
+    return 'plenty';
+  };
+
+  const status = store.status || 'TODAY_OPEN';
+  const luckyBagCount = store.luckyBagCount || store.remaining || 0;
+  const minutesUntilConfirm = store.minutesUntilConfirm || 60;
+  const pushAlarmQueueCount = store.pushAlarmQueueCount || 0;
+
+  const stockStatus = getStockStatus(luckyBagCount);
+  const timeStatus = getTimeStatus(minutesUntilConfirm);
+
+  // 긴급도 계산
+  const getUrgencyLevel = () => {
+    if (status === 'TOMORROW_OPEN') return stockStatus; // 내일은 재고만
+    if (stockStatus === 'danger' || timeStatus === 'danger') return 'danger';
+    return 'plenty';
+  };
+
+  const urgencyLevel = getUrgencyLevel();
+
+  // 버튼 색상
+  const getButtonColor = () => {
+    if (status === 'TODAY_OPEN') {
+      return urgencyLevel === 'danger' ? CTA_COLORS.danger : CTA_COLORS.todayDefault;
+    }
+    if (status === 'TOMORROW_OPEN') {
+      return urgencyLevel === 'danger' ? CTA_COLORS.danger : CTA_COLORS.tomorrowDefault;
+    }
+    return CTA_COLORS.gray;
+  };
+
+  // 버튼 텍스트
+  const getButtonText = () => {
+    if (status === 'TODAY_OPEN' || status === 'TOMORROW_OPEN') {
+      return urgencyLevel === 'danger' ? '지금 예약하기' : '예약하기';
+    }
+    return alarmOn ? '오픈 알림 끄기' : '오픈 알림 받기';
+  };
+
+  const getDateText = () => status === 'TODAY_OPEN' ? '오늘' : '내일';
+
+  // 재고 텍스트 & 색상
+  const getStockDisplay = () => {
+    if (stockStatus === 'danger') {
+      if (luckyBagCount === 1) {
+        return { text: '마지막 1개', color: CTA_COLORS.danger, icon: '🔥' };
+      }
+      return { text: `${luckyBagCount}개 남음`, color: CTA_COLORS.danger, icon: '🔥' };
+    }
+    return { text: `${luckyBagCount > 5 ? '5+' : luckyBagCount}개 남음`, color: '#6B7280', icon: null };
+  };
+
+  // TODAY_OPEN 시간 텍스트
+  const getTodayTimeDisplay = () => {
+    if (timeStatus === 'confirmed') {
+      return { text: '확정됨', color: CTA_COLORS.todayDefault, icon: '✓' };
+    }
+    const hours = Math.floor(minutesUntilConfirm / 60);
+    const mins = minutesUntilConfirm % 60;
+    let timeText;
+    if (hours > 0) {
+      timeText = mins > 0 ? `확정까지 ${hours}시간 ${mins}분` : `확정까지 ${hours}시간`;
+    } else {
+      timeText = `확정까지 ${mins}분`;
+    }
+    if (timeStatus === 'danger') {
+      return { text: timeText, color: CTA_COLORS.danger, icon: '🔥' };
+    }
+    return { text: timeText, color: '#6B7280', icon: null };
+  };
+
+  // TOMORROW_OPEN 시간 텍스트
+  const getTomorrowTimeDisplay = () => {
+    const [startHour, startMin] = (store.currentPickupData?.pickupTime?.startTime || '17:00').split(':').map(Number);
+    const confirmHour = startMin >= 30 ? startHour : startHour - 1;
+    const confirmMin = startMin >= 30 ? startMin - 30 : startMin + 30;
+    const timeText = confirmMin > 0 ? `내일 ${confirmHour}시 ${confirmMin}분 확정` : `내일 ${confirmHour}시 확정`;
+    return { text: timeText, color: '#6B7280', icon: null };
+  };
+
+  const stockDisplay = getStockDisplay();
+  const todayTimeDisplay = getTodayTimeDisplay();
+  const tomorrowTimeDisplay = getTomorrowTimeDisplay();
+
+  // CTA 클릭 핸들러
+  const handleCTAClick = () => {
+    if (status === 'TODAY_OPEN' || status === 'TOMORROW_OPEN') {
+      onNavigate('checkout', { store, quantity, totalPrice: store.luckyBagPrice * quantity });
+    } else {
+      setAlarmOn(!alarmOn);
+    }
+  };
 
   return (
-    <div style={{ minHeight: '100vh', background: colors.bg, paddingBottom: 100 }}>
+    <div style={{ minHeight: '100vh', background: colors.bg, paddingBottom: 140 }}>
       {/* 헤더 이미지 */}
       <div style={{ position: 'relative' }}>
         <img src={store.image} alt={store.name} style={{ width: '100%', height: 250, objectFit: 'cover' }} />
@@ -4100,7 +4221,26 @@ const StoreDetailScreen = ({ store, onBack, onNavigate }) => {
       {/* 가게 정보 */}
       <div style={{ padding: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-          <Badge variant="primary">럭키백</Badge>
+          {status === 'TODAY_OPEN' && (
+            <span style={{ padding: '4px 8px', borderRadius: 6, fontSize: 12, fontWeight: 500, background: '#E6F9F1', color: CTA_COLORS.todayDefault }}>
+              오늘 픽업 가능
+            </span>
+          )}
+          {status === 'TOMORROW_OPEN' && (
+            <span style={{ padding: '4px 8px', borderRadius: 6, fontSize: 12, fontWeight: 500, background: '#EEF4FF', color: CTA_COLORS.tomorrowDefault }}>
+              내일 픽업 가능
+            </span>
+          )}
+          {status === 'SOLD_OUT' && (
+            <span style={{ padding: '4px 8px', borderRadius: 6, fontSize: 12, fontWeight: 500, background: colors.gray100, color: '#6B7280' }}>
+              오늘 매진
+            </span>
+          )}
+          {status === 'CLOSED' && (
+            <span style={{ padding: '4px 8px', borderRadius: 6, fontSize: 12, fontWeight: 500, background: colors.gray100, color: '#6B7280' }}>
+              휴무
+            </span>
+          )}
           <span style={{ fontSize: 12, color: colors.textTertiary }}>{store.category}</span>
         </div>
         <h1 style={{ fontSize: 22, fontWeight: 700, color: colors.text, margin: '0 0 8px' }}>{store.name}</h1>
@@ -4146,31 +4286,33 @@ const StoreDetailScreen = ({ store, onBack, onNavigate }) => {
           </div>
         </Card>
 
-        {/* 수량 선택 */}
-        <Card style={{ marginBottom: 16 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: 15, fontWeight: 500, color: colors.text }}>수량</span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-              <button
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                style={{
-                  width: 32, height: 32, borderRadius: 16, border: `1px solid ${colors.border}`,
-                  background: colors.bgCard, cursor: 'pointer', fontSize: 18, color: colors.text,
-                }}
-              >-</button>
-              <span style={{ fontSize: 16, fontWeight: 600, color: colors.text, minWidth: 24, textAlign: 'center' }}>
-                {quantity}
-              </span>
-              <button
-                onClick={() => setQuantity(Math.min(5, quantity + 1))}
-                style={{
-                  width: 32, height: 32, borderRadius: 16, border: `1px solid ${colors.border}`,
-                  background: colors.bgCard, cursor: 'pointer', fontSize: 18, color: colors.text,
-                }}
-              >+</button>
+        {/* 수량 선택 - 예약 가능한 경우에만 표시 */}
+        {(status === 'TODAY_OPEN' || status === 'TOMORROW_OPEN') && (
+          <Card style={{ marginBottom: 16 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span style={{ fontSize: 15, fontWeight: 500, color: colors.text }}>수량</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                <button
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  style={{
+                    width: 32, height: 32, borderRadius: 16, border: `1px solid ${colors.border}`,
+                    background: colors.bgCard, cursor: 'pointer', fontSize: 18, color: colors.text,
+                  }}
+                >-</button>
+                <span style={{ fontSize: 16, fontWeight: 600, color: colors.text, minWidth: 24, textAlign: 'center' }}>
+                  {quantity}
+                </span>
+                <button
+                  onClick={() => setQuantity(Math.min(luckyBagCount, quantity + 1))}
+                  style={{
+                    width: 32, height: 32, borderRadius: 16, border: `1px solid ${colors.border}`,
+                    background: colors.bgCard, cursor: 'pointer', fontSize: 18, color: colors.text,
+                  }}
+                >+</button>
+              </div>
             </div>
-          </div>
-        </Card>
+          </Card>
+        )}
 
         {/* 가게 위치 */}
         <Card>
@@ -4195,21 +4337,136 @@ const StoreDetailScreen = ({ store, onBack, onNavigate }) => {
         </Card>
       </div>
 
-      {/* 하단 주문 바 */}
+      {/* 하단 CTA */}
       <div style={{
         position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)',
         width: '100%', maxWidth: 480, background: colors.bgCard,
-        padding: 16, borderTop: `1px solid ${colors.border}`,
+        borderTop: `1px solid ${colors.border}`,
       }}>
-        <Button
-          variant="primary"
-          size="lg"
-          fullWidth
-          onClick={() => onNavigate('checkout', { store, quantity, totalPrice: store.luckyBagPrice * quantity })}
-          style={{ background: '#16CC82', padding: '18px', fontSize: 16, borderRadius: 14 }}
-        >
-          럭키백 픽업 예약({store.remaining}개 남음)
-        </Button>
+        {/* 예약 가능 상태 */}
+        {(status === 'TODAY_OPEN' || status === 'TOMORROW_OPEN') && (
+          <div style={{ padding: '16px 20px' }}>
+            {/* 체크박스 + 픽업 시간 */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+              <div style={{
+                width: 20, height: 20, borderRadius: 4,
+                background: status === 'TODAY_OPEN' ? CTA_COLORS.todayDefault : CTA_COLORS.tomorrowDefault,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <span style={{ color: '#FFF', fontSize: 12, fontWeight: 700 }}>✓</span>
+              </div>
+              <span style={{ fontSize: 14, fontWeight: 500, color: colors.text }}>
+                {getDateText()} {store.pickupTime} 픽업
+              </span>
+            </div>
+
+            {/* 재고 + 확정 시간 */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 28, marginBottom: 16 }}>
+              <span style={{ fontSize: 13, color: stockDisplay.color }}>
+                {stockDisplay.icon && <span style={{ marginRight: 4 }}>{stockDisplay.icon}</span>}
+                {stockDisplay.text}
+              </span>
+              <span style={{ color: '#D1D5DB' }}>·</span>
+              {status === 'TODAY_OPEN' && (
+                <span style={{ fontSize: 13, color: todayTimeDisplay.color }}>
+                  {todayTimeDisplay.icon && <span style={{ marginRight: 4 }}>{todayTimeDisplay.icon}</span>}
+                  {todayTimeDisplay.text}
+                </span>
+              )}
+              {status === 'TOMORROW_OPEN' && (
+                <span style={{ fontSize: 13, color: tomorrowTimeDisplay.color }}>
+                  {tomorrowTimeDisplay.text}
+                </span>
+              )}
+            </div>
+
+            {/* 버튼 */}
+            <div style={{ display: 'flex', gap: 12 }}>
+              <button
+                onClick={() => setBookmarked(!bookmarked)}
+                style={{
+                  width: 48, height: 48, border: '2px solid #E5E7EB', borderRadius: 12,
+                  background: '#FFF', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}
+              >
+                <span style={{ fontSize: 20, opacity: bookmarked ? 1 : 0.3 }}>🔖</span>
+              </button>
+              <button
+                onClick={handleCTAClick}
+                style={{
+                  flex: 1, padding: '14px 0', borderRadius: 12, border: 'none',
+                  background: getButtonColor(), color: '#FFF', fontSize: 16, fontWeight: 600, cursor: 'pointer',
+                }}
+              >
+                {getButtonText()}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* 매진 상태 */}
+        {status === 'SOLD_OUT' && (
+          <div style={{ padding: '16px 20px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+              <span style={{ fontSize: 16 }}>😢</span>
+              <span style={{ fontSize: 14, color: colors.text }}>
+                오늘 마감 · <span style={{ color: '#9CA3AF' }}>{pushAlarmQueueCount.toLocaleString()}명 대기 중</span>
+              </span>
+            </div>
+            <div style={{ display: 'flex', gap: 12 }}>
+              <button
+                onClick={() => setBookmarked(!bookmarked)}
+                style={{
+                  width: 48, height: 48, border: '2px solid #E5E7EB', borderRadius: 12,
+                  background: '#FFF', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}
+              >
+                <span style={{ fontSize: 20, opacity: bookmarked ? 1 : 0.3 }}>🔖</span>
+              </button>
+              <button
+                onClick={() => setAlarmOn(!alarmOn)}
+                style={{
+                  flex: 1, padding: '14px 0', borderRadius: 12, border: 'none',
+                  background: alarmOn ? '#9CA3AF' : '#6B7280', color: '#FFF', fontSize: 16, fontWeight: 600, cursor: 'pointer',
+                }}
+              >
+                {alarmOn ? '오픈 알림 끄기' : '오픈 알림 받기'}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* 휴무 상태 */}
+        {status === 'CLOSED' && (
+          <div style={{ padding: '16px 20px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+              <span style={{ fontSize: 16 }}>🌙</span>
+              <span style={{ fontSize: 14, color: colors.text }}>
+                오늘 휴무 · <span style={{ color: '#9CA3AF' }}>{pushAlarmQueueCount.toLocaleString()}명 대기 중</span>
+              </span>
+            </div>
+            <div style={{ display: 'flex', gap: 12 }}>
+              <button
+                onClick={() => setBookmarked(!bookmarked)}
+                style={{
+                  width: 48, height: 48, border: '2px solid #E5E7EB', borderRadius: 12,
+                  background: '#FFF', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}
+              >
+                <span style={{ fontSize: 20, opacity: bookmarked ? 1 : 0.3 }}>🔖</span>
+              </button>
+              <button
+                onClick={() => setAlarmOn(!alarmOn)}
+                style={{
+                  flex: 1, padding: '14px 0', borderRadius: 12, border: 'none',
+                  background: alarmOn ? '#9CA3AF' : '#6B7280', color: '#FFF', fontSize: 16, fontWeight: 600, cursor: 'pointer',
+                }}
+              >
+                {alarmOn ? '오픈 알림 끄기' : '오픈 알림 받기'}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
