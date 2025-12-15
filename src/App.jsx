@@ -3924,31 +3924,6 @@ const ConsumerHomeScreen = ({ onNavigate, stores }) => {
         </p>
       </div>
 
-      {/* CTA 플레이그라운드 바로가기 */}
-      <div style={{ padding: '16px 16px 0' }}>
-        <div
-          onClick={() => onNavigate('cta-playground')}
-          style={{
-            background: '#111', borderRadius: 12, padding: '16px 20px',
-            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-            cursor: 'pointer',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <span style={{ fontSize: 24 }}>🎮</span>
-            <div>
-              <span style={{ fontSize: 15, color: '#FFF', fontWeight: 600 }}>CTA 플레이그라운드</span>
-              <div style={{ fontSize: 12, color: '#9CA3AF', marginTop: 2 }}>
-                슬라이더로 모든 케이스 테스트
-              </div>
-            </div>
-          </div>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="#9CA3AF">
-            <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
-          </svg>
-        </div>
-      </div>
-
       {/* 케이스별 가게 리스트 */}
       <div style={{ padding: 16 }}>
         {caseGroups.map((group) => (
