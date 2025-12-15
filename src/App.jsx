@@ -3612,197 +3612,196 @@ const TermsScreen = ({ onBack }) => {
 // 소비자 앱 - Mock 데이터
 // ============================================
 // 백엔드 API 스펙 기반 Mock 데이터
-// - luckyBag: LuckyBag 엔티티 (id, name, price, discountPrice, dailySalesCount)
-// - placeImages: PlaceImage[] (path, order)
-// - currentPickupData: { pickupDate, pickupTime: { startTime, endTime } }
+// CTA 테스트 케이스별 구성
 const consumerMockStores = [
+  // ============================================
+  // TODAY_OPEN 케이스 (4개)
+  // ============================================
+  // 1. 재고 여유 + 시간 여유 → 예약하기 (초록)
   {
-    id: 1, name: '어반써티연남', category: '베이커리', distance: 370,
+    id: 1, name: '재고 여유 + 시간 여유', category: '베이커리', distance: 370,
     placeImages: [{ path: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=300&h=200&fit=crop', order: 1 }],
     reviewCount: 128, rating: 4.8,
-    luckyBag: {
-      id: 101, name: '오늘의 빵 럭키백', price: 11000, discountPrice: 5500,
-      dailySalesCount: 5, description: '오늘의 빵 럭키백! 갓 구운 다양한 빵을 할인된 가격에 만나보세요.',
-    },
-    currentPickupData: { pickupDate: '2024-12-13', pickupTime: { startTime: '21:50', endTime: '22:00' } },
-    address: '서울특별시 마포구 연남동 373-3', latitude: 37.5495, longitude: 126.9138,
-    town: { name: '연남동' },
-    luckyBagCount: 4, // 남은 수량
-    // 새로운 CTA 관련 필드
-    status: 'TODAY_OPEN', // TODAY_OPEN | TOMORROW_OPEN | SOLD_OUT | CLOSED
-    minutesUntilConfirm: 85, // 확정까지 남은 분
-    pushAlarmQueueCount: 1234, // 오픈 알림 대기 인원
-    // 하위 호환용 (프로토타입 UI에서 사용)
+    luckyBag: { id: 101, name: '럭키백', price: 11000, discountPrice: 5500, dailySalesCount: 5, description: '럭키백입니다.' },
+    currentPickupData: { pickupDate: '2024-12-15', pickupTime: { startTime: '19:00', endTime: '20:00' } },
+    address: '서울특별시 마포구 연남동', latitude: 37.5495, longitude: 126.9138, town: { name: '연남동' },
+    luckyBagCount: 6, // 4개 이상 = 여유
+    status: 'TODAY_OPEN',
+    minutesUntilConfirm: 90, // 30분 초과 = 여유
+    pushAlarmQueueCount: 1234,
     get image() { return this.placeImages[0]?.path; },
     get luckyBagPrice() { return this.luckyBag.discountPrice; },
     get originalPrice() { return this.luckyBag.price; },
     get pickupTime() { return `${this.currentPickupData.pickupTime.startTime}-${this.currentPickupData.pickupTime.endTime}`; },
     get description() { return this.luckyBag.description; },
     get remaining() { return this.luckyBagCount; },
-    get lat() { return this.latitude; },
-    get lng() { return this.longitude; },
-    get distanceText() { return this.distance >= 1000 ? `${(this.distance / 1000).toFixed(1)}km` : `${this.distance}m`; },
+    get distanceText() { return `${this.distance}m`; },
   },
+  // 2. 재고 위험 + 시간 여유 → 지금 예약하기 (주황)
   {
-    id: 2, name: '카페공명', category: '카페, 디저트', distance: 1100,
-    placeImages: [{ path: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=300&h=200&fit=crop', order: 1 }],
-    reviewCount: 256, rating: 4.6,
-    luckyBag: {
-      id: 102, name: '디저트 럭키백', price: 9800, discountPrice: 4900,
-      dailySalesCount: 4, description: '커피와 디저트 럭키백! 시그니처 음료와 케이크를 특별 가격에.',
-    },
-    currentPickupData: { pickupDate: '2024-12-13', pickupTime: { startTime: '20:00', endTime: '21:00' } },
-    address: '서울특별시 마포구 서교동 123-45', latitude: 37.5512, longitude: 126.9189,
-    town: { name: '서교동' },
-    luckyBagCount: 3,
-    status: 'TODAY_OPEN', minutesUntilConfirm: 25, pushAlarmQueueCount: 892, // 시간 위험
-    get image() { return this.placeImages[0]?.path; },
-    get luckyBagPrice() { return this.luckyBag.discountPrice; },
-    get originalPrice() { return this.luckyBag.price; },
-    get pickupTime() { return `${this.currentPickupData.pickupTime.startTime}-${this.currentPickupData.pickupTime.endTime}`; },
-    get description() { return this.luckyBag.description; },
-    get remaining() { return this.luckyBagCount; },
-    get lat() { return this.latitude; },
-    get lng() { return this.longitude; },
-    get distanceText() { return this.distance >= 1000 ? `${(this.distance / 1000).toFixed(1)}km` : `${this.distance}m`; },
-  },
-  {
-    id: 3, name: '빨간토마토피자', category: '피자', distance: 500,
+    id: 2, name: '재고 위험 + 시간 여유', category: '피자', distance: 500,
     placeImages: [{ path: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=300&h=200&fit=crop', order: 1 }],
     reviewCount: 89, rating: 4.5,
-    luckyBag: {
-      id: 103, name: '피자 럭키백', price: 13000, discountPrice: 6500,
-      dailySalesCount: 6, description: '피자 럭키백! 오늘 남은 피자를 반값에 가져가세요.',
-    },
-    currentPickupData: { pickupDate: '2024-12-13', pickupTime: { startTime: '18:00', endTime: '19:00' } },
-    address: '서울특별시 마포구 서교동 456-78', latitude: 37.5478, longitude: 126.9156,
-    town: { name: '서교동' },
-    luckyBagCount: 1, // 마지막 1개
-    status: 'TODAY_OPEN', minutesUntilConfirm: 45, pushAlarmQueueCount: 567, // 재고 위험
+    luckyBag: { id: 102, name: '럭키백', price: 13000, discountPrice: 6500, dailySalesCount: 6, description: '럭키백입니다.' },
+    currentPickupData: { pickupDate: '2024-12-15', pickupTime: { startTime: '18:00', endTime: '19:00' } },
+    address: '서울특별시 마포구 서교동', latitude: 37.5478, longitude: 126.9156, town: { name: '서교동' },
+    luckyBagCount: 2, // 4개 미만 = 위험
+    status: 'TODAY_OPEN',
+    minutesUntilConfirm: 60, // 30분 초과 = 여유
+    pushAlarmQueueCount: 567,
     get image() { return this.placeImages[0]?.path; },
     get luckyBagPrice() { return this.luckyBag.discountPrice; },
     get originalPrice() { return this.luckyBag.price; },
     get pickupTime() { return `${this.currentPickupData.pickupTime.startTime}-${this.currentPickupData.pickupTime.endTime}`; },
     get description() { return this.luckyBag.description; },
     get remaining() { return this.luckyBagCount; },
-    get lat() { return this.latitude; },
-    get lng() { return this.longitude; },
-    get distanceText() { return this.distance >= 1000 ? `${(this.distance / 1000).toFixed(1)}km` : `${this.distance}m`; },
+    get distanceText() { return `${this.distance}m`; },
   },
+  // 3. 재고 여유 + 시간 위험 → 지금 예약하기 (주황)
   {
-    id: 4, name: '저스티나', category: '이탈리안', distance: 197,
-    placeImages: [{ path: 'https://images.unsplash.com/photo-1534620808146-d33bb39128b2?w=300&h=200&fit=crop', order: 1 }],
+    id: 3, name: '재고 여유 + 시간 위험', category: '카페', distance: 300,
+    placeImages: [{ path: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=300&h=200&fit=crop', order: 1 }],
+    reviewCount: 256, rating: 4.6,
+    luckyBag: { id: 103, name: '럭키백', price: 9800, discountPrice: 4900, dailySalesCount: 4, description: '럭키백입니다.' },
+    currentPickupData: { pickupDate: '2024-12-15', pickupTime: { startTime: '17:00', endTime: '18:00' } },
+    address: '서울특별시 마포구 합정동', latitude: 37.5512, longitude: 126.9189, town: { name: '합정동' },
+    luckyBagCount: 5, // 4개 이상 = 여유
+    status: 'TODAY_OPEN',
+    minutesUntilConfirm: 20, // 30분 이하 = 위험
+    pushAlarmQueueCount: 892,
+    get image() { return this.placeImages[0]?.path; },
+    get luckyBagPrice() { return this.luckyBag.discountPrice; },
+    get originalPrice() { return this.luckyBag.price; },
+    get pickupTime() { return `${this.currentPickupData.pickupTime.startTime}-${this.currentPickupData.pickupTime.endTime}`; },
+    get description() { return this.luckyBag.description; },
+    get remaining() { return this.luckyBagCount; },
+    get distanceText() { return `${this.distance}m`; },
+  },
+  // 4. 재고 위험 + 시간 위험 → 지금 예약하기 (주황)
+  {
+    id: 4, name: '재고 위험 + 시간 위험', category: '샐러드', distance: 200,
+    placeImages: [{ path: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=300&h=200&fit=crop', order: 1 }],
     reviewCount: 342, rating: 4.9,
-    luckyBag: {
-      id: 104, name: '이탈리안 럭키백', price: 15800, discountPrice: 7900,
-      dailySalesCount: 3, description: '이탈리안 럭키백! 파스타와 리조또를 할인가에 만나보세요.',
-    },
-    currentPickupData: { pickupDate: '2024-12-14', pickupTime: { startTime: '21:00', endTime: '22:00' } },
-    address: '서울특별시 마포구 서교동 789-12', latitude: 37.5501, longitude: 126.9201,
-    town: { name: '서교동' },
-    luckyBagCount: 2,
-    status: 'TOMORROW_OPEN', minutesUntilConfirm: 0, pushAlarmQueueCount: 2341, // 내일 픽업
+    luckyBag: { id: 104, name: '럭키백', price: 8000, discountPrice: 4000, dailySalesCount: 3, description: '럭키백입니다.' },
+    currentPickupData: { pickupDate: '2024-12-15', pickupTime: { startTime: '16:30', endTime: '17:30' } },
+    address: '서울특별시 마포구 망원동', latitude: 37.5501, longitude: 126.9201, town: { name: '망원동' },
+    luckyBagCount: 1, // 마지막 1개 = 위험
+    status: 'TODAY_OPEN',
+    minutesUntilConfirm: 15, // 30분 이하 = 위험
+    pushAlarmQueueCount: 2341,
     get image() { return this.placeImages[0]?.path; },
     get luckyBagPrice() { return this.luckyBag.discountPrice; },
     get originalPrice() { return this.luckyBag.price; },
     get pickupTime() { return `${this.currentPickupData.pickupTime.startTime}-${this.currentPickupData.pickupTime.endTime}`; },
     get description() { return this.luckyBag.description; },
     get remaining() { return this.luckyBagCount; },
-    get lat() { return this.latitude; },
-    get lng() { return this.longitude; },
-    get distanceText() { return this.distance >= 1000 ? `${(this.distance / 1000).toFixed(1)}km` : `${this.distance}m`; },
+    get distanceText() { return `${this.distance}m`; },
   },
+
+  // ============================================
+  // TOMORROW_OPEN 케이스 (3개)
+  // ============================================
+  // 1. 재고 1개 → 지금 예약하기 (주황)
   {
-    id: 5, name: '녹턴', category: '베이커리, 카페', distance: 230,
+    id: 5, name: '내일 픽업 - 재고 1개', category: '베이커리', distance: 230,
     placeImages: [{ path: 'https://images.unsplash.com/photo-1549931319-a545dcf3bc73?w=300&h=200&fit=crop', order: 1 }],
     reviewCount: 567, rating: 4.7,
-    luckyBag: {
-      id: 105, name: '베이커리 럭키백', price: 8000, discountPrice: 4000,
-      dailySalesCount: 4, description: '베이커리 럭키백! 오늘 구운 빵과 디저트를 즐겨보세요.',
-    },
-    currentPickupData: { pickupDate: '2024-12-13', pickupTime: { startTime: '17:00', endTime: '18:00' } },
-    address: '서울특별시 마포구 합정동 373-3 1층', latitude: 37.5489, longitude: 126.9145,
-    town: { name: '합정동' },
-    luckyBagCount: 0,
-    status: 'SOLD_OUT', minutesUntilConfirm: 0, pushAlarmQueueCount: 1567, // 매진
+    luckyBag: { id: 105, name: '럭키백', price: 8000, discountPrice: 4000, dailySalesCount: 4, description: '럭키백입니다.' },
+    currentPickupData: { pickupDate: '2024-12-16', pickupTime: { startTime: '19:00', endTime: '20:00' } },
+    address: '서울특별시 마포구 연남동', latitude: 37.5489, longitude: 126.9145, town: { name: '연남동' },
+    luckyBagCount: 1, // 위험
+    status: 'TOMORROW_OPEN',
+    minutesUntilConfirm: 0,
+    pushAlarmQueueCount: 1567,
     get image() { return this.placeImages[0]?.path; },
     get luckyBagPrice() { return this.luckyBag.discountPrice; },
     get originalPrice() { return this.luckyBag.price; },
     get pickupTime() { return `${this.currentPickupData.pickupTime.startTime}-${this.currentPickupData.pickupTime.endTime}`; },
     get description() { return this.luckyBag.description; },
     get remaining() { return this.luckyBagCount; },
-    get lat() { return this.latitude; },
-    get lng() { return this.longitude; },
-    get distanceText() { return this.distance >= 1000 ? `${(this.distance / 1000).toFixed(1)}km` : `${this.distance}m`; },
+    get distanceText() { return `${this.distance}m`; },
   },
+  // 2. 재고 3개 → 지금 예약하기 (주황)
   {
-    id: 6, name: '네스토베이커리', category: '베이커리', distance: 450,
-    placeImages: [{ path: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=300&h=200&fit=crop', order: 1 }],
-    reviewCount: 203, rating: 4.4,
-    luckyBag: {
-      id: 106, name: '수제 빵 럭키백', price: 10000, discountPrice: 5000,
-      dailySalesCount: 5, description: '수제 빵 럭키백! 정성껏 만든 빵을 반값에 담아가세요.',
-    },
-    currentPickupData: { pickupDate: '2024-12-13', pickupTime: { startTime: '19:30', endTime: '20:30' } },
-    address: '서울특별시 마포구 서교동 111-22', latitude: 37.5505, longitude: 126.9178,
-    town: { name: '서교동' },
-    luckyBagCount: 0,
-    status: 'CLOSED', minutesUntilConfirm: 0, pushAlarmQueueCount: 432, // 휴무
-    get image() { return this.placeImages[0]?.path; },
-    get luckyBagPrice() { return this.luckyBag.discountPrice; },
-    get originalPrice() { return this.luckyBag.price; },
-    get pickupTime() { return `${this.currentPickupData.pickupTime.startTime}-${this.currentPickupData.pickupTime.endTime}`; },
-    get description() { return this.luckyBag.description; },
-    get remaining() { return this.luckyBagCount; },
-    get lat() { return this.latitude; },
-    get lng() { return this.longitude; },
-    get distanceText() { return this.distance >= 1000 ? `${(this.distance / 1000).toFixed(1)}km` : `${this.distance}m`; },
-  },
-  {
-    id: 7, name: '소행당', category: '베이커리, 디저트', distance: 320,
+    id: 6, name: '내일 픽업 - 재고 3개', category: '디저트', distance: 320,
     placeImages: [{ path: 'https://images.unsplash.com/photo-1486427944299-d1955d23e34d?w=300&h=200&fit=crop', order: 1 }],
     reviewCount: 412, rating: 4.8,
-    luckyBag: {
-      id: 107, name: '디저트 럭키백', price: 9000, discountPrice: 4500,
-      dailySalesCount: 4, description: '디저트 럭키백! 케이크와 쿠키를 특별 가격에.',
-    },
-    currentPickupData: { pickupDate: '2024-12-14', pickupTime: { startTime: '20:30', endTime: '21:00' } },
-    address: '서울특별시 마포구 연남동 222-33', latitude: 37.5498, longitude: 126.9165,
-    town: { name: '연남동' },
-    luckyBagCount: 3,
-    status: 'TOMORROW_OPEN', minutesUntilConfirm: 0, pushAlarmQueueCount: 789, // 내일 픽업 재고 위험
+    luckyBag: { id: 106, name: '럭키백', price: 9000, discountPrice: 4500, dailySalesCount: 4, description: '럭키백입니다.' },
+    currentPickupData: { pickupDate: '2024-12-16', pickupTime: { startTime: '20:00', endTime: '21:00' } },
+    address: '서울특별시 마포구 서교동', latitude: 37.5498, longitude: 126.9165, town: { name: '서교동' },
+    luckyBagCount: 3, // 위험
+    status: 'TOMORROW_OPEN',
+    minutesUntilConfirm: 0,
+    pushAlarmQueueCount: 789,
     get image() { return this.placeImages[0]?.path; },
     get luckyBagPrice() { return this.luckyBag.discountPrice; },
     get originalPrice() { return this.luckyBag.price; },
     get pickupTime() { return `${this.currentPickupData.pickupTime.startTime}-${this.currentPickupData.pickupTime.endTime}`; },
     get description() { return this.luckyBag.description; },
     get remaining() { return this.luckyBagCount; },
-    get lat() { return this.latitude; },
-    get lng() { return this.longitude; },
-    get distanceText() { return this.distance >= 1000 ? `${(this.distance / 1000).toFixed(1)}km` : `${this.distance}m`; },
+    get distanceText() { return `${this.distance}m`; },
   },
+  // 3. 재고 6개 → 예약하기 (파랑)
   {
-    id: 8, name: '바이닐인사이드', category: '카페, 브런치', distance: 580,
+    id: 7, name: '내일 픽업 - 재고 6개', category: '브런치', distance: 580,
     placeImages: [{ path: 'https://images.unsplash.com/photo-1517433367423-c7e5b0f35086?w=300&h=200&fit=crop', order: 1 }],
     reviewCount: 189, rating: 4.3,
-    luckyBag: {
-      id: 108, name: '브런치 럭키백', price: 11000, discountPrice: 5500,
-      dailySalesCount: 3, description: '브런치 럭키백! 샌드위치와 음료를 할인가에 만나보세요.',
-    },
-    currentPickupData: { pickupDate: '2024-12-13', pickupTime: { startTime: '18:30', endTime: '19:30' } },
-    address: '서울특별시 마포구 연남동 444-55', latitude: 37.5510, longitude: 126.9195,
-    town: { name: '연남동' },
-    luckyBagCount: 6,
-    status: 'TODAY_OPEN', minutesUntilConfirm: 120, pushAlarmQueueCount: 345, // 여유
+    luckyBag: { id: 107, name: '럭키백', price: 11000, discountPrice: 5500, dailySalesCount: 3, description: '럭키백입니다.' },
+    currentPickupData: { pickupDate: '2024-12-16', pickupTime: { startTime: '18:00', endTime: '19:00' } },
+    address: '서울특별시 마포구 합정동', latitude: 37.5510, longitude: 126.9195, town: { name: '합정동' },
+    luckyBagCount: 6, // 여유
+    status: 'TOMORROW_OPEN',
+    minutesUntilConfirm: 0,
+    pushAlarmQueueCount: 345,
     get image() { return this.placeImages[0]?.path; },
     get luckyBagPrice() { return this.luckyBag.discountPrice; },
     get originalPrice() { return this.luckyBag.price; },
     get pickupTime() { return `${this.currentPickupData.pickupTime.startTime}-${this.currentPickupData.pickupTime.endTime}`; },
     get description() { return this.luckyBag.description; },
     get remaining() { return this.luckyBagCount; },
-    get lat() { return this.latitude; },
-    get lng() { return this.longitude; },
-    get distanceText() { return this.distance >= 1000 ? `${(this.distance / 1000).toFixed(1)}km` : `${this.distance}m`; },
+    get distanceText() { return `${this.distance}m`; },
+  },
+
+  // ============================================
+  // SOLD_OUT / CLOSED 케이스 (각 1개)
+  // ============================================
+  {
+    id: 8, name: '매진된 가게', category: '베이커리', distance: 450,
+    placeImages: [{ path: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=300&h=200&fit=crop', order: 1 }],
+    reviewCount: 203, rating: 4.4,
+    luckyBag: { id: 108, name: '럭키백', price: 10000, discountPrice: 5000, dailySalesCount: 5, description: '럭키백입니다.' },
+    currentPickupData: { pickupDate: '2024-12-15', pickupTime: { startTime: '19:00', endTime: '20:00' } },
+    address: '서울특별시 마포구 서교동', latitude: 37.5505, longitude: 126.9178, town: { name: '서교동' },
+    luckyBagCount: 0,
+    status: 'SOLD_OUT',
+    minutesUntilConfirm: 0,
+    pushAlarmQueueCount: 432,
+    get image() { return this.placeImages[0]?.path; },
+    get luckyBagPrice() { return this.luckyBag.discountPrice; },
+    get originalPrice() { return this.luckyBag.price; },
+    get pickupTime() { return `${this.currentPickupData.pickupTime.startTime}-${this.currentPickupData.pickupTime.endTime}`; },
+    get description() { return this.luckyBag.description; },
+    get remaining() { return this.luckyBagCount; },
+    get distanceText() { return `${this.distance}m`; },
+  },
+  {
+    id: 9, name: '휴무인 가게', category: '이탈리안', distance: 197,
+    placeImages: [{ path: 'https://images.unsplash.com/photo-1534620808146-d33bb39128b2?w=300&h=200&fit=crop', order: 1 }],
+    reviewCount: 156, rating: 4.6,
+    luckyBag: { id: 109, name: '럭키백', price: 15800, discountPrice: 7900, dailySalesCount: 3, description: '럭키백입니다.' },
+    currentPickupData: { pickupDate: '2024-12-15', pickupTime: { startTime: '20:00', endTime: '21:00' } },
+    address: '서울특별시 마포구 망원동', latitude: 37.5501, longitude: 126.9201, town: { name: '망원동' },
+    luckyBagCount: 0,
+    status: 'CLOSED',
+    minutesUntilConfirm: 0,
+    pushAlarmQueueCount: 289,
+    get image() { return this.placeImages[0]?.path; },
+    get luckyBagPrice() { return this.luckyBag.discountPrice; },
+    get originalPrice() { return this.luckyBag.price; },
+    get pickupTime() { return `${this.currentPickupData.pickupTime.startTime}-${this.currentPickupData.pickupTime.endTime}`; },
+    get description() { return this.luckyBag.description; },
+    get remaining() { return this.luckyBagCount; },
+    get distanceText() { return `${this.distance}m`; },
   },
 ];
 
