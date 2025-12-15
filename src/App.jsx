@@ -3851,238 +3851,170 @@ const ConsumerBottomNav = ({ activeTab, onChange }) => {
 };
 
 // ============================================
-// 소비자 앱 - 메인 화면 (지도 + 바텀시트)
+// 소비자 앱 - 메인 화면 (CTA 테스트용 케이스별 진입)
 // ============================================
 const ConsumerHomeScreen = ({ onNavigate, stores }) => {
   const { colors } = useTheme();
-  const [bottomSheetExpanded, setBottomSheetExpanded] = useState(false);
-  const [selectedTab, setSelectedTab] = useState('nearby');
 
-  // 간단한 그리드 지도 생성
-  const renderGridMap = () => (
-    <div style={{
-      width: '100%', height: bottomSheetExpanded ? 200 : 400,
-      background: `linear-gradient(135deg, ${colors.gray100} 0%, ${colors.gray200} 100%)`,
-      position: 'relative', overflow: 'hidden', transition: 'height 0.3s ease',
-    }}>
-      {/* 그리드 라인 */}
-      <svg width="100%" height="100%" style={{ position: 'absolute', top: 0, left: 0 }}>
-        {[...Array(20)].map((_, i) => (
-          <React.Fragment key={i}>
-            <line x1={i * 30} y1="0" x2={i * 30} y2="100%" stroke={colors.gray300} strokeWidth="0.5" />
-            <line x1="0" y1={i * 30} x2="100%" y2={i * 30} stroke={colors.gray300} strokeWidth="0.5" />
-          </React.Fragment>
-        ))}
-        {/* 도로 표시 */}
-        <line x1="0" y1="150" x2="100%" y2="150" stroke="#90CAF9" strokeWidth="8" />
-        <line x1="200" y1="0" x2="200" y2="100%" stroke="#A5D6A7" strokeWidth="6" />
-      </svg>
+  const CTA_COLORS = {
+    todayDefault: '#16CC83',
+    tomorrowDefault: '#5E94FF',
+    danger: '#F39A00',
+    gray: '#6B7280',
+  };
 
-      {/* 가게 마커들 */}
-      {stores.map((store, idx) => (
-        <div key={store.id} onClick={() => onNavigate('store-detail', store)} style={{
-          position: 'absolute',
-          left: `${20 + (idx % 3) * 30}%`,
-          top: `${15 + Math.floor(idx / 3) * 25}%`,
-          cursor: 'pointer',
-          transform: 'translate(-50%, -100%)',
-        }}>
-          <div style={{
-            width: 36, height: 36, borderRadius: 18,
-            background: colors.blue500, border: '3px solid white',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
-              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-            </svg>
-          </div>
-        </div>
-      ))}
+  // 케이스별 가게 그룹핑
+  const caseGroups = [
+    {
+      title: '오늘 픽업 (TODAY_OPEN)',
+      color: CTA_COLORS.todayDefault,
+      stores: stores.filter(s => s.status === 'TODAY_OPEN'),
+    },
+    {
+      title: '내일 픽업 (TOMORROW_OPEN)',
+      color: CTA_COLORS.tomorrowDefault,
+      stores: stores.filter(s => s.status === 'TOMORROW_OPEN'),
+    },
+    {
+      title: '매진 (SOLD_OUT)',
+      color: CTA_COLORS.gray,
+      stores: stores.filter(s => s.status === 'SOLD_OUT'),
+    },
+    {
+      title: '휴무 (CLOSED)',
+      color: CTA_COLORS.gray,
+      stores: stores.filter(s => s.status === 'CLOSED'),
+    },
+  ];
 
-      {/* 현재 위치 마커 */}
-      <div style={{
-        position: 'absolute', left: '50%', top: '50%',
-        transform: 'translate(-50%, -50%)',
-      }}>
-        <div style={{
-          width: 20, height: 20, borderRadius: 10,
-          background: colors.blue500, border: '4px solid white',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
-        }} />
-        <div style={{
-          position: 'absolute', top: -4, left: -4,
-          width: 28, height: 28, borderRadius: 14,
-          background: colors.blue500, opacity: 0.3,
-          animation: 'pulse 2s infinite',
-        }} />
-      </div>
-    </div>
-  );
+  // 긴급도 계산
+  const getUrgency = (store) => {
+    const stockDanger = store.luckyBagCount < 4;
+    const timeDanger = store.status === 'TODAY_OPEN' && store.minutesUntilConfirm <= 30;
+    if (stockDanger || timeDanger) return 'danger';
+    return 'plenty';
+  };
+
+  // 케이스 설명 생성
+  const getCaseDescription = (store) => {
+    const parts = [];
+    if (store.status === 'TODAY_OPEN' || store.status === 'TOMORROW_OPEN') {
+      parts.push(`재고 ${store.luckyBagCount}개`);
+      if (store.status === 'TODAY_OPEN') {
+        parts.push(`확정까지 ${store.minutesUntilConfirm}분`);
+      }
+      const urgency = getUrgency(store);
+      parts.push(urgency === 'danger' ? '⚠️ 위험' : '✅ 여유');
+    }
+    return parts.join(' · ');
+  };
 
   return (
-    <div style={{ minHeight: '100vh', background: colors.bg }}>
-      {/* 검색 바 */}
+    <div style={{ minHeight: '100vh', background: '#F3F4F6', paddingBottom: 100 }}>
+      {/* 헤더 */}
       <div style={{
-        position: 'absolute', top: 16, left: 16, right: 16, zIndex: 10,
-        display: 'flex', gap: 8, alignItems: 'center',
+        background: '#FFF', padding: '20px',
+        borderBottom: '1px solid #E5E7EB',
       }}>
-        <div style={{
-          flex: 1, display: 'flex', alignItems: 'center', gap: 8,
-          background: colors.bgCard, borderRadius: 24, padding: '12px 16px',
-          boxShadow: `0 2px 8px ${colors.shadow}`,
-        }}>
-          <div style={{ width: 24, height: 24, borderRadius: 12, background: '#03C75A', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ color: 'white', fontWeight: 'bold', fontSize: 12 }}>L</span>
+        <h1 style={{ fontSize: 20, fontWeight: 700, color: '#111', margin: 0 }}>
+          CTA 케이스별 테스트
+        </h1>
+        <p style={{ fontSize: 14, color: '#6B7280', marginTop: 8, margin: 0 }}>
+          각 버튼을 눌러 가게 상세 페이지의 CTA를 확인하세요
+        </p>
+      </div>
+
+      {/* CTA 플레이그라운드 바로가기 */}
+      <div style={{ padding: '16px 16px 0' }}>
+        <div
+          onClick={() => onNavigate('cta-playground')}
+          style={{
+            background: '#111', borderRadius: 12, padding: '16px 20px',
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+            cursor: 'pointer',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ fontSize: 24 }}>🎮</span>
+            <div>
+              <span style={{ fontSize: 15, color: '#FFF', fontWeight: 600 }}>CTA 플레이그라운드</span>
+              <div style={{ fontSize: 12, color: '#9CA3AF', marginTop: 2 }}>
+                슬라이더로 모든 케이스 테스트
+              </div>
+            </div>
           </div>
-          <span style={{ color: colors.textSecondary, fontSize: 13 }}>내 주변 럭키백을 검색해보세요!</span>
-        </div>
-        <div style={{
-          width: 44, height: 44, borderRadius: 22, background: colors.blue500,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: `0 2px 8px ${colors.shadow}`,
-        }}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-            <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71L12 2z"/>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="#9CA3AF">
+            <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
           </svg>
         </div>
       </div>
 
-      {/* 지도 */}
-      {renderGridMap()}
+      {/* 케이스별 가게 리스트 */}
+      <div style={{ padding: 16 }}>
+        {caseGroups.map((group) => (
+          <div key={group.title} style={{ marginBottom: 24 }}>
+            <div style={{
+              display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12,
+            }}>
+              <div style={{
+                width: 12, height: 12, borderRadius: 6,
+                background: group.color,
+              }} />
+              <span style={{ fontSize: 15, fontWeight: 600, color: '#111' }}>
+                {group.title}
+              </span>
+              <span style={{ fontSize: 13, color: '#9CA3AF' }}>
+                ({group.stores.length}개)
+              </span>
+            </div>
 
-      {/* 바텀시트 */}
-      <div style={{
-        position: 'fixed', bottom: 80, left: '50%', transform: 'translateX(-50%)',
-        width: '100%', maxWidth: 480, background: colors.bgCard,
-        borderRadius: '20px 20px 0 0', boxShadow: `0 -4px 20px ${colors.shadow}`,
-        maxHeight: bottomSheetExpanded ? 'calc(100vh - 120px)' : 280,
-        overflow: 'hidden', transition: 'max-height 0.3s ease',
-      }}>
-        {/* 드래그 핸들 */}
-        <div
-          onClick={() => setBottomSheetExpanded(!bottomSheetExpanded)}
-          style={{ padding: '12px 0', cursor: 'pointer' }}
-        >
-          <div style={{
-            width: 40, height: 4, background: colors.gray300,
-            borderRadius: 2, margin: '0 auto',
-          }} />
-        </div>
+            {group.stores.length > 0 ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {group.stores.map((store) => {
+                  const urgency = getUrgency(store);
+                  const buttonColor = urgency === 'danger' ? CTA_COLORS.danger : group.color;
 
-        {/* 탭 */}
-        <div style={{ display: 'flex', padding: '0 16px', gap: 8, marginBottom: 16 }}>
-          <button
-            onClick={() => setSelectedTab('nearby')}
-            style={{
-              flex: 1, padding: '10px 16px', borderRadius: 20,
-              border: `1px solid ${selectedTab === 'nearby' ? colors.text : colors.border}`,
-              background: selectedTab === 'nearby' ? colors.text : colors.bgCard,
-              color: selectedTab === 'nearby' ? colors.bgCard : colors.text,
-              fontSize: 14, fontWeight: 500, cursor: 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-            }}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-            </svg>
-            마포구 서교동
-          </button>
-          <button
-            onClick={() => setSelectedTab('trend')}
-            style={{
-              flex: 1, padding: '10px 16px', borderRadius: 20,
-              border: `1px solid ${selectedTab === 'trend' ? colors.text : colors.border}`,
-              background: selectedTab === 'trend' ? colors.text : colors.bgCard,
-              color: selectedTab === 'trend' ? colors.bgCard : colors.text,
-              fontSize: 14, fontWeight: 500, cursor: 'pointer',
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
-            }}
-          >
-            <span style={{ fontSize: 16 }}>🔥</span>
-            전국 트렌드
-          </button>
-        </div>
-
-        {/* 인기 장소 헤더 */}
-        <div style={{
-          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          padding: '0 16px', marginBottom: 12,
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 16, fontWeight: 700, color: colors.text }}>
-              지금 주변 인기 럭키백
-            </span>
-            <span style={{ color: colors.blue500, fontWeight: 700 }}>TOP 10</span>
-          </div>
-          <span style={{ fontSize: 12, color: colors.textTertiary }}>• 14분 전 업데이트</span>
-        </div>
-
-        {/* 가게 리스트 */}
-        <div style={{
-          overflowY: 'auto', maxHeight: bottomSheetExpanded ? 'calc(100vh - 320px)' : 150,
-          padding: '0 16px 16px',
-        }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-            {stores.map((store, idx) => (
-              <div
-                key={store.id}
-                onClick={() => onNavigate('store-detail', store)}
-                style={{
-                  background: colors.bgCard, borderRadius: 12, overflow: 'hidden',
-                  cursor: 'pointer', boxShadow: `0 1px 3px ${colors.shadow}`,
-                }}
-              >
-                <div style={{ position: 'relative' }}>
-                  <img
-                    src={store.image}
-                    alt={store.name}
-                    style={{ width: '100%', height: 120, objectFit: 'cover' }}
-                  />
-                  <div style={{
-                    position: 'absolute', top: 8, left: 8,
-                    background: 'rgba(0,0,0,0.6)', color: 'white',
-                    padding: '4px 8px', borderRadius: 4, fontSize: 20, fontWeight: 700,
-                  }}>
-                    {idx + 1}
-                  </div>
-                  <div style={{
-                    position: 'absolute', bottom: 8, left: 8, right: 8,
-                    background: 'rgba(0,0,0,0.6)', color: 'white',
-                    padding: '6px 8px', borderRadius: 4, fontSize: 11,
-                    whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-                  }}>
-                    {store.luckyBagPrice.toLocaleString()}원 럭키백 판매중
-                  </div>
-                </div>
-                <div style={{ padding: 12 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                    <div>
-                      <div style={{ fontWeight: 600, color: colors.text, fontSize: 14, marginBottom: 4 }}>
-                        {store.name}
-                      </div>
-                      <div style={{ fontSize: 12, color: colors.textTertiary }}>
-                        {store.category} • {store.distanceText}
+                  return (
+                    <div
+                      key={store.id}
+                      onClick={() => onNavigate('store-detail', store)}
+                      style={{
+                        background: '#FFF', borderRadius: 12, padding: 16,
+                        cursor: 'pointer', border: '1px solid #E5E7EB',
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontSize: 15, fontWeight: 600, color: '#111', marginBottom: 4 }}>
+                            {store.name}
+                          </div>
+                          <div style={{ fontSize: 13, color: '#6B7280' }}>
+                            {getCaseDescription(store)}
+                          </div>
+                        </div>
+                        <div style={{
+                          padding: '8px 16px', borderRadius: 8,
+                          background: buttonColor, color: '#FFF',
+                          fontSize: 13, fontWeight: 600,
+                        }}>
+                          {urgency === 'danger' ? '지금 예약' : '예약하기'}
+                        </div>
                       </div>
                     </div>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill={colors.gray300}>
-                      <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-                    </svg>
-                  </div>
-                </div>
+                  );
+                })}
               </div>
-            ))}
+            ) : (
+              <div style={{
+                background: '#FFF', borderRadius: 12, padding: 20,
+                textAlign: 'center', color: '#9CA3AF', fontSize: 14,
+              }}>
+                해당 케이스 가게 없음
+              </div>
+            )}
           </div>
-        </div>
+        ))}
       </div>
-
-      <style>{`
-        @keyframes pulse {
-          0% { transform: scale(1); opacity: 0.3; }
-          50% { transform: scale(1.5); opacity: 0.1; }
-          100% { transform: scale(1); opacity: 0.3; }
-        }
-      `}</style>
     </div>
   );
 };
