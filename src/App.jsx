@@ -4473,6 +4473,373 @@ const StoreDetailScreen = ({ store, onBack, onNavigate }) => {
 };
 
 // ============================================
+// 소비자 앱 - CTA 플레이그라운드 (테스트용)
+// ============================================
+const CTAPlaygroundScreen = ({ onBack, onNavigate }) => {
+  const { colors } = useTheme();
+  const [status, setStatus] = useState('TODAY_OPEN');
+  const [luckyBagCount, setLuckyBagCount] = useState(6);
+  const [minutesUntilConfirm, setMinutesUntilConfirm] = useState(85);
+  const [bookmarked, setBookmarked] = useState(false);
+  const [alarmOn, setAlarmOn] = useState(false);
+
+  const pushAlarmQueueCount = 1234;
+  const pickupTime = { startTime: '17:00', endTime: '18:00' };
+
+  // CTA 브랜드 컬러
+  const CTA_COLORS = {
+    todayDefault: '#16CC83',
+    tomorrowDefault: '#5E94FF',
+    danger: '#F39A00',
+    gray: '#6B7280',
+  };
+
+  // 재고 상태 (2단계: 여유 / 위험)
+  const getStockStatus = (count) => count >= 4 ? 'plenty' : 'danger';
+
+  // 시간 상태 (2단계: 여유 / 위험) - TODAY_OPEN만 해당
+  const getTimeStatus = (minutes) => {
+    if (minutes <= 0) return 'confirmed';
+    if (minutes <= 30) return 'danger';
+    return 'plenty';
+  };
+
+  const stockStatus = getStockStatus(luckyBagCount);
+  const timeStatus = getTimeStatus(minutesUntilConfirm);
+
+  // 긴급도 계산
+  const getUrgencyLevel = () => {
+    if (status === 'TOMORROW_OPEN') return stockStatus;
+    if (stockStatus === 'danger' || timeStatus === 'danger') return 'danger';
+    return 'plenty';
+  };
+
+  const urgencyLevel = getUrgencyLevel();
+
+  // 버튼 색상
+  const getButtonColor = () => {
+    if (status === 'TODAY_OPEN') {
+      return urgencyLevel === 'danger' ? CTA_COLORS.danger : CTA_COLORS.todayDefault;
+    }
+    if (status === 'TOMORROW_OPEN') {
+      return urgencyLevel === 'danger' ? CTA_COLORS.danger : CTA_COLORS.tomorrowDefault;
+    }
+    return CTA_COLORS.gray;
+  };
+
+  // 버튼 텍스트
+  const getButtonText = () => {
+    if (status === 'TODAY_OPEN' || status === 'TOMORROW_OPEN') {
+      return urgencyLevel === 'danger' ? '지금 예약하기' : '예약하기';
+    }
+    return alarmOn ? '오픈 알림 끄기' : '오픈 알림 받기';
+  };
+
+  const getDateText = () => status === 'TODAY_OPEN' ? '오늘' : '내일';
+
+  // 재고 텍스트 & 색상
+  const getStockDisplay = () => {
+    if (stockStatus === 'danger') {
+      if (luckyBagCount === 1) {
+        return { text: '마지막 1개', color: CTA_COLORS.danger, icon: '🔥' };
+      }
+      return { text: `${luckyBagCount}개 남음`, color: CTA_COLORS.danger, icon: '🔥' };
+    }
+    return { text: `${luckyBagCount > 5 ? '5+' : luckyBagCount}개 남음`, color: '#6B7280', icon: null };
+  };
+
+  // TODAY_OPEN 시간 텍스트
+  const getTodayTimeDisplay = () => {
+    if (timeStatus === 'confirmed') {
+      return { text: '확정됨', color: CTA_COLORS.todayDefault, icon: '✓' };
+    }
+    const hours = Math.floor(minutesUntilConfirm / 60);
+    const mins = minutesUntilConfirm % 60;
+    let timeText;
+    if (hours > 0) {
+      timeText = mins > 0 ? `확정까지 ${hours}시간 ${mins}분` : `확정까지 ${hours}시간`;
+    } else {
+      timeText = `확정까지 ${mins}분`;
+    }
+    if (timeStatus === 'danger') {
+      return { text: timeText, color: CTA_COLORS.danger, icon: '🔥' };
+    }
+    return { text: timeText, color: '#6B7280', icon: null };
+  };
+
+  // TOMORROW_OPEN 시간 텍스트
+  const getTomorrowTimeDisplay = () => {
+    const timeText = `내일 ${pickupTime.startTime.split(':')[0] - 1}시 30분 확정`;
+    return { text: timeText, color: '#6B7280', icon: null };
+  };
+
+  const stockDisplay = getStockDisplay();
+  const todayTimeDisplay = getTodayTimeDisplay();
+  const tomorrowTimeDisplay = getTomorrowTimeDisplay();
+
+  // Mock store for checkout navigation
+  const mockStore = {
+    id: 1, name: '성수동 베이커리', category: '베이커리',
+    luckyBagPrice: 5900, originalPrice: 12000,
+    image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=300&h=200&fit=crop',
+    address: '서울 성동구 성수동',
+    pickupTime: `${pickupTime.startTime}-${pickupTime.endTime}`,
+    status, luckyBagCount, minutesUntilConfirm,
+  };
+
+  const handleCTAClick = () => {
+    if (status === 'TODAY_OPEN' || status === 'TOMORROW_OPEN') {
+      onNavigate('checkout', { store: mockStore, quantity: 1, totalPrice: mockStore.luckyBagPrice });
+    } else {
+      setAlarmOn(!alarmOn);
+    }
+  };
+
+  return (
+    <div style={{ minHeight: '100vh', background: '#F3F4F6' }}>
+      {/* 헤더 */}
+      <div style={{
+        padding: '16px 20px', background: colors.bgCard,
+        display: 'flex', alignItems: 'center', gap: 12,
+        borderBottom: `1px solid ${colors.border}`,
+      }}>
+        <button onClick={onBack} style={{
+          background: 'none', border: 'none', fontSize: 24, cursor: 'pointer', padding: 0, color: colors.text,
+        }}>←</button>
+        <span style={{ fontSize: 18, fontWeight: 600, color: colors.text }}>CTA 플레이그라운드</span>
+      </div>
+
+      {/* 컨트롤 패널 */}
+      <div style={{ padding: 16 }}>
+        <div style={{ background: '#FFF', borderRadius: 16, padding: 20, marginBottom: 16 }}>
+          <p style={{ fontWeight: 600, color: colors.text, marginBottom: 16, fontSize: 15 }}>상태 선택</p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 20 }}>
+            {['TODAY_OPEN', 'TOMORROW_OPEN', 'SOLD_OUT', 'CLOSED'].map((s) => (
+              <button
+                key={s}
+                onClick={() => setStatus(s)}
+                style={{
+                  padding: '8px 16px', borderRadius: 20, border: 'none', cursor: 'pointer',
+                  fontSize: 13, fontWeight: 500, transition: 'all 0.2s',
+                  background: status === s
+                    ? (s === 'TODAY_OPEN' ? CTA_COLORS.todayDefault : s === 'TOMORROW_OPEN' ? CTA_COLORS.tomorrowDefault : CTA_COLORS.gray)
+                    : '#F3F4F6',
+                  color: status === s ? '#FFF' : '#6B7280',
+                }}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
+
+          {(status === 'TODAY_OPEN' || status === 'TOMORROW_OPEN') && (
+            <>
+              <div style={{ marginBottom: 20 }}>
+                <p style={{ fontSize: 14, color: colors.text, marginBottom: 8 }}>
+                  재고: <b>{luckyBagCount}개</b>
+                  <span style={{
+                    marginLeft: 8, fontSize: 12, padding: '2px 8px', borderRadius: 10,
+                    background: stockStatus === 'danger' ? '#FEF3C7' : '#E5E7EB',
+                    color: stockStatus === 'danger' ? CTA_COLORS.danger : '#6B7280',
+                  }}>
+                    {stockStatus === 'plenty' ? '여유' : '위험'}
+                  </span>
+                </p>
+                <input
+                  type="range" min="1" max="10" value={luckyBagCount}
+                  onChange={(e) => setLuckyBagCount(Number(e.target.value))}
+                  style={{ width: '100%', accentColor: status === 'TODAY_OPEN' ? CTA_COLORS.todayDefault : CTA_COLORS.tomorrowDefault }}
+                />
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#9CA3AF', marginTop: 4 }}>
+                  <span>1개</span>
+                  <span>4개 (여유 기준)</span>
+                  <span>10개</span>
+                </div>
+              </div>
+
+              {status === 'TODAY_OPEN' && (
+                <div>
+                  <p style={{ fontSize: 14, color: colors.text, marginBottom: 8 }}>
+                    확정까지: <b>{Math.floor(minutesUntilConfirm / 60)}시간 {minutesUntilConfirm % 60}분</b>
+                    <span style={{
+                      marginLeft: 8, fontSize: 12, padding: '2px 8px', borderRadius: 10,
+                      background: timeStatus === 'danger' ? '#FEF3C7' : timeStatus === 'confirmed' ? '#D1FAE5' : '#E5E7EB',
+                      color: timeStatus === 'danger' ? CTA_COLORS.danger : timeStatus === 'confirmed' ? CTA_COLORS.todayDefault : '#6B7280',
+                    }}>
+                      {timeStatus === 'plenty' ? '여유' : timeStatus === 'danger' ? '위험' : '확정됨'}
+                    </span>
+                  </p>
+                  <input
+                    type="range" min="0" max="180" value={minutesUntilConfirm}
+                    onChange={(e) => setMinutesUntilConfirm(Number(e.target.value))}
+                    style={{ width: '100%', accentColor: CTA_COLORS.todayDefault }}
+                  />
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: '#9CA3AF', marginTop: 4 }}>
+                    <span>확정됨</span>
+                    <span>30분 (위험 기준)</span>
+                    <span>3시간</span>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+
+        {/* 긴급도 계산 결과 */}
+        <div style={{ background: '#FFF', borderRadius: 16, padding: 20, marginBottom: 16 }}>
+          <p style={{ fontWeight: 600, color: colors.text, marginBottom: 12, fontSize: 15 }}>긴급도 계산</p>
+          <div style={{ fontSize: 14, color: '#6B7280' }}>
+            {status === 'TODAY_OPEN' && (
+              <p>재고: {stockStatus} / 시간: {timeStatus} → 둘 중 하나라도 위험이면 위험</p>
+            )}
+            {status === 'TOMORROW_OPEN' && (
+              <p>재고: {stockStatus} (시간은 긴급도 미반영)</p>
+            )}
+            {(status === 'SOLD_OUT' || status === 'CLOSED') && (
+              <p>예약 불가 상태</p>
+            )}
+            <p style={{ marginTop: 8 }}>
+              → 최종 긴급도: <b style={{
+                color: urgencyLevel === 'danger' ? CTA_COLORS.danger : status === 'TODAY_OPEN' ? CTA_COLORS.todayDefault : CTA_COLORS.tomorrowDefault,
+              }}>{urgencyLevel}</b>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* CTA 미리보기 */}
+      <div style={{
+        position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)',
+        width: '100%', maxWidth: 480, background: colors.bgCard,
+        borderTop: `1px solid ${colors.border}`,
+      }}>
+        {/* 예약 가능 상태 */}
+        {(status === 'TODAY_OPEN' || status === 'TOMORROW_OPEN') && (
+          <div style={{ padding: '16px 20px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+              <div style={{
+                width: 20, height: 20, borderRadius: 4,
+                background: status === 'TODAY_OPEN' ? CTA_COLORS.todayDefault : CTA_COLORS.tomorrowDefault,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <span style={{ color: '#FFF', fontSize: 12, fontWeight: 700 }}>✓</span>
+              </div>
+              <span style={{ fontSize: 14, fontWeight: 500, color: colors.text }}>
+                {getDateText()} {pickupTime.startTime}~{pickupTime.endTime} 픽업
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 28, marginBottom: 16 }}>
+              <span style={{ fontSize: 13, color: stockDisplay.color }}>
+                {stockDisplay.icon && <span style={{ marginRight: 4 }}>{stockDisplay.icon}</span>}
+                {stockDisplay.text}
+              </span>
+              <span style={{ color: '#D1D5DB' }}>·</span>
+              {status === 'TODAY_OPEN' && (
+                <span style={{ fontSize: 13, color: todayTimeDisplay.color }}>
+                  {todayTimeDisplay.icon && <span style={{ marginRight: 4 }}>{todayTimeDisplay.icon}</span>}
+                  {todayTimeDisplay.text}
+                </span>
+              )}
+              {status === 'TOMORROW_OPEN' && (
+                <span style={{ fontSize: 13, color: tomorrowTimeDisplay.color }}>
+                  {tomorrowTimeDisplay.text}
+                </span>
+              )}
+            </div>
+
+            <div style={{ display: 'flex', gap: 12 }}>
+              <button
+                onClick={() => setBookmarked(!bookmarked)}
+                style={{
+                  width: 48, height: 48, border: '2px solid #E5E7EB', borderRadius: 12,
+                  background: '#FFF', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}
+              >
+                <span style={{ fontSize: 20, opacity: bookmarked ? 1 : 0.3 }}>🔖</span>
+              </button>
+              <button
+                onClick={handleCTAClick}
+                style={{
+                  flex: 1, padding: '14px 0', borderRadius: 12, border: 'none',
+                  background: getButtonColor(), color: '#FFF', fontSize: 16, fontWeight: 600, cursor: 'pointer',
+                }}
+              >
+                {getButtonText()}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* 매진 상태 */}
+        {status === 'SOLD_OUT' && (
+          <div style={{ padding: '16px 20px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+              <span style={{ fontSize: 16 }}>😢</span>
+              <span style={{ fontSize: 14, color: colors.text }}>
+                오늘 마감 · <span style={{ color: '#9CA3AF' }}>{pushAlarmQueueCount.toLocaleString()}명 대기 중</span>
+              </span>
+            </div>
+            <div style={{ display: 'flex', gap: 12 }}>
+              <button
+                onClick={() => setBookmarked(!bookmarked)}
+                style={{
+                  width: 48, height: 48, border: '2px solid #E5E7EB', borderRadius: 12,
+                  background: '#FFF', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}
+              >
+                <span style={{ fontSize: 20, opacity: bookmarked ? 1 : 0.3 }}>🔖</span>
+              </button>
+              <button
+                onClick={() => setAlarmOn(!alarmOn)}
+                style={{
+                  flex: 1, padding: '14px 0', borderRadius: 12, border: 'none',
+                  background: alarmOn ? '#9CA3AF' : '#6B7280', color: '#FFF', fontSize: 16, fontWeight: 600, cursor: 'pointer',
+                }}
+              >
+                {alarmOn ? '오픈 알림 끄기' : '오픈 알림 받기'}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* 휴무 상태 */}
+        {status === 'CLOSED' && (
+          <div style={{ padding: '16px 20px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
+              <span style={{ fontSize: 16 }}>🌙</span>
+              <span style={{ fontSize: 14, color: colors.text }}>
+                오늘 휴무 · <span style={{ color: '#9CA3AF' }}>{pushAlarmQueueCount.toLocaleString()}명 대기 중</span>
+              </span>
+            </div>
+            <div style={{ display: 'flex', gap: 12 }}>
+              <button
+                onClick={() => setBookmarked(!bookmarked)}
+                style={{
+                  width: 48, height: 48, border: '2px solid #E5E7EB', borderRadius: 12,
+                  background: '#FFF', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}
+              >
+                <span style={{ fontSize: 20, opacity: bookmarked ? 1 : 0.3 }}>🔖</span>
+              </button>
+              <button
+                onClick={() => setAlarmOn(!alarmOn)}
+                style={{
+                  flex: 1, padding: '14px 0', borderRadius: 12, border: 'none',
+                  background: alarmOn ? '#9CA3AF' : '#6B7280', color: '#FFF', fontSize: 16, fontWeight: 600, cursor: 'pointer',
+                }}
+              >
+                {alarmOn ? '오픈 알림 끄기' : '오픈 알림 받기'}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// ============================================
 // 소비자 앱 - 주문 확인 화면
 // ============================================
 const OrderConfirmScreen = ({ store, quantity, onBack, onNavigate }) => {
@@ -6050,6 +6417,32 @@ const ConsumerMypageScreen = ({ onNavigate, onSwitchRole }) => {
             />
           </div>
         </div>
+
+        {/* 개발자 도구 */}
+        <div style={{ marginTop: 20, paddingBottom: 100 }}>
+          <div style={{ fontSize: 16, fontWeight: 700, color: colors.text, marginBottom: 12 }}>개발자 도구</div>
+          <div
+            onClick={() => onNavigate('cta-playground')}
+            style={{
+              background: colors.card, borderRadius: 12, padding: '16px 20px',
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+              cursor: 'pointer',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span style={{ fontSize: 24 }}>🎮</span>
+              <div>
+                <span style={{ fontSize: 15, color: colors.text, fontWeight: 500 }}>CTA 플레이그라운드</span>
+                <div style={{ fontSize: 12, color: colors.textTertiary, marginTop: 2 }}>
+                  상태별 CTA 케이스 테스트
+                </div>
+              </div>
+            </div>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill={colors.textTertiary}>
+              <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+            </svg>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -6209,6 +6602,8 @@ export default function App() {
         return <PaymentCompleteScreen store={selectedStore} quantity={orderData.quantity} totalPrice={orderData.totalPrice} onNavigate={consumerNavigate} />;
       case 'payment-fail':
         return <PaymentFailScreen store={selectedStore} onBack={consumerGoBack} onNavigate={consumerNavigate} />;
+      case 'cta-playground':
+        return <CTAPlaygroundScreen onBack={consumerGoBack} onNavigate={consumerNavigate} />;
       default:
         return <ConsumerHomeScreen onNavigate={consumerNavigate} stores={consumerMockStores} />;
     }
